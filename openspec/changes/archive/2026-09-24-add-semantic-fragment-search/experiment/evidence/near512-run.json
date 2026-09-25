@@ -1,0 +1,96 @@
+{
+  "run_metadata": {
+    "endpoint": "http://localhost:8000/v1/systemone",
+    "model": "english",
+    "lg_version": "laya-grep 0.1.0",
+    "started_utc": "2026-09-24T17:37:36Z",
+    "completed_utc": "2026-09-24T17:38:03Z",
+    "dataset_sha256": "363a9f29fd92e6cf435224c97b8d17c2c3e7bfc0ed785d83d20b9c5b9957c148",
+    "health": {
+      "status": "ok",
+      "loaded": [
+        "multilingual",
+        "typed-decisions",
+        "english"
+      ],
+      "device": "auto"
+    },
+    "metadata_probe": {
+      "model": "laya-rl-agent",
+      "routing": {
+        "model": "english",
+        "repo": "convaiinnovations/laya",
+        "reason": "explicit model='english'",
+        "detection": null,
+        "workflow": null
+      }
+    },
+    "cases": [
+      {
+        "id": "context-edge-english-512",
+        "exit": 0,
+        "elapsed_ms": 1400,
+        "output": "context-edge-english-512.stdout.jsonl",
+        "stderr": "context-edge-english-512.stderr",
+        "query": "Does this log contain an error?",
+        "endpoint": "http://localhost:8000/v1/systemone",
+        "model": "english",
+        "threshold": 0.5,
+        "join_threshold": 0.5,
+        "max_fragment_bytes": 16384,
+        "max_line_bytes": 16384,
+        "flow_derived_request_count": 1,
+        "request_count_basis": "successful text-reader control flow; null on command error; not independently server-instrumented"
+      }
+    ]
+  },
+  "input": {
+    "sha256": "7db7dc1af2813cc508563049618c45bd63069f6175d7c68105efe833ad8f1841",
+    "bytes": 10215,
+    "physical_lines": 1,
+    "generated_from_dataset": true
+  },
+  "telemetry_response": {
+    "model": "laya-rl-agent",
+    "answers": {
+      "match": {
+        "type": "noul",
+        "noul": 0.8721,
+        "confidence": 0.8721,
+        "answer_confidence": 0.8721,
+        "action": {
+          "act_probability": 1.0
+        }
+      }
+    },
+    "usage": {
+      "input_tokens": 512,
+      "output_tokens": 0
+    },
+    "routing": {
+      "model": "english",
+      "repo": "convaiinnovations/laya",
+      "reason": "explicit model='english'",
+      "detection": null,
+      "workflow": null
+    }
+  },
+  "lg_json_result": {
+    "kind": "log",
+    "source": {
+      "kind": "file",
+      "path": "/tmp/opencode/semantic-experiment-near512/context-edge-english-512.log"
+    },
+    "range": {
+      "start_line": 1,
+      "end_line": 1,
+      "start_byte": 0,
+      "end_byte": 10215
+    },
+    "text": "Build error: CONTEXT_LIMIT_SYNTHETIC_BEGIN; diagnostic follows: synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; synthetic diagnostic detail; \n",
+    "text_basis": "source",
+    "probability": 0.8721,
+    "split_before": false,
+    "split_after": false
+  }
+}

@@ -1,0 +1,2 @@
+{"text":"PKIX ошибка\r\n","file":"src/main.rs","language":"Rust","range":{"byteOffset":{"start":10,"end":29},"start":{"line":2,"column":4},"end":{"line":3,"column":0}},"lines":"ignored context","labels":[],"metaVariables":{}}
+{"text":"PKIX node","file":"src/main.rs","range":{"byteOffset":{"start":30,"end":39},"start":{"line":4,"column":1},"end":{"line":4,"column":10}},"lines":"SHOULD NOT APPEAR"}
