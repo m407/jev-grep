@@ -1,0 +1,10 @@
+#:schema https://fnox.jdx.dev/schema.json
+root = true
+env = "exec"
+
+[providers.zen-keychain]
+type = "keychain"
+service = "jev-grep"
+
+[secrets]
+JEV_GREP_API_KEY= { provider = "zen-keychain", value = "JEV_GREP_API_KEY", if_missing = "error" }

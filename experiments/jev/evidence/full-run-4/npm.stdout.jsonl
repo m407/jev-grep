@@ -1,0 +1,1 @@
+{"kind":"log","source":{"kind":"stdin","path":null},"range":{"start_line":1,"end_line":4,"start_byte":0,"end_byte":143},"text":"npm ERR! code ERESOLVE\nnpm ERR! unable to resolve dependency tree\nnpm ERR! peer react@^18 required by ui-kit@4.2.0\nnpm ERR! Found: react@19.0.0","text_basis":"source","probability":0.95,"split_before":false,"split_after":false}

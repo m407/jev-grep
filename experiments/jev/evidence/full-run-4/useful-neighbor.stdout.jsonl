@@ -1,0 +1,1 @@
+{"kind":"log","source":{"kind":"stdin","path":null},"range":{"start_line":1,"end_line":2,"start_byte":0,"end_byte":115},"text":"Database migration 20260924_add_index started\nLock wait timeout exceeded while creating index idx_events_created_at","text_basis":"source","probability":0.93,"split_before":false,"split_after":false}
