@@ -8,7 +8,7 @@ import threading
 import unittest
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-BIN = str(Path(__file__).resolve().parents[1] / 'target/debug/lg')
+BIN = str(Path(__file__).resolve().parents[1] / 'target/debug/jev-grep')
 
 
 class CliTests(unittest.TestCase):
@@ -60,10 +60,81 @@ class CliTests(unittest.TestCase):
         self.server.server_close()
         self.thread.join()
 
-    def run_lg(self, *args, data='', cwd=None):
-        env = {k: v for k, v in os.environ.items() if not k.startswith('LG_')}
-        return subprocess.run([BIN, '--api-url', self.url, *args], input=data,
-                              text=True, capture_output=True, timeout=10, cwd=cwd, env=env)
+    def test_help_version_and_default_configuration(self):
+        help_result = subprocess.run([BIN, '--help'], text=True, capture_output=True, timeout=5)
+        self.assertEqual(help_result.returncode, 0)
+        self.assertIn('jev-grep', help_result.stdout)
+        self.assertIn('https://opencode.ai/zen/v1/systemone', help_result.stdout)
+        self.assertIn('jev-1.13', help_result.stdout)
+        self.assertNotIn('lg', help_result.stdout)
+        version = subprocess.run([BIN, '--version'], text=True, capture_output=True, timeout=5)
+        self.assertEqual(version.returncode, 0)
+        self.assertTrue(version.stdout.startswith('jev-grep '), version.stdout)
+
+    def test_new_environment_defaults_and_old_environment_is_ignored(self):
+        result = self.run_lg('criterion', data='PKIX\n', use_default_url=False,
+                             env_overrides={
+                                 'JEV_GREP_API_URL': self.url,
+                                 'LG_API_URL': 'http://127.0.0.1:1/old',
+                                 'LG_MODEL': 'old-model',
+                                 'LG_API_KEY': 'old-secret',
+                             })
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.requests[0][2]['model'], 'jev-1.13')
+        self.assertNotIn('authorization', {k.lower() for k in self.requests[0][1]})
+
+    def test_environment_and_flag_precedence_and_required_model(self):
+        result = self.run_lg('criterion', data='PKIX\n', use_default_url=False,
+                             env_overrides={'JEV_GREP_API_URL': self.url,
+                                            'JEV_GREP_MODEL': 'env-model',
+                                            'JEV_GREP_API_KEY': 'env-token'})
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.requests[-1][2]['model'], 'env-model')
+        headers = {key.lower(): value.lower() for key, value in self.requests[-1][1].items()}
+        self.assertEqual(headers.get('authorization'), 'bearer env-token')
+
+        self.requests.clear()
+        result = self.run_lg('--api-url', self.url, '--model', 'flag-model', '--api-key', 'flag-token',
+                             'criterion', data='PKIX\n', use_default_url=False,
+                             env_overrides={'JEV_GREP_API_URL': 'http://127.0.0.1:1/ignored',
+                                            'JEV_GREP_MODEL': 'env-model',
+                                            'JEV_GREP_API_KEY': 'env-token'})
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.requests[0][2]['model'], 'flag-model')
+        headers = {key.lower(): value.lower() for key, value in self.requests[0][1].items()}
+        self.assertEqual(headers.get('authorization'), 'bearer flag-token')
+
+        self.requests.clear()
+        for invalid_model in ('', '   '):
+            result = self.run_lg('--model', invalid_model, 'criterion', data='PKIX\n')
+            self.assertEqual(result.returncode, 2, result.stderr)
+            self.assertIn('model must not be empty', result.stderr)
+        self.assertEqual(self.requests, [])
+
+    def test_zen_gateway_http_errors_include_status_without_fallback(self):
+        for status in (401, 429, 529):
+            with self.subTest(status=status):
+                self.requests.clear()
+                self.status = status
+                result = self.run_lg('--api-key', 'test-token', 'criterion', data='PKIX\n')
+                self.assertEqual(result.returncode, 2)
+                self.assertIn(f'HTTP {status}', result.stderr)
+                self.assertEqual(len(self.requests), 1)
+                headers = {key.lower(): value.lower() for key, value in self.requests[0][1].items()}
+                self.assertEqual(headers.get('authorization'), 'bearer test-token')
+        self.status = 200
+
+    def run_lg(self, *args, data='', cwd=None, env_overrides=None, use_default_url=True):
+        env = {k: v for k, v in os.environ.items()
+               if not k.startswith(('LG_', 'JEV_GREP_'))}
+        if env_overrides:
+            env.update(env_overrides)
+        command = [BIN]
+        if use_default_url:
+            command += ['--api-url', self.url]
+        command += list(args)
+        return subprocess.run(command, input=data, text=True, capture_output=True,
+                              timeout=10, cwd=cwd, env=env)
 
     def test_fragment_join_and_located_json(self):
         result = self.run_lg('--format', 'json', 'errors', data='PKIX first\njoin continuation\n')

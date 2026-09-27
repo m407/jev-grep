@@ -29,7 +29,7 @@ impl Api {
         );
         ensure!(
             url.username().is_empty() && url.password().is_none(),
-            "use LG_API_KEY instead of URL credentials"
+            "use JEV_GREP_API_KEY instead of URL credentials"
         );
         Ok(Self {
             client: Client::builder()
@@ -116,11 +116,7 @@ impl Api {
 }
 
 fn request_body(args: &Args, state: Value, questions: Value) -> Value {
-    let mut body = json!({"state": state, "questions": questions});
-    if let Some(model) = &args.model {
-        body["model"] = json!(model);
-    }
-    body
+    json!({"model": args.model, "state": state, "questions": questions})
 }
 
 fn question(instructions: &str) -> Value {
@@ -194,7 +190,7 @@ mod tests {
             paths: vec![],
             api_url: url,
             api_key,
-            model: Some("checkpoint".into()),
+            model: "checkpoint".into(),
             threshold: 0.5,
             join_threshold: 0.5,
             input_format: "text".into(),
@@ -380,7 +376,7 @@ mod tests {
             paths: vec![],
             api_url: "http://localhost".into(),
             api_key: None,
-            model: Some("checkpoint".into()),
+            model: "checkpoint".into(),
             threshold: 0.5,
             join_threshold: 0.5,
             input_format: "text".into(),

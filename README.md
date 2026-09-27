@@ -1,30 +1,30 @@
-# laya-grep (`lg`)
+# jev-grep
 
 Семантический поиск **фрагментов логов и кода** через HTTP API
-[Laya](https://github.com/NandhaKishorM/laya). Вместо регулярного выражения задайте
-критерий на естественном языке. `lg` возвращает подходящий текст с источником,
+[Jev в OpenCode Zen](https://opencode.ai/docs/zen/#jev). Вместо регулярного выражения задайте
+критерий на естественном языке. `jev-grep` возвращает подходящий текст с источником,
 диапазоном строк и, в JSONL, байтовыми координатами.
 
 Два способа обработки:
 
-- **Логи:** `lg` читает текст или JSONL, с помощью модели объединяет соседние
+- **Логи:** `jev-grep` читает текст или JSONL, с помощью модели объединяет соседние
   записи в смысловые фрагменты и оценивает результат целиком.
-- **Код:** `ast-grep` выделяет функции, методы или другие AST-узлы; `lg`
+- **Код:** `ast-grep` выделяет функции, методы или другие AST-узлы; `jev-grep`
   независимо оценивает каждый готовый кандидат, сохраняя его координаты.
 
 ```text
 text logs -------------------------------+
-logs --> agrind --> JSONL {text: ...} ----+--> lg --> human / JSONL
+logs --> agrind --> JSONL {text: ...} ----+--> jev-grep --> human / JSONL
 code --> ast-grep --> JSONL matches -----+
 ```
 
-`lg` — локальный Rust CLI, а inference выполняет настроенный сервер Laya.
+`jev-grep` — локальный Rust CLI, а inference выполняет настроенный сервер Jev on OpenCode Zen.
 Внешние CLI запускаются явно в shell-конвейере. Индекс репозитория не требуется.
 
 Разделы: [установка](#установка-и-подключение-модели),
 [текстовые логи](#самостоятельное-использование-текстовые-логи),
 [agrind и JSONL](#подготовленные-логи-jsonl-и-agrind),
-[ast-grep и код](#поиск-кода-ast-grep--lg),
+[ast-grep и код](#поиск-кода-ast-grep--jev-grep),
 [вывод](#вывод-human-и-jsonl), [лимиты](#пороги-лимиты-и-краткие-режимы).
 
 ## Установка и подключение модели
@@ -33,33 +33,31 @@ code --> ast-grep --> JSONL matches -----+
 
 ```sh
 cargo install --path . --locked
-lg --help
+jev-grep --help
 ```
 
 Нужен Rust с поддержкой edition 2024; сборка проверена на Rust 1.98.1.
 Зависимости закреплены в `Cargo.lock`. Python/PyTorch не нужны самому клиенту.
 
-Для запуска сервера см. [развёртывание Laya](docs/deployment.md). По умолчанию
-`lg` обращается к `http://localhost:8000/v1/systemone`; сервер должен быть уже
-запущен. Облачного fallback нет.
+Для подключения см. [руководство по Jev и OpenCode Zen](docs/deployment.md). По умолчанию
+`jev-grep` обращается к `https://opencode.ai/zen/v1/systemone` с моделью `jev-1.13`.
+Автоматического переключения endpoint или модели нет.
 
 ```sh
-export LG_API_URL=http://localhost:8000/v1/systemone
+export JEV_GREP_API_URL=https://opencode.ai/zen/v1/systemone
+export JEV_GREP_MODEL=jev-1.13
 
-# Необязательно: зафиксировать checkpoint вместо серверного auto-routing.
-export LG_MODEL=english
-
-# Если сервер требует аутентификацию, задайте LG_API_KEY в окружении.
-lg 'Certificate validation failure' application.log
+# Ключ задавайте через fnox; см. руководство по развёртыванию.
+jev-grep 'Certificate validation failure' application.log
 ```
 
 Endpoint и модель также можно передать флагами `--api-url` и `--model`.
-Язык критерия и входа должен поддерживаться выбранным checkpoint; для смешанных
-языков выбирайте соответствующую модель на сервере.
+Язык критерия и входа должен поддерживаться выбранной моделью; переопределения
+поддерживаются через `JEV_GREP_API_URL`, `JEV_GREP_MODEL` и `JEV_GREP_API_KEY`.
 
 ## Быстрый выбор режима
 
-| Вход | Опция `lg` | Единица поиска | Координаты результата |
+| Вход | Опция `jev-grep` | Единица поиска | Координаты результата |
 | --- | --- | --- | --- |
 | Обычный текстовый лог | `--input-format text` (по умолчанию) | Сгруппированные моделью соседние строки | В прочитанном файле/stdin |
 | JSONL с полем `text` | `--input-format log-jsonl` | Сгруппированные моделью соседние записи | В физическом JSONL-файле/stdin |
@@ -74,19 +72,19 @@ Endpoint и модель также можно передать флагами `
 
 ```sh
 # Один файл, вывод для человека.
-lg 'Certificate validation or trust chain failure' application.log
+jev-grep 'Certificate validation or trust chain failure' application.log
 
 # Рекурсивно искать только в .log-файлах, повысить порог отбора.
-lg -g '*.log' --threshold 0.8 'Database connection failure' ./logs
+jev-grep -g '*.log' --threshold 0.8 'Database connection failure' ./logs
 
 # Машинный вывод.
-lg --format json 'Unresolved network failure' build.log
+jev-grep --format json 'Unresolved network failure' build.log
 
 # До трёх выбранных фрагментов на каждый входной файл.
-lg -m 3 'Dependency resolution failure' first.log second.log
+jev-grep -m 3 'Dependency resolution failure' first.log second.log
 ```
 
-Без путей `lg` читает перенаправленный stdin, а при запуске из терминала обходит
+Без путей `jev-grep` читает перенаправленный stdin, а при запуске из терминала обходит
 текущий каталог. `-` явно обозначает stdin. При указанных путях stdin автоматически
 не добавляется. Записи из разных входных файлов не объединяются.
 
@@ -105,28 +103,28 @@ lg -m 3 'Dependency resolution failure' first.log second.log
 set -o pipefail
 
 ./gradlew --console=plain build 2>&1 |
-  lg 'Build failure caused by dependencies or certificate validation'
+  jev-grep 'Build failure caused by dependencies or certificate validation'
 
 npm run build 2>&1 |
-  lg --format json 'Compilation or dependency error'
+  jev-grep --format json 'Compilation or dependency error'
 
 buildah bud . 2>&1 |
-  lg 'Image build failed because a command or download failed'
+  jev-grep 'Image build failed because a command or download failed'
 
 tail -f application.log |
-  lg 'Connection failure that was not resolved by a retry'
+  jev-grep 'Connection failure that was not resolved by a retry'
 ```
 
 `2>&1` направляет stdout и stderr команды в один входной поток. У stdin координаты
 начинаются с начала **полученного потока**. Например, `tail -f` не передаёт всю
 историю файла: номера в результате не являются номерами строк полного
 `application.log`. Чтобы получить координаты в сохранённом логе, передавайте
-путь непосредственно: `lg 'Build failure' build.log`.
+путь непосредственно: `jev-grep 'Build failure' build.log`.
 
 ### Как собирается фрагмент
 
 Первая запись получает оценку `match`. Для текущего фрагмента и следующей записи
-`lg` отправляет **один HTTP-запрос с четырьмя вопросами**:
+`jev-grep` отправляет **один HTTP-запрос с четырьмя вопросами**:
 
 - `same_event` — продолжает ли запись то же конкретное событие;
 - `useful_context` — существенно ли она объясняет, уточняет, разрешает или
@@ -161,7 +159,7 @@ tail -f application.log |
 ```
 
 ```sh
-lg --input-format log-jsonl --format json \
+jev-grep --input-format log-jsonl --format json \
   'Connection failure that was not resolved' prepared.jsonl
 ```
 
@@ -186,7 +184,7 @@ JSON-массив, пустая физическая строка, отсутс�
 set -o pipefail
 
 agrind --output json '* | json | message as text | fields text' < app.jsonl |
-  lg --input-format log-jsonl --format json 'Certificate validation failure'
+  jev-grep --input-format log-jsonl --format json 'Certificate validation failure'
 ```
 
 Здесь `message` должно быть строкой в каждой записи. Если для критерия важен
@@ -197,7 +195,7 @@ set -o pipefail
 
 agrind --output json \
   '* | json | concat(level, ": ", message) as text | fields text' < app.jsonl |
-  lg --input-format log-jsonl 'Unresolved application error'
+  jev-grep --input-format log-jsonl 'Unresolved application error'
 ```
 
 Для обычного текста возможна упаковка каждой строки:
@@ -206,18 +204,18 @@ agrind --output json \
 set -o pipefail
 
 agrind --output json '* | parse "*" as text noconvert' < build.log |
-  lg --input-format log-jsonl 'Dependency resolution failure'
+  jev-grep --input-format log-jsonl 'Dependency resolution failure'
 ```
 
-`noconvert` оставляет числоподобные строки строками, как требует `lg`.
+`noconvert` оставляет числоподобные строки строками, как требует `jev-grep`.
 При этом `agrind parse` удаляет крайние пробелы, включая отступы stack trace.
-Чтобы сохранить исходный лог точно, используйте `lg ... build.log` без преобразования.
+Чтобы сохранить исходный лог точно, используйте `jev-grep ... build.log` без преобразования.
 
 Роль `agrind` — подготовка записей; **сборку многострочного фрагмента выполняет
-модель внутри `lg`**. Не добавляйте предварительный фильтр только по `error`, если
+модель внутри `jev-grep`**. Не добавляйте предварительный фильтр только по `error`, если
 нужны продолжения stack trace или сообщения о восстановлении. Оператор `json`
 в agrind отбрасывает невалидные JSON-строки; оператор `parse` без `nodrop` отбрасывает
-несовпавшие строки. Такие потери upstream `lg` обнаружить не сможет.
+несовпавшие строки. Такие потери upstream `jev-grep` обнаружить не сможет.
 
 ### Где искать совпадение после преобразования
 
@@ -230,15 +228,15 @@ agrind --output json '* | parse "*" as text noconvert' < build.log |
 
 ```bash
 agrind --output json '* | json | message as text | fields text' < app.jsonl > prepared.jsonl
-lg --input-format log-jsonl 'Certificate validation failure' prepared.jsonl
+jev-grep --input-format log-jsonl 'Certificate validation failure' prepared.jsonl
 ```
 
 В результате будет путь `prepared.jsonl`. Путь `app.jsonl` и его исходные координаты
 через произвольные поля JSON не переносятся.
 
-## Поиск кода: `ast-grep` + `lg`
+## Поиск кода: `ast-grep` + `jev-grep`
 
-[ast-grep](https://ast-grep.github.io/) определяет структурные границы, `lg`
+[ast-grep](https://ast-grep.github.io/) определяет структурные границы, `jev-grep`
 проверяет смысл. Используйте **`scan --json=stream`**: один объект на совпадение.
 Примеры проверены с ast-grep 0.45.3.
 
@@ -256,11 +254,11 @@ severity: hint
 rule:
   kind: function_item
 ' ./src |
-  lg --input-format ast-grep --max-line-bytes 262144 \
+  jev-grep --input-format ast-grep --max-line-bytes 262144 \
     'Function that validates input or rejects malformed data'
 ```
 
-Для машинного вывода добавьте `--format json` к `lg`.
+Для машинного вывода добавьте `--format json` к `jev-grep`.
 `severity: hint` позволяет использовать правило для извлечения кандидатов;
 error-level правило ast-grep может давать ненулевой exit code из-за самих совпадений.
 
@@ -281,7 +279,7 @@ severity: hint
 rule:
   kind: function_definition
 ' |
-  lg --input-format ast-grep --max-line-bytes 262144 --format json \
+  jev-grep --input-format ast-grep --max-line-bytes 262144 --format json \
     'Function that retries a failed network request'
 ```
 
@@ -289,7 +287,7 @@ rule:
 код без пути. Чтобы сохранить имя файла, передайте `service.py` непосредственно
 в ast-grep вместо `cat ... | ... --stdin`.
 
-Сам ast-grep читает код из stdin до EOF. Полученные готовые JSONL-кандидаты `lg`
+Сам ast-grep читает код из stdin до EOF. Полученные готовые JSONL-кандидаты `jev-grep`
 оценивает и выводит по одному, без ожидания EOF всего потока кандидатов.
 
 ### Собственные правила и сохранённые кандидаты
@@ -302,14 +300,14 @@ rule:
 set -o pipefail
 
 ast-grep scan --json=stream --rule rule.yml ./src |
-  lg --input-format ast-grep --max-line-bytes 262144 --format json \
+  jev-grep --input-format ast-grep --max-line-bytes 262144 --format json \
     'Code that handles authentication failures'
 ```
 
 Либо сохраните результат ast-grep и повторяйте семантические запросы:
 
 ```sh
-lg --input-format ast-grep --max-line-bytes 262144 \
+jev-grep --input-format ast-grep --max-line-bytes 262144 \
   'Code that handles authentication failures' candidates.jsonl
 ```
 
@@ -321,10 +319,10 @@ lg --input-format ast-grep --max-line-bytes 262144 \
   и повторные узлы остаются отдельными кандидатами. Их выбор задаётся upstream-правилом.
 - Принимаются поля `text`, `file`, `range.byteOffset.start/end`,
   `range.start.line/column`, `range.end.line/column`; `language` необязателен.
-  `lg` проверяет согласованность текста и диапазонов, но не открывает исходный файл
+  `jev-grep` проверяет согласованность текста и диапазонов, но не открывает исходный файл
   заново и не проверяет, изменился ли он после запуска ast-grep.
 - Обычный JSON-массив от `--json`/`--json=compact` и объекты `outline` не подходят.
-- `-g`, `--hidden`, `--no-ignore` у `lg` применяются к входным файлам JSONL,
+- `-g`, `--hidden`, `--no-ignore` у `jev-grep` применяются к входным файлам JSONL,
   а не к `file` внутри кандидатов. Отбор исходных файлов кода настройте в ast-grep.
 
 ## Вывод: human и JSONL
@@ -408,10 +406,10 @@ Human-вывод добавляет завершающий LF для удобс�
 | `-m`, `--max-count N` | Ограничить число выбранных фрагментов на источник |
 
 ```sh
-lg -c 'Certificate validation failure' application.log
-lg -l -g '*.log' 'Database connection failure' ./logs
-lg -q 'Build failure' build.log
-lg -v 'Routine successful operation' application.log
+jev-grep -c 'Certificate validation failure' application.log
+jev-grep -l -g '*.log' 'Database connection failure' ./logs
+jev-grep -q 'Build failure' build.log
+jev-grep -v 'Routine successful operation' application.log
 ```
 
 Для text/log-jsonl источник — входной файл или stdin. Для ast-grep — upstream-поле
@@ -420,7 +418,7 @@ lg -v 'Routine successful operation' application.log
 
 - `-l` печатает каждый upstream-путь один раз;
 - `-c` выводит итоги после EOF в порядке первого появления путей; файлы, от которых
-  не пришло ни одного кандидата, неизвестны `lg` и не появляются в счётчиках;
+  не пришло ни одного кандидата, неизвестны `jev-grep` и не появляются в счётчиках;
 - после достижения `-m` дальнейшие кандидаты этого пути валидируются, но не
   отправляются модели; кандидаты других файлов продолжают обрабатываться.
 
@@ -437,12 +435,12 @@ lg -v 'Routine successful operation' application.log
 Точное достижение лимита само по себе не завершает фрагмент.
 
 Одна текстовая строка, одно декодированное поле `text` или один AST-кандидат,
-превышающие этот предел, вызывают ошибку: внутри неделимой записи `lg` не режет.
+превышающие этот предел, вызывают ошибку: внутри неделимой записи `jev-grep` не режет.
 Превышение `--max-line-bytes` — отдельная ошибка до декодирования JSONL.
 
 **Байтовый лимит клиента не увеличивает токеновый контекст модели.** Увеличивать
-размеры следует с учётом настроек Laya: сервер может обрезать длинный вход, включая
-новую запись при оценке границы. `lg` не передаёт настройку `max_len` в HTTP-запросе.
+размеры следует с учётом настроек Jev on OpenCode Zen: сервер может обрезать длинный вход, включая
+новую запись при оценке границы. `jev-grep` не передаёт настройку `max_len` в HTTP-запросе.
 
 ## Коды завершения и конвейеры
 
@@ -455,8 +453,8 @@ stdout содержит результат, stderr — диагностику. �
 выдаётся как успешно завершённый. Закрытие downstream pipe обрабатывается без
 диагностики BrokenPipe.
 
-`lg` не может узнать exit status предыдущей команды по EOF. Используйте
-`set -o pipefail` в Bash: код всего конвейера может отличаться от кода `lg`.
+`jev-grep` не может узнать exit status предыдущей команды по EOF. Используйте
+`set -o pipefail` в Bash: код всего конвейера может отличаться от кода `jev-grep`.
 Например, сама сборка может завершиться ошибкой при успешно найденном фрагменте.
 Ранняя остановка через `-q`/`-m` также может закрыть pipe и вызвать SIGPIPE upstream.
 
@@ -476,14 +474,13 @@ Reader ограничен физической строкой, текущим ф
 Дополнительно используются транспортные буферы, состояние обхода файлов и, для
 ast-grep, учёт всех встреченных upstream-путей.
 
-Группировка и отбор вероятностные. В небольшом
-[эксперименте с реальной Laya](openspec/changes/archive/2026-09-24-add-semantic-fragment-search/experiment/RESULTS.md)
-на синтетических логах обнаружены ложные объединения, разбиения и пропуски.
-Проверяйте критерий, checkpoint и пороги на своих примерах; приведённые команды
-описывают использование CLI, а не гарантируют качество конкретной модели.
+Группировка и отбор вероятностные. Методика текущего синтетического эксперимента
+описана в [experiments/jev/README.md](experiments/jev/README.md); она не заменяет
+реальные результаты inference. Проверяйте критерий, модель Jev и пороги на своих
+примерах; приведённые команды не гарантируют качество конкретной модели.
 
 Оцениваемый текст отправляется указанному API. Для локальной обработки используйте
-локальный сервер. Поддерживаются bearer-аутентификация через `LG_API_KEY` и HTTPS
+локальный сервер. Поддерживаются bearer-аутентификация через `JEV_GREP_API_KEY` и HTTPS
 с проверкой TLS; HTTP redirects и credentials внутри URL не принимаются.
 
 ## Проверки для разработчиков
@@ -498,5 +495,5 @@ cargo clippy --locked --all-targets -- -D warnings
 
 Acceptance-тесты используют Python standard library и локальный mock HTTP API.
 Они проверяют группировку при заданных модельных ответах, форматы входа/вывода,
-координаты, лимиты, фильтры и ошибки. Сервер Laya и веса не требуются;
+координаты, лимиты, фильтры и ошибки. Сервер Jev on OpenCode Zen и веса не требуются;
 точность настоящей модели эти тесты не измеряют.

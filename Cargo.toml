@@ -1,11 +1,11 @@
 [package]
-name = "laya-grep"
+name = "jev-grep"
 version = "0.1.0"
 edition = "2024"
-description = "Streaming semantic grep using the Laya typed-decision HTTP API"
+description = "Streaming semantic grep using Jev via OpenCode Zen"
 
 [[bin]]
-name = "lg"
+name = "jev-grep"
 path = "src/main.rs"
 
 [dependencies]

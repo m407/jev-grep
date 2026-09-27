@@ -104,7 +104,7 @@ pub fn search(
             let source_selected = code_sources.sources[source_index].1;
             // A capped source is still fully parsed and size-checked above,
             // but must not trigger another inference request.
-            if !args.max_count.is_some_and(|limit| source_selected >= limit) {
+            if args.max_count.is_none_or(|limit| source_selected < limit) {
                 let probability = api
                     .probability(args, &candidate.text)
                     .with_context(|| format!("{name}:{}", record.line))?;
@@ -229,7 +229,7 @@ fn emit_code(
     count: &mut u64,
     was_listed: bool,
 ) -> Result<bool> {
-    if (probability >= args.threshold) != !args.invert_match {
+    if (probability >= args.threshold) == args.invert_match {
         return Ok(false);
     }
     *count += 1;
@@ -324,7 +324,7 @@ fn emit(
     out: &mut dyn Write,
     count: &mut u64,
 ) -> Result<bool> {
-    if (p >= args.threshold) == !args.invert_match { /* selected */
+    if (p >= args.threshold) != args.invert_match { /* selected */
     } else {
         return Ok(false);
     }

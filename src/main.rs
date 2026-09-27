@@ -11,10 +11,7 @@ use std::io::{self, BufReader, IsTerminal};
 use std::path::PathBuf;
 
 #[derive(Parser)]
-#[command(
-    version,
-    about = "Streaming semantic grep via Laya's typed noul HTTP API"
-)]
+#[command(version, about = "Streaming semantic grep via Jev on OpenCode Zen")]
 pub struct Args {
     /// Natural-language criterion, sent as the typed question instructions
     query: String,
@@ -23,16 +20,16 @@ pub struct Args {
     /// Full System One endpoint (input text is sent here)
     #[arg(
         long,
-        env = "LG_API_URL",
-        default_value = "http://localhost:8000/v1/systemone"
+        env = "JEV_GREP_API_URL",
+        default_value = "https://opencode.ai/zen/v1/systemone"
     )]
     api_url: String,
     /// Bearer token; prefer the environment variable to avoid shell history exposure
-    #[arg(long, env = "LG_API_KEY", hide_env_values = true)]
+    #[arg(long, env = "JEV_GREP_API_KEY", hide_env_values = true)]
     api_key: Option<String>,
-    /// Checkpoint name; omitted means server-side routing
-    #[arg(long, env = "LG_MODEL")]
-    model: Option<String>,
+    /// Jev model ID
+    #[arg(long, env = "JEV_GREP_MODEL", default_value = "jev-1.13")]
+    model: String,
     /// Select fragments whose P(true) is at least this value
     #[arg(long, default_value_t = 0.5)]
     threshold: f64,
@@ -84,6 +81,7 @@ pub struct Args {
 
 fn run(mut args: Args) -> Result<bool> {
     ensure!(!args.query.trim().is_empty(), "query must not be empty");
+    ensure!(!args.model.trim().is_empty(), "model must not be empty");
     ensure!(
         args.threshold.is_finite() && (0.0..=1.0).contains(&args.threshold),
         "threshold must be between 0 and 1"
@@ -197,7 +195,7 @@ fn main() {
             }) {
                 0
             } else {
-                eprintln!("lg: {error:#}");
+                eprintln!("jev-grep: {error:#}");
                 2
             }
         }

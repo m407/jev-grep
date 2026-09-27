@@ -1,0 +1,1 @@
+{"kind":"code","source":{"kind":"file","path":"src/cert.rs"},"range":{"start_line":1,"end_line":3,"start_byte":0,"end_byte":84},"text":"fn validate_certificate() {\n    return Err(\"PKIX certificate validation failure\");\n}","text_basis":"source","probability":0.59,"split_before":false,"split_after":false}
