@@ -2,6 +2,7 @@
 import json
 import os
 from pathlib import Path
+import ssl
 import subprocess
 import tempfile
 import threading
@@ -11,12 +12,22 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 BIN = str(Path(__file__).resolve().parents[1] / 'target/debug/jev-grep')
 
 
+def clean_test_env(overrides=None):
+    env = {k: v for k, v in os.environ.items()
+           if not k.startswith(('LG_', 'JEV_GREP_'))}
+    if overrides:
+        env.update(overrides)
+    return env
+
+
 class CliTests(unittest.TestCase):
     def setUp(self):
         self.requests = []
         self.response = None
         self.responses = []
         self.status = 200
+        self.statuses = []
+        self.raw_response = None
         self.response_gate = None
         owner = self
 
@@ -40,11 +51,17 @@ class CliTests(unittest.TestCase):
                             'match_extended': {'noul': 0.9 if 'PKIX' in state['current_fragment'] or 'PKIX' in nxt else 0.1}}}
                     else:
                         response = {'answers': {'match': {'noul': 0.9 if 'PKIX' in state else 0.1}}}
-                data = json.dumps(response).encode()
-                self.send_response(owner.status)
-                self.send_header('Content-Length', str(len(data)))
-                self.end_headers()
-                self.wfile.write(data)
+                status = owner.statuses.pop(0) if owner.statuses else owner.status
+                if owner.raw_response is not None:
+                    raw = owner.raw_response
+                    owner.raw_response = None
+                    self.wfile.write(raw)
+                else:
+                    data = json.dumps(response).encode()
+                    self.send_response(status)
+                    self.send_header('Content-Length', str(len(data)))
+                    self.end_headers()
+                    self.wfile.write(data)
 
             def log_message(self, *_):
                 pass
@@ -61,13 +78,15 @@ class CliTests(unittest.TestCase):
         self.thread.join()
 
     def test_help_version_and_default_configuration(self):
-        help_result = subprocess.run([BIN, '--help'], text=True, capture_output=True, timeout=5)
+        help_result = subprocess.run([BIN, '--help'], text=True, capture_output=True, timeout=5,
+                                     env=clean_test_env())
         self.assertEqual(help_result.returncode, 0)
         self.assertIn('jev-grep', help_result.stdout)
         self.assertIn('https://opencode.ai/zen/v1/systemone', help_result.stdout)
         self.assertIn('jev-1.13', help_result.stdout)
         self.assertNotIn('lg', help_result.stdout)
-        version = subprocess.run([BIN, '--version'], text=True, capture_output=True, timeout=5)
+        version = subprocess.run([BIN, '--version'], text=True, capture_output=True, timeout=5,
+                                 env=clean_test_env())
         self.assertEqual(version.returncode, 0)
         self.assertTrue(version.stdout.startswith('jev-grep '), version.stdout)
 
@@ -112,7 +131,7 @@ class CliTests(unittest.TestCase):
         self.assertEqual(self.requests, [])
 
     def test_zen_gateway_http_errors_include_status_without_fallback(self):
-        for status in (401, 429, 529):
+        for status in (401,):
             with self.subTest(status=status):
                 self.requests.clear()
                 self.status = status
@@ -124,11 +143,85 @@ class CliTests(unittest.TestCase):
                 self.assertEqual(headers.get('authorization'), 'bearer test-token')
         self.status = 200
 
+    def test_transient_http_retry_preserves_request_and_auth_and_caps_attempts(self):
+        self.statuses = [503, 200]
+        result = self.run_lg('--api-key', 'test-token', 'criterion', data='PKIX\n')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(len(self.requests), 2)
+        self.assertEqual(self.requests[0][2], self.requests[1][2])
+        for _, headers, _ in self.requests:
+            self.assertEqual({k.lower(): v.lower() for k, v in headers.items()}['authorization'], 'bearer test-token')
+
+        self.requests.clear()
+        self.statuses = [503, 503, 503, 503, 200]
+        result = self.run_lg('criterion', data='PKIX\n')
+        self.assertEqual(result.returncode, 2)
+        self.assertEqual(result.stdout, '')
+        self.assertEqual(len(self.requests), 4)
+        self.assertIn('attempts exhausted', result.stderr)
+
+    def test_malformed_and_oversized_complete_responses_are_not_retried(self):
+        for body in (b'{bad', b'{"answers":{}}',
+                     b'{"answers":{"match":{"noul":0.9}}}' + b' ' * 70000):
+            self.requests.clear()
+            self.raw_response = (b'HTTP/1.1 200 OK\r\nContent-Length: ' + str(len(body)).encode()
+                                 + b'\r\nConnection: close\r\n\r\n' + body)
+            result = self.run_lg('criterion', data='PKIX\n')
+            self.assertEqual(result.returncode, 2)
+            self.assertEqual(len(self.requests), 1)
+            self.assertEqual(result.stdout, '')
+
+    def test_group_retry_commits_once_and_exhaustion_does_not_flush_pending(self):
+        self.statuses = [200, 429, 200]
+        result = self.run_lg('--format', 'json', 'criterion', data='PKIX first\njoin continuation\n')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(len(self.requests), 3)
+        self.assertEqual(self.requests[1][2], self.requests[2][2])
+        self.assertEqual(len(result.stdout.splitlines()), 1)
+        self.assertIn('join continuation', json.loads(result.stdout)['text'])
+
+        self.requests.clear()
+        self.statuses = [200, 503, 503, 503, 503]
+        result = self.run_lg('--format', 'json', 'criterion', data='PKIX pending\nother\n')
+        self.assertEqual(result.returncode, 2)
+        self.assertEqual(len(self.requests), 5)
+        self.assertEqual(result.stdout, '')
+
+    def test_tls_certificate_validation_failure_is_not_retried(self):
+        with tempfile.TemporaryDirectory() as folder:
+            cert, key = Path(folder, 'cert.pem'), Path(folder, 'key.pem')
+            subprocess.run(['openssl', 'req', '-x509', '-newkey', 'rsa:2048', '-nodes',
+                            '-keyout', str(key), '-out', str(cert), '-days', '1',
+                            '-subj', '/CN=localhost'], check=True, capture_output=True)
+            owner = self
+
+            class TLSHTTPServer(ThreadingHTTPServer):
+                connection_count = 0
+                def get_request(self):
+                    sock, address = super().get_request()
+                    self.connection_count += 1
+                    return self.context.wrap_socket(sock, server_side=True), address
+
+            server = TLSHTTPServer(('127.0.0.1', 0), type(self.server.RequestHandlerClass.__name__,
+                                    (self.server.RequestHandlerClass,), {}))
+            context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+            context.load_cert_chain(cert, key)
+            server.context = context
+            thread = threading.Thread(target=server.serve_forever, daemon=True)
+            thread.start()
+            try:
+                result = self.run_lg('--api-url', f'https://localhost:{server.server_port}/v1/systemone',
+                                     'criterion', data='PKIX\n', use_default_url=False)
+                self.assertEqual(result.returncode, 2)
+                self.assertEqual(server.connection_count, 1)
+                self.assertEqual(self.requests, [])
+            finally:
+                server.shutdown()
+                server.server_close()
+                thread.join()
+
     def run_lg(self, *args, data='', cwd=None, env_overrides=None, use_default_url=True):
-        env = {k: v for k, v in os.environ.items()
-               if not k.startswith(('LG_', 'JEV_GREP_'))}
-        if env_overrides:
-            env.update(env_overrides)
+        env = clean_test_env(env_overrides)
         command = [BIN]
         if use_default_url:
             command += ['--api-url', self.url]
@@ -271,7 +364,7 @@ class CliTests(unittest.TestCase):
         self.response_gate = (3, entered, release)
         process = subprocess.Popen([BIN, '--api-url', self.url, 'errors'],
                                    stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE)
+                                   stderr=subprocess.PIPE, env=clean_test_env())
         try:
             process.stdin.write(b'PKIX first\nPKIX second\nother\n')
             process.stdin.close()
@@ -310,7 +403,7 @@ class CliTests(unittest.TestCase):
     def test_ast_grep_stdin_and_streams_before_jsonl_eof(self):
         candidate = {'text':'PKIX ready', 'file':'STDIN', 'range':{'byteOffset':{'start':0,'end':10}, 'start':{'line':0,'column':0}, 'end':{'line':0,'column':10}}, 'lines':'wrong'}
         data = (json.dumps(candidate) + '\n').encode()
-        process = subprocess.Popen([BIN, '--api-url', self.url, '--input-format', 'ast-grep', '--format', 'json', 'errors'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = subprocess.Popen([BIN, '--api-url', self.url, '--input-format', 'ast-grep', '--format', 'json', 'errors'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=clean_test_env())
         try:
             process.stdin.write(data); process.stdin.flush()
             import select
@@ -430,7 +523,7 @@ class CliTests(unittest.TestCase):
             self.assertEqual(len(self.requests), 3)
 
     def test_stream_boundary_emits_before_eof(self):
-        process = subprocess.Popen([BIN, '--api-url', self.url, 'errors'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = subprocess.Popen([BIN, '--api-url', self.url, 'errors'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=clean_test_env())
         try:
             process.stdin.write(b'PKIX\n')
             process.stdin.flush()

@@ -63,6 +63,13 @@ System One endpoint. There is no automatic endpoint/model fallback.
 
 ## Data, cost, and context
 
+`--timeout` is a shared 30-second-by-default budget for each model evaluation,
+including retries, response-body reads, and waiting. Transient HTTP/network
+failures receive at most four total attempts with exponential backoff, jitter,
+and `Retry-After`; authentication, TLS validation, malformed responses, and
+oversized responses are not retried. A retry after a transport failure may incur
+a second inference charge; exactly-once inference is not guaranteed.
+
 Requests send input text to the selected endpoint. Use only data you are
 authorized to disclose; synthetic examples are preferable for testing. Zen
 model availability and pricing can change; check the [current Zen Jev
@@ -82,4 +89,36 @@ are byte-based and are separate from any model token context. Measure with
 authorized synthetic inputs; a long input alone does not prove the context
 limit.
 
-The [project experiment methodology](../experiments/jev/README.md) and any real-inference report are separate evidence from the published model specifications.
+Future evaluation methodology is deferred to the [project backlog](BACKLOG.md). The synthetic seed is not a Jev quality result.
+
+## Minimal live integration smoke
+
+Live smoke performed on **2026-09-28** with the release binary built by
+`cargo build --locked --release`. Requested model: `jev-1.13`; requested
+endpoint: `https://opencode.ai/zen/v1/systemone`. Both invocations used
+`fnox exec` with the configured keychain entry; no credential value was printed
+or stored. Inputs were synthetic and stored temporarily under
+`/tmp/opencode/jev-smoke-20260928`.
+
+Reproduce from the repository root after configuring fnox as above:
+
+```sh
+cargo build --locked --release
+mkdir -p /tmp/opencode/jev-smoke-20260928
+printf '%s\n' '{"text":"fn validate_certificate() { true }","file":"synthetic.rs","language":"Rust","range":{"byteOffset":{"start":0,"end":34},"start":{"line":0,"column":0},"end":{"line":0,"column":34}}}' > /tmp/opencode/jev-smoke-20260928/ast.jsonl
+printf '%s\n' 'certificate validation failed for service alpha' 'certificate validation succeeded for service beta' > /tmp/opencode/jev-smoke-20260928/log.txt
+fnox exec -- target/release/jev-grep --input-format ast-grep --json \
+  'Find certificate validation code that may explain a validation failure' \
+  /tmp/opencode/jev-smoke-20260928/ast.jsonl
+fnox exec -- target/release/jev-grep --json \
+  'Find log records relevant to a certificate validation failure' \
+  /tmp/opencode/jev-smoke-20260928/log.txt
+```
+
+Outcomes: the valid single synthetic AST candidate completed with exit **1**
+(no selected fragment), no stderr/API/input error. The two-line text input
+completed with exit **0** and emitted the selected first record; without `-q`
+or `-m`, processing continued through the second record and the grouped
+assessment path before EOF. Neither outcome establishes model quality. This is
+protocol/integration evidence only; no benchmark, quality claim, latency or
+usage statistics were collected. The run was performed once per scenario.

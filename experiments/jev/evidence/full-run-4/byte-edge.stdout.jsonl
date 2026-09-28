@@ -1,1 +1,0 @@
-{"kind":"log","source":{"kind":"stdin","path":null},"range":{"start_line":1,"end_line":1,"start_byte":0,"end_byte":123},"text":"Build error: LOG_CONTEXT_EDGE_BEGIN; detail: synthetic diagnostic xx xx xx xx xx xx xx xx xx xx xx xx xx xx xx xx xx xx xx\n","text_basis":"source","probability":0.73,"split_before":false,"split_after":false}

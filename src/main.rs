@@ -74,7 +74,7 @@ pub struct Args {
     /// Maximum evaluated fragment bytes
     #[arg(long, default_value_t = 16384)]
     max_fragment_bytes: u64,
-    /// Total timeout per HTTP request in seconds
+    /// Total timeout for each model evaluation, including retries and response reading
     #[arg(long, default_value_t = 30)]
     timeout: u64,
 }
