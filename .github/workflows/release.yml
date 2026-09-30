@@ -1,0 +1,172 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Check commit messages
+        if: github.event_name == 'push'
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          if [[ "$BEFORE" == 0000000000000000000000000000000000000000 ]]; then
+            npm run commitlint -- --last --verbose
+          else
+            npm run commitlint -- --from "$BEFORE" --to "$GITHUB_SHA" --verbose
+          fi
+      - run: npm run test:release
+      - name: Install Rust
+        run: rustup toolchain install stable --profile minimal --component rustfmt --component clippy
+      - name: Validate
+        run: |
+          cargo +stable fmt --check
+          cargo +stable clippy --locked --all-targets -- -D warnings
+          cargo +stable test --locked
+          cargo +stable build --locked
+          python3 -m unittest discover -s tests -v
+
+  plan:
+    needs: check
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    outputs:
+      version: ${{ steps.release.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - id: release
+        run: npm run release:plan
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+  build:
+    needs: plan
+    if: needs.plan.outputs.version != ''
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+            binary: jev-grep
+          - runner: macos-15
+            target: aarch64-apple-darwin
+            binary: jev-grep
+          - runner: windows-2022
+            target: x86_64-pc-windows-msvc
+            binary: jev-grep.exe
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Set release version
+        env:
+          RELEASE_VERSION: ${{ needs.plan.outputs.version }}
+        run: python scripts/set-release-version.py "$RELEASE_VERSION"
+      - name: Install Rust
+        env:
+          TARGET: ${{ matrix.target }}
+        run: rustup toolchain install stable --profile minimal --target "$TARGET"
+      - name: Build and smoke-test
+        env:
+          TARGET: ${{ matrix.target }}
+          BINARY: ${{ matrix.binary }}
+          RELEASE_VERSION: ${{ needs.plan.outputs.version }}
+        run: |
+          cargo +stable build --release --locked --target "$TARGET"
+          test "$("target/$TARGET/release/$BINARY" --version)" = "jev-grep $RELEASE_VERSION"
+          "target/$TARGET/release/$BINARY" --help
+      - name: Package
+        env:
+          TAG: v${{ needs.plan.outputs.version }}
+          TARGET: ${{ matrix.target }}
+          BINARY: ${{ matrix.binary }}
+        run: |
+          python - <<'PY'
+          import os
+          import tarfile
+          import zipfile
+          from pathlib import Path
+
+          target, binary = os.environ['TARGET'], os.environ['BINARY']
+          name = f"jev-grep-{os.environ['TAG']}-{target}"
+          Path('dist').mkdir()
+          files = [(Path('target') / target / 'release' / binary, binary),
+                   (Path('README.md'), 'README.md')]
+          if binary.endswith('.exe'):
+              with zipfile.ZipFile(f'dist/{name}.zip', 'w', zipfile.ZIP_DEFLATED) as archive:
+                  for path, member in files:
+                      archive.write(path, arcname=member)
+          else:
+              with tarfile.open(f'dist/{name}.tar.gz', 'w:gz') as archive:
+                  for path, member in files:
+                      archive.add(path, arcname=member)
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ matrix.target }}
+          path: dist/*
+          if-no-files-found: error
+
+  publish:
+    needs: [plan, build]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: release-*
+          merge-multiple: true
+          path: dist
+      - name: Generate checksums
+        working-directory: dist
+        run: sha256sum -- *.tar.gz *.zip > SHA256SUMS
+      - name: Publish semantic release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          RELEASE_VERSION: ${{ needs.plan.outputs.version }}
+        run: npm run release

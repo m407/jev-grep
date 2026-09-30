@@ -538,6 +538,8 @@ ast-grep, учёт всех встреченных upstream-путей.
 
 ## Проверки для разработчиков
 
+Автоматические релизы из `main` и Conventional Commits: [выпуск релиза](docs/releasing.md).
+
 ```sh
 cargo test --locked
 cargo build --locked
