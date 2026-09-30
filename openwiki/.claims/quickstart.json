@@ -1,0 +1,226 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:a529f027b62b909f43a2712f6e0a2b29bc8dd7c17d68d098c0a4209d39eb1951",
+  "claims": [
+    {
+      "id": "claim_487e42f96c5441d8847104910773c373",
+      "statement": "jev-grep is a local Rust semantic-search CLI with external HTTP inference; it sends input and criterion to the configured endpoint, requires no repository index, and relies on explicit shell pipelines for external extraction tools.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L5-L23",
+          "version": "repo-lines-v1:sha256:1fe888863a71e3c8ffe67fa184750fcbc12da9f52c1d0daf7ec9dd2b2d1a4a91:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg4NDBiZWI5NWJmY2QyYjQ5ZDM4NGYwMWFlOGFiOTM0YWJmODcyOWFkNDY4MjhlNWMwYjYyYTU0NzAyMTFiOWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI3NWE2YzU5MzVkNGIwOGFlMTlkNmE4N2E5NDY5ODIyOWUyODY1ZmUxNDc4MjZiOWY5YmU5OGUzMGE3YzI4MjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJjMjllZWExZDk3YzdhZTNjZTQ5ZmUzNTBmOGQwODRkMzNhMjdlNDUwOWU4YmIxZDIxNGNhMWNhOTgxOGY4MjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEyMDQ5NDEwOTMyYTdiOTc4YTQwZGZlNjFiMzFiNGY0NjFhODFhMTYxYWUyNDc3ZmVhMDI1MmE5M2M5MzcxNmQifQ"
+        },
+        {
+          "resource": "repo://src/api.rs#L44-L75",
+          "version": "repo-lines-v1:sha256:7c7b2b1c1f5ef6e98376a9c18fc553aa9b40025747dba33d25e660847fdd3528:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxM2E1NDExZDYyNzJlODA0MjAyYWUxM2NlNzlmMDlmZGUwNDRhMjFiYWIyMjQxN2I0ZGRmMGY5NDEwZDhiMmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFlNzVjNzBkOTQ2MzYyNWUxMDc5ZmQ4ZmM4ZWU2MmFkMmU5MmM0MmJlYWFiZmQ4NWI3OGQ4ZTBhNDk3OWI5NGEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViOWEwOGJjMjlmNmViZWJlOWE1ZjAxOTAzZDk4NDVkYmNiNTg0MmE0NTVmMDdkNWY0MDAyZGFjMzJhNWM2MDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJkOTUyMjQ1ZDk1OWU2OTM5MDMzMjVmZDkxNTA0YThkNDM3OTM0Yzg2YTlmY2UzMzZlOGM2ZjY1ZGE3MjE4MTYifQ"
+        },
+        {
+          "resource": "repo://src/api.rs#L99-L106",
+          "version": "repo-lines-v1:sha256:b2a2f65b036ec24b8b23673c3a88920e6021637ec3381253b3d44a94df339f6f:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzQwY2EyNDU2OWIyMTI4YzgzODJhMDI0ZjRkNjBjYTRlOGVhMGQ1Y2QxMjdlMzNmNzRmZTZhYTE5M2M1ZTU5ZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTUyMmM0MmNkMTljNmQwM2Q4MDhjNDUyNzIwNTUyODI1YjdlYTFjNWI0OTFiMjE4NTExY2FjNzQxNWNmOWQ5YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMThhZWE0ZDlhMTI5N2I5ZjdjNjNlZjBjZmU3ODNkNzBiZmY5ODk5ZTA1OWVmYjY4ZjNhOTlkM2FlMDJkNWE5NyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYWFiYWNlMTFmZGFhODY0ZGU2YmJhZmUwY2Y4MGI3MmYyNjQzYjA1OGQ2Y2RjMTA2YWU1ZjgxNjBmMDQ5ZDVkYiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_bc711ba5c6814afa9fa5ac1ce5f7b173",
+      "statement": "The Rust binary is built from src/main.rs with edition 2024 support, and cargo build --locked creates the debug binary used by the Python acceptance suite.",
+      "evidence": [
+        {
+          "resource": "repo://Cargo.toml#L1-L9",
+          "version": "repo-lines-v1:sha256:405f0bd68435e8a8ce1aebf3fb98c476b3f1700ee1c8684a54f2bb93444823f9:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOGEzY2Q1YTgxYjNmOWE2MjFhYTQ5M2Q5MGM0NWY0MmFiNTcxZDRlNDJiOGFlNWFmZjM1MWNiMGEwMmQwNmQ4MiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWRhYmIyYmE1ZTZmYjkxNDAwZDA1N2U5MzFjZTkxOTk4YjZmNzBmYzU4YjczMzA1MjEzMjZhNGVjNWU1YjZjNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzI2MjZjMmFmYzJkZWVmZTc2ODRhMDg1NDc2MTgzMjRlZGQ2NWU5NDE2MzI2MDA5ZmFlOTU4ODRkYWQyZDRjYyJ9"
+        },
+        {
+          "resource": "repo://docs/development.md#L5-L13",
+          "version": "repo-lines-v1:sha256:84dbe96e3a60a8c496ad6009f5f36395c45f1d354e2775b4c09ebe911562e3df:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDBiYWM4ODQ0YWM3ZTA2NWFjZDk3MWMzYTRhMDVjYWU0OTlkM2RmMWU4YjJhNzQ2OWJmN2FlZTQxNTUyMTIyOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDdjMDZjNTYxZDVjMzI3MzQzNjg1MjY4YTQ2YjMzOTFmMzk5OGVlZTg5MGQyYmU1MWYwZDIxY2M0YTUzYWU2ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2NjYWZkNWQ2MzQzMjI3YWFmZGFhMDI0YjZlZDRhNmFjMGFiNjA1YzdkM2ZmMDA2MzBlMDNkNjk3YzQxOTI1MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDA3NjE4MWRhZjJlZTNmMjliY2Y2OTMwYjljOGMwMzc4YWRjYmFkZDNhNGIwOGI0MjYxMTMyOTI3MTVhNzdhZCJ9"
+        },
+        {
+          "resource": "repo://tests/test_cli.py#L1-L12",
+          "version": "repo-lines-v1:sha256:ba5895f3f644fde3ca8a870c39d449855b46fc8c88fb85118b330c77b7a2fbe7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3NTFjNWQ1OWNhN2Y4OWRmZmZmYjhkMDU4N2E4NGJlZjBjOWFlNDI0YjQzOTZkODZlZWI3MjQwZThjMjk1OTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVhZWM4YzIwZTk5NDYxYjBmMTgxYWI4MjcxM2MwZThjMzU3MGRhNDQzMTg5YjVmZDE4YTMxYmU5M2Q4YmZhNGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdlNTQ5MTE0YjEyMDhmNWFiOTJiYTVjMTYyNzJmNGM4MTA3NmMzOWIyN2I5MGNkOTA5OTZkNmExNTEzZGY5ZTQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2e5a6407535a4901a47003154c76946e",
+      "statement": "The documented validation includes cargo test/build --locked, Python unittest discovery, cargo fmt --check, and clippy with warnings denied; acceptance tests use standard-library mock HTTP responses without live Zen or model weights and do not measure model accuracy.",
+      "evidence": [
+        {
+          "resource": "repo://docs/development.md#L5-L18",
+          "version": "repo-lines-v1:sha256:dfdef2efe961e3578aaeb529e2cc9728963082f8f1715f8c2d76680a15784cd9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQwYmFjODg0NGFjN2UwNjVhY2Q5NzFjM2E0YTA1Y2FlNDk5ZDNkZjFlOGIyYTc0NjliZjdhZWU0MTU1MjEyMjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliMTZjNGRkYmE3MWM4ZDZhZjY0MzBjZjMwZjE0ZTFkNWNjNTUzYjRmMzUyM2Y0YWU1MjkxY2FhY2I0MTc3YTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdjY2FmZDVkNjM0MzIyN2FhZmRhYTAyNGI2ZWQ0YTZhYzBhYjYwNWM3ZDNmZjAwNjMwZTAzZDY5N2M0MTkyNTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc3NTFkYzU1NWIyMTQwNTY4NWE2MTg1ZWVlMGQ5MWFmYmJmYTA3MWQ5N2ZlYzRmZTkwN2ZlY2RjMWQwN2JiMzQifQ"
+        },
+        {
+          "resource": "repo://tests/test_cli.py#L23-L73",
+          "version": "repo-lines-v1:sha256:7e13a634667e6958ada1525f94b429dd7dfade463088c124e60b0d657c2531b9:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAzNDU5MjRiYTA1MTc4ODY3NjdlZGIzODk1ZjZkYWRjMjE1ODFiNzg5N2E0ZmU2MzA0ZTk0YTY4OTk5Y2M5Y2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU0NThmMzhlNDE5OTY1MDhiZWU1MTMyM2JmNTY3OWFjNWNiMjdlYzE4YjMyMjkxZWY5ZDdmY2I3YjZlYjQwNmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFlYzIzZTJjMTE3YTU5Y2M2NzEwNzBiZDcwY2E0NzY1OWJkNzE4YTA1NTJkNDJlNWQ1ODlmOWQwNTBiMmE5ZGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ0ZTI5ZGFiYjM4ZjY1ZDk5NTRiYzQ1NWU4NDEzYzQ4YmM1OWFjM2NlNjM1MTM2NTNhMGNkMzlkY2Y5MzY1YzAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3cd2af4d40d849a39a4877a668c32bfd",
+      "statement": "Node >=24.10.0 and npm scripts are release/commit tooling rather than Rust binary runtime requirements, with test:release running the Node release test suite.",
+      "evidence": [
+        {
+          "resource": "repo://Cargo.toml#L7-L19",
+          "version": "repo-lines-v1:sha256:fb0cdf4a15c29a68aaa0266335931206e2086a79771bb86dca968db616f84c3d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3MjExYjc4ZTFhZDliZTcxNDMxMmJkODkyZTBiYjljY2IyZDEyNTMxNjU4MTJmZTk2ZDMzMGU5NWFiNTJiZjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZmZmNlOGM2NjczZGM4NGEwNGVjYTg5MjcwYzI2ZDgyYmY0ZDkxZmVkYTE5YWI0ODJjYjRmZjZlNWY4NjUxMTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI1M2ZhYmY5ZWY5N2MzMTdiOTUyYmJhNjRkOWEwZjBmNDE0MDdkNDA0OWU0ZDM3MmNhOGQ2OWQxYWU0OTBhMGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://package.json#L2-L23",
+          "version": "repo-lines-v1:sha256:00fff0f6b8f3a394bac57d4fa357deb66e345b56786ff5798b8ffc2c78aedfb6:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFlNWQxMjJiYjIwYmZiNjdlMTYxYzVhOTA5NzI5OWEzNzViYTg1YWQxNjQ0ZDRiYzUxYWE3YWVmOGUxMjY0YzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoxLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_51e4c799319c4ab5841800f176db7929",
+      "statement": "The CLI defaults to the Zen System One endpoint https://opencode.ai/zen/v1/systemone, model jev-1.13, and threshold 0.5; endpoint, model, and key can be configured through flags or JEV_GREP_* environment variables, with flags taking precedence.",
+      "evidence": [
+        {
+          "resource": "repo://src/main.rs#L20-L35",
+          "version": "repo-lines-v1:sha256:40dc5f538bc3155d9b0eb25cba4000705ecf3ba29e1b35adefae976ed9aed2c1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcwZGM2NzNmMTVjOWU1NzMzMDdkNmZmMjBiYmViNjI1ZDM2YTQwMzA0ZjBlMTdmMTcwZjc0ZGIyNmExZDA3YWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI2Y2I3MTc4MDUwMzYxMmJhMWU3ZGI0YTFjYjkwMzdhZTliOGI5YTg4NmJhMGJmNTZiMmI1YTRiMzE3NWJiZDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNiMzYwMDllN2U5ZTVjOTNiOTlkODZmNGQxNDBkNDI3MmM4MjMzM2YyMzVjODhhYjhkZjVmZDliOGVmMmQ5NDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhiMGI2MTllY2IyMTFlNmJiM2VmMjc1NmJkZDVhYjdmZjk4MTg2ZDdlYTNhZjBlNDgwMTFmN2E3OWMyOTk2ODAifQ"
+        },
+        {
+          "resource": "repo://tests/test_cli.py#L105-L124",
+          "version": "repo-lines-v1:sha256:0a62f2a8f7df58d65d14c2d67999020ce7999636b97aa0d946f5e286fd485d0f:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxNTk3MzcyZTg3ZDZiYmFhNjc4ODNmMTYyYmMzNGM5NDdhYTI3YWMxMzlkNmNhMDU2YzQ1NWYwOTU3NWI0M2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQwYmM2YTZmMGEyMzU2YWIzZjFhNmViZGZmODhkODE3OGVkZjdiY2U5OTViMThmZTA2ZmE3ZTAyZTgxM2NmOWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZjZTQ0YjA0NzhjMzJmNjFiZDhhNmFhNzk5Y2IzMGU0NTFlMDA4ZDEwODA5ODEwZTM4MDRiM2NmOTAxZjA3OGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY3ZDQxZGE5NzhjMzU5YTMyYjFkYWY5YjdkZTk2NzdmNjQ3MjAzNGY0ODAwOWI0NzZiNDRiZDE1MjYyM2RiNGUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ea579b0253014beba297d03366c83c01",
+      "statement": "fnox supplies credentials at launch and is not a runtime dependency of the binary; the documented hidden-input keychain setup uses fnox set JEV_GREP_API_KEY --provider zen-keychain, and direct invocation for configured mock/custom endpoints is supported.",
+      "evidence": [
+        {
+          "resource": "repo://docs/deployment.md#L24-L47",
+          "version": "repo-lines-v1:sha256:f7c2ba47517471238e0afb11e0230004b7bc11374ded6dc958b6a433018574ad:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxNWZlZDczOTk3YmM3YWUyMmRkYjc0NDY2NjU5NzlkN2ZiOWI4MjlkNDliMTBmOGVkYTkyZjNhZDdmNWQ4OTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwMmExYzNhNmFjNDFiOGNkYjBiMTFjYWFhNGI4ZTIxNmI2NmRkNDI1N2VhN2JmZTNkZGRiMDdkOWYwOGYwNWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU2YWNjZGI2NmVmYjhjYTU5MjVlYzE2ZTE3MjQ0ZDA0MjdlOTkwYWM1YTZkMDU0OWI3MjMzMzUxZGY2OTZhMDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRkZDU4MDY5MjFlOGVhMjljYzEzMmViMTNiZTUwNDExNDQyNWZkNWQ5YTJjOTI3ZWQyNzVjYTc0NDYwMzYzNDkifQ"
+        },
+        {
+          "resource": "repo://docs/deployment.md#L5-L8",
+          "version": "repo-lines-v1:sha256:bfe1f79486bb2ee66893ac568b70cc574d4e745cbb8928566759f131f825d0c0:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDAxNTYxNjM3OTVmZjNiYjExMTg3MDkzZDA2N2IwZDkyZDNjNDM0OGYwMTNhYjAwMDQ1MzA0N2ViM2U0YTZlZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzkzODI1NzQ0MjkxZTkzZTEwODQ4MWFiODI5NTZiODRhYTU2YzU5MGIwYWYyMWM1NTk5Nzg5Mjg5NDE5NTdjOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmQxNDU3YmJjODA2ZDdhYmFlMmQzYTIzNDM3MTJlNjRiYWI3MDI1OTQ0N2E0ODg2MDY1NDQ3YmRjZWM4ZDUzYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYmIxMzQ4NmM1NGMwZjdiMGVjOGMxNzdjOWY0NzdhNmE3Y2YyYzJmZDBmNzU0MmViYmFjNmEzNzMwZGRjNDc2ZCJ9"
+        },
+        {
+          "resource": "repo://src/api.rs#L104-L106",
+          "version": "repo-lines-v1:sha256:da42aca9df70bd577a9ae2449c419077e9309ea201beb55898f0aa33f6997a6f:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGM1NWUxMTlkNTIzN2M1ZTRmMWYwNmU0MGVmYmY4MzJkYWI4ZTFhMmQ0Y2RjYTY5ZjVhMzEyMWIxMjA4NmVhYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTUyMmM0MmNkMTljNmQwM2Q4MDhjNDUyNzIwNTUyODI1YjdlYTFjNWI0OTFiMjE4NTExY2FjNzQxNWNmOWQ5YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWExYmQyODQyNmRjZmU3NTQ4ZmU2YTlmYTFlZDU0MGY3MmU1ZTNhM2FkNjBjN2I4NTZhNWQ2MTA0ZDRhZjhiMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYWFiYWNlMTFmZGFhODY0ZGU2YmJhZmUwY2Y4MGI3MmYyNjQzYjA1OGQ2Y2RjMTA2YWU1ZjgxNjBmMDQ5ZDVkYiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_eff2d6d4a9364972b84a191693a11ae8",
+      "statement": "The timeout defaults to 30 seconds per model evaluation and covers retries and response reading rather than the entire CLI invocation.",
+      "evidence": [
+        {
+          "resource": "repo://src/api.rs#L87-L158",
+          "version": "repo-lines-v1:sha256:0b30b943cdb824850015f51c5c3a86e1807a46dd12580e8129d556e6c3f96187:eyJzZWxlY3RlZExpbmVDb3VudCI6NzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFkYjcyODM3Nzg5NmZiMzU2MTZiODJiOTVjNDVkNzQwYTljMmVmODZjMjA5NzY1NmRkZjA4MGI0NzBiODEyMjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU3YTVmZmEzZTA5NWRmMDViNmIzMzMzODcxYWJhMWMxYjNlMjVhYjNkYmYxZDQ5MmYxNTRjMmNjMmIxMjJmNTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViOWEwOGJjMjlmNmViZWJlOWE1ZjAxOTAzZDk4NDVkYmNiNTg0MmE0NTVmMDdkNWY0MDAyZGFjMzJhNWM2MDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE4OTE2ZjRhNGIzZTc4ODJhNWVjYTA1MWY1M2M2NWNlOTlkZWIwZGU3YWYzYTA4MzExMDU3NzMyZTQ5NGE1OTUifQ"
+        },
+        {
+          "resource": "repo://src/main.rs#L77-L79",
+          "version": "repo-lines-v1:sha256:0fe3c3053282430ff6931b6bd3324e84faa70b54a973dc545d0aed54b6aa191f:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODY2NTMzOGYyNmQxMDYzOTBhZDhkN2YxMzU0ZDlkZjZiN2RjMDBhNWU4NTUyYTQ2MTcwOTMzNjkwM2YxNmViNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjg0Yjc1YjI5NTM5YzE2OGM5MDNjZmZhZGE2NmMxN2Y4MWUxYmQwYTcyNDc5ZDkxOWE3Y2I1YzQwYzM4MGIwNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmJiZTJhM2U1OTU2ZGYzNzJiNTQ2NDFlNWI2NWQxMGRiNGRlMDcwNzM0ZTU3ZDJkMDg5NDI3MzExNzA1OTk3NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjQ3NjIzMzE5NGU5MWNhZmRjOWI5OGNjM2EyZjc3OTFiYWQ2OGNjNTExNDUyMDEwMjQzMzQ2MGU2Mjg5YTNiMiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_3242e3968daa4161a7f5ebafdab8e62f",
+      "statement": "Without paths the CLI reads stdin if piped or searches the current directory if interactive, and '-' explicitly denotes stdin.",
+      "evidence": [
+        {
+          "resource": "repo://src/main.rs#L111-L135",
+          "version": "repo-lines-v1:sha256:cef89453f030213dfc3e18a58661b0c332710504b480144be9f41959a5b9ff84:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA3NjAwYWVhZmM5MTkwOGJmZmExMTRkOWM4YTY3MzFmMzRjOTFkMjQ0NzVkZDNhZWM0NTI2YTcxMzEwNGIyYjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImViYjJlMjY3Y2RhM2VhMmQ5OTEwZGE2OGM1YWI5MDE2MGM5ZTAxOTY0OTIxYTIxYTEzMTM2MGFhZDFmMWUwMWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJmY2EzNTFiNTEwMjcxZTgwYTQyYzEyNTFhNmIzZGMzOGI1ZDYzZGYxMDkxMGE5ZmNjNjMyOTAwMzBmNDY3NTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIxNWMwMGQ4YjM4YWJkYmZhNjA5ODc5MjhkOWU5MjU1MWVkNDc0NWMwNmQ1YTQ1NzA1ZWI4ODM1MzRmNzYxOWMifQ"
+        },
+        {
+          "resource": "repo://src/main.rs#L18-L19",
+          "version": "repo-lines-v1:sha256:c1eac66616dc10a8421535dd6d631716964d543f19987988b222772d3e76735f:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzFhMmJkMjMzOTZmNDc0MGU4OTgwZThkOTNlMTRlMDMyNTI0MzE1NTIyYWI2OGNhNDg1NjVjNWQ3MDZhZWQ3MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMWVjNjgwM2JkNDFhM2QyNzRiMzBmMzg5MTQ0ZGI3ODMxNjdmNmNiMzliMjNjYzRlZGQxMDBiZjkxM2ZlZGUxZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzBiMTE5NzdkYTA0NDVmMzk4OTg5NzNjODIxNzc5NGMwMmY5OTBmOTQ0NTBmZDg4NDZmYmI4YjFmOGFkOTc0YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzE2NGM2NTliYTI4NDdlMTk5NjlmMjdkZDcyOThlMWQ5NzhjOWNjNWNkY2FiNzVhODNmMjRlYTY5MGI1MDNjNiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_67ddda79023842b7958717e7c33db52a",
+      "statement": "The CLI accepts text, log-jsonl, and ast-grep input, defaults to human output, and its json format emits located JSONL results with source, line ranges, and byte offsets rather than a JSON array or ripgrep event schema.",
+      "evidence": [
+        {
+          "resource": "repo://src/main.rs#L39-L57",
+          "version": "repo-lines-v1:sha256:5d2a0a0141eb114a1d460afba968455488001c8e73c76a0a99a9b816ee1b1ad2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc3ZmVjYmE5ODU0NmYwOGIwNTA1YzAyYjBiZjdlNDViZGM5NjU3ZWNhYjA5YmI1NDc1ZWJjYjM0MTg3OTMwODQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2ZGY3ZmI2ZjM2MjIwNDIxZWJlZTBhOGZiYTA4Y2IyNWMyNjgxZDY1ZGJkZDcyYzQ3MzA2Y2UzMjdjZWYxMDQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhiMGI2MTllY2IyMTFlNmJiM2VmMjc1NmJkZDVhYjdmZjk4MTg2ZDdlYTNhZjBlNDgwMTFmN2E3OWMyOTk2ODAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjliOGFlMzUzYThhYTQwYjhmMjNjZjU1YmIwNGRjNjZiZGZkOTUyMWU4YzJkZjI4ZmE2NTQ3MTFhNDFhMDg1ZWEifQ"
+        },
+        {
+          "resource": "repo://src/search.rs#L249-L311",
+          "version": "repo-lines-v1:sha256:66eda352514a80505f7ea5287fa4ff165bf8b921733962e1a28e20a52becd593:eyJzZWxlY3RlZExpbmVDb3VudCI6NjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZhMjgyZTU4Zjg2MTU0ZGVkZGVlOTk0ZDliNGIxNzBhYzYwYjY4ZTdmNDliOTMwNzEwM2Y2YWQ0ZDQzOGE0ODIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcyZjcyM2RkMzdjYjk2OGNmMDczYjRlMzRkYzJjMmFlN2VlNTE0MzBmYWJlYjIwZTBkNmYzM2U4NjNkYTQyYjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRiMzA0Yzg4YjZhODVlNGUyMTcxZjZjN2I4ZGI3NmFhZDdjMDQ5YTIyOGFkYzcxMzk1NTI2Y2VmYWJlYzBjZjkifQ"
+        },
+        {
+          "resource": "repo://src/search.rs#L343-L395",
+          "version": "repo-lines-v1:sha256:785ff80c8f6833aa9392cb5847d49cb5d261fe4ad96bfc3f8fbcf60044c977d4:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZhMjgyZTU4Zjg2MTU0ZGVkZGVlOTk0ZDliNGIxNzBhYzYwYjY4ZTdmNDliOTMwNzEwM2Y2YWQ0ZDQzOGE0ODIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcyZjcyM2RkMzdjYjk2OGNmMDczYjRlMzRkYzJjMmFlN2VlNTE0MzBmYWJlYjIwZTBkNmYzM2U4NjNkYTQyYjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_80292efcee2b41ee88ceadca5623d136",
+      "statement": "main owns argument validation, input discovery, a single API client, and sequential search orchestration; input owns bounded decoding and candidate validation, while search owns selection and emission.",
+      "evidence": [
+        {
+          "resource": "repo://src/input.rs",
+          "version": "repo-file-v1:sha256:5673e800b2797d05a197ccaf831e0b13b07a9954887fe90872646f99061690c3"
+        },
+        {
+          "resource": "repo://src/main.rs#L82-L183",
+          "version": "repo-lines-v1:sha256:611b4d12c722a3821c4064618bfbbd47f1aca4d2e060fa93c3d7e2200bd77c2e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI2NTZmMzE5Y2U4NDI1YWEwZDRhYWM0ODIzNWFjMzU4NmNiZTI3ODY5MGFmZjBkYzU0NDQ4YTUzMjYzZTEyZTg5IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI5ZDg1ZDk4NWUyODFkNWJmNjYzYzI2ZGIyMGI0MjZmMTdhMjU2YTgxNDVjNDhiYjBjMTJhNjliOWZlZmI2ZjAxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIxMjM0N2YyMThkNjg2NTdiYmJjNTY2NTRlOWUwMGY3NTUwMDRlODYyZDdjZGVhNmY0YjA5MzY3ZDhiMmUyNTI2IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI2MTk4MWI0Y2I5Y2RhOTIyN2I4YzcwMDRjMGFlZThmOGI1ZjA4OWE2ODAxOGYxYWY4YjQyZmZiN2Q2ZmViNzU2In0"
+        },
+        {
+          "resource": "repo://src/search.rs#L52-L220",
+          "version": "repo-lines-v1:sha256:9b85c2cc6a2012851f3e24ca78c1388ac728ae8644f01b2ef8d79e23de8ece42:eyJzZWxlY3RlZExpbmVDb3VudCI6MTY5LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJlMzRlY2NmYTYwMmNiYjYyYTE4MDFmYzk0Yjc2OWQ2NjUzOTVhYTdmNDYzYmJkNmE1OTI0MWFiNmQyMThlZTBiIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI5ZDg1ZDk4NWUyODFkNWJmNjYzYzI2ZGIyMGI0MjZmMTdhMjU2YTgxNDVjNDhiYjBjMTJhNjliOWZlZmI2ZjAxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIxOWU3NjM1NWNmMTE5OTQ4MGMzZjk5ODM2YjE0ODZjODQxZDg5MWZhYWQ5MDRjNjA4ZTA5MzAyMmQzNzU3YWVlIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIxODI1MzdmMzQ4MjM5NWY1NzI1N2Q4ZjI4M2U0Y2QxYTQ0M2U0ZGI0NDg0M2Q0OTY4ZWQ0MzA3NGRiM2FlMzQzIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_841a33512a024b74905917b7cec66e37",
+      "statement": "Text and log records are grouped as adjacent pending fragments while AST candidates are evaluated independently with upstream source locations; AST source accounting is shared across physical inputs in the invocation.",
+      "evidence": [
+        {
+          "resource": "repo://src/main.rs#L124-L134",
+          "version": "repo-lines-v1:sha256:79184b0b95c7c6fbd010aeafab8cd7920cc0da2977c0f9f9ed1e84ab1470470f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjczOTNiZDdlNjkxNGJiNjg4YzdkMDU1N2NjZjFjZDQ5ZTIwN2VkM2Y4ZWU3YTQxNjIyMGEzNTQzMDhiYWE0MjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZmODc3NDJiYWM1OGNlYWE1MzZhYTBiMDM3OTk4MTg2ZDQ2NzIwZjdhZjFhMWM0OWQ5MGQ2MDI4YjA0MWQ3NTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg0Yjk2NGYwMGIyMjJhYzQ1ODAwYjcyNDAyZmI2NzNlMmZlNmYyYWEzZWFkNGY5OWQ2MDZiZWJjMGMyNGQ0NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg5MTNmNDQ0ZTVjODZhMmUwMGJlNzdmZTM4ZjI4Yzg2MmZmOTAyMjU4YWUzZjY0OWRjNDRkNmU2MDQ1ZjI0MjcifQ"
+        },
+        {
+          "resource": "repo://src/search.rs#L263-L289",
+          "version": "repo-lines-v1:sha256:9eb4c6768006c8793df0958428b63fc3181e0dec2381fef386bb9b697da229be:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4NTI1NWM3MjQ5YWM1NGYyMDIzNjYxZTI1MDQ2MDQ4MTFiMDkzMmNiMWZhMWQ3NzcwOTRjYjcyNGZhYzkzZjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU4NWExOWQ0YjUxOWY4MmI0YmEyOTM0OTVmNjE5OGZmMjc2ZTIxODU3MzJjZDEzMmQ4NzZkMzhhZWRjZTZiMDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU4YTY2MGViNmQxNGQwOTM4NjMxMGVlOGM2MWFkYmI5ZWQ4MmQ3MjYwN2FhZGJhOTcwZjQ4ZjAwMzdjZGRkZjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIwN2FhY2ZhMjQxOGM1ZjViZjhiODgwN2YzYjM5OWRlNTRmNTMxNmYwY2YxN2YxZjlkYThjOGZlZDQwOTcyYjAifQ"
+        },
+        {
+          "resource": "repo://src/search.rs#L79-L205",
+          "version": "repo-lines-v1:sha256:cef7372f41c547d6757e45e95ab8ce83f7330b63d8378993093197f285174408:eyJzZWxlY3RlZExpbmVDb3VudCI6MTI3LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI1YThiYTg0NDJlYmI1YTM5ZTU0ZjYwODk1ZmY2OGY4YWY4ZjYxMzgyNDM1Mjg5Mjc1NDEyYzJkMzkzMDMxZjJlIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJjMDNjYjMxZjJhY2U5NmE5ODEwZDNhNWE1NzQxZjA1MjhlZWI2NzJjMDc1NjY1ZjliNzk3ZmY3ZjFjZGNlMzcyIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI0NzdlN2Y5ZTg4ZDljZTkwMjVmNTQwZTZkZTRkNTdiODBlNTIzZTVlNDliNWMwZTNiMGMwNjFmNTFiOWQ3ZTBjIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI5NjhlZGUwZmFjYTMwNGM5OWQ0ZTRlY2U5ZGYyMGIxYjVhYjZlMDg2MDAxZTk0YmExZWQwODg4NzI0ZjUwYjI4In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_92faee99a36742a79ec1e51a439b4083",
+      "statement": "CLI exits are 0 for selection, 1 for no selection, and 2 for runtime errors, with broken pipes treated as success; results can already have been emitted before a later propagated failure.",
+      "evidence": [
+        {
+          "resource": "repo://src/main.rs#L162-L203",
+          "version": "repo-lines-v1:sha256:58bbe22ed102e57ed63bdb410920cc622661c5614e34fd2c39acae14bffcc5ae:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI1YTA1NzEzMTlkMmExOWVjYWI2N2FjMGQzNTkzNDE4NWZiZjZjY2U0NDI5ZmJkYWZiNjJlMjdhM2U5MzVlYTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM4MTI5MWU4ZDU0NWU5YTE0NGEwYmI0NzVjZTk3YTRiOTBjOTEwMzE0ZTFlZTZjZWNmMzk0N2MxMzgyOGU3OGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg0OTI5MDVhMTA2OWUwZTczOWVjOWJhZjBiMjY5NDRkYTU4MTUwZmViOTU0MmQyODc0MzJkOGFkYzliNzg0ZjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://src/search.rs#L137-L205",
+          "version": "repo-lines-v1:sha256:5a5a34dc7e59ba7c9632cccf51754112d6d348f7acde1760516c5ea05c6afa12:eyJzZWxlY3RlZExpbmVDb3VudCI6NjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5NmNlY2M0NzYxZDBlMmFiN2M2MGUxM2ZmZGYyYWNiY2M5ZDBiNmUxNTc4ZWQ4ZGQ4ODA5Yjk0OWZjMGFmMWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwM2NiMzFmMmFjZTk2YTk4MTBkM2E1YTU3NDFmMDUyOGVlYjY3MmMwNzU2NjVmOWI3OTdmZjdmMWNkY2UzNzIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVjOGU5M2YyMzQzMDRmNmYxMTU3YWJjZWE1NDA0NDMwNWUzMGJhODk0ZTcyOWY1YjJmOWZmMTIxNjIzMGJkNmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk2OGVkZTBmYWNhMzA0Yzk5ZDRlNGVjZTlkZjIwYjFiNWFiNmUwODYwMDFlOTRiYTFlZDA4ODg3MjRmNTBiMjgifQ"
+        },
+        {
+          "resource": "repo://src/search.rs#L307-L313",
+          "version": "repo-lines-v1:sha256:639845a7ccc63bde625437e964eaeccb03273de1f206a80d4280878b976b1439:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDg5OWEwNzVlZGZiMTE3NGVhM2NlMDNlYmVlZTExZTlhODk0MDZjZTJiZDI0YjRhZTc3MjY1Y2IxM2FhZmNjOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzM1MWYzMWYwYTAwNzc1YjE2OTVjMzBlMDA4Njg5MDc5OGM1MjZlZjliNmQzNTc1MTJlMTA3NTkzYjhjZjAxZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDNmYjYyMDBjYzAxYjljYmEzOTNjOTExNDk4ODY2ZjllZmVkY2M3YmFhZWJhYTM2YzMxODMwODg4YmM1YTIwNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWMyMmZjOWI2MDYzYjdiYTcxZDE3ZTJjZGU3MDM4N2ExMzYxNTFkOTQzMmEzYWU2NmY5ODBmOGFkYTY5ODdlYiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_385e652d6de1417fa488d39493ae131e",
+      "statement": "Repository guidance treats source and tests as authoritative, uses the generated wiki as optional just-in-time context, and asks for narrow quiet validation with complete failure output preserved.",
+      "evidence": [
+        {
+          "resource": "repo://AGENTS.md#L5-L14",
+          "version": "repo-lines-v1:sha256:965b11a851738f08a591fcd7200331a525a9902e67b614ce6d86c6a4283402a5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFkYjQ2MDY2MGY0ZDUwYTI1YWNhNzc5NjEwMDJkMzk3MDVjNjQ2ZGMyNmE4YmZhNjZhZTZmNjkwOTU5YzY5NTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFiNTM5NTNiZmI3MmMxMjYyYmJhZTJlYWNhNzJjYWJmMWFmNDk5MjdhMGJiYTExNTdiMmQ1YmRiMjg1YzRiZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFhZmI5NjA2ZjViMGQ4ZjYzNGIyNjAzNzhkNmVjZTI1M2I1YzE0NDdhOWJmMWQwNDkzNDk0NDBhOGI1ZWJmMDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMwODlkZjkzZjhiYTU3YTRkZGJmZDhmMDEzOTYyYzM5NzhjZTRkYjY4MTk5YzRkYTY2NjY0OWIwOTk2Y2VkYTkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_dadc2ea5246649f7a75943c4cd3eb620",
+      "statement": "Cost/duration estimates, quality-evaluation methodology, statistics, response caching, and parallel evaluation are deferred unimplemented directions; the synthetic quality seed is unexecuted rather than measured Jev quality evidence.",
+      "evidence": [
+        {
+          "resource": "repo://docs/BACKLOG.md#L5-L25",
+          "version": "repo-lines-v1:sha256:d8f1e2c1ea66386b9e3825de60e63c4c429425d3691252e1154835bb942fe576:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ3MDI4MzEyNmM1YWM3YWYwM2Y3NjAyMzEzZjE4NjQ3ZmZhNWFiZTBiYTE1MDEzNmJmODI4M2NlODM5Yzg1ZTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYwNWJiNzYzMTI0MGMzYjM5Y2YwYWI1ZGFjMDM2ZmYwY2E1NTg3MDBhZTZiODQ5MTU0ODRhYWVhNjlhNTBkMjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNjYzFlYzllY2NlZjYxYmQ2OWE0ZDMyNjVhZWE5NTFmYzY0MmQ3ZGNhNzE3ZWVhYzM4NjUxMmYxNGY4YWMyMTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.1",
+    "at": "2026-09-30T19:07:23.717Z"
+  }
+}

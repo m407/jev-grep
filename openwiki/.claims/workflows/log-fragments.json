@@ -1,0 +1,412 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:4bc00b940523bf837fe3c04b290b1e02ed0154e7200bacc2586534d1e2d0275d",
+  "claims": [
+    {
+      "id": "claim_23f384592a0c4c7da485d67b5931edc8",
+      "statement": "Text and log-jsonl search keep pending fragment, saved probability, split-before flag, selected count, and found state local to each input; records do not group across files and max-count applies per log input.",
+      "evidence": [
+        {
+          "resource": "repo://src/main.rs#L125-L178",
+          "version": "repo-lines-v1:sha256:8f2c385eb4554f9de5203d22cc3d4459ea5fb4abc80bbef1c4bdfbfd271290d3:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAzMTdiNGEzOTg5NmUwMjYwOTA4N2UxNWIxZDE5NTU0MWY1YjJhZThmOWU1ZTJkYTQzZDUyN2I2ZjhhNGI1ZjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2YjA0NDkxNDY5NzIyZTgzNjNhOTRlNDA0NDUzOGUwMTNhMmEyMTdlMzZiMWU1NjhiYTYwYWNiN2I0YzhmMmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUwMTM5YzVjZmJmNTVkODBjZDQxYWJlODY5M2E5YmJiNDI3YzVhOTQzOTM0MDg1YjYyMzFhOGEwNTY4ZDAzMTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVmZWY4ZTQwNTBjY2M3YmFmNDA4ZjU4MTNkYWUzOTVmNDllMDRmZjE4ZWNhOWIwNDg3ZDBkZWUyMzgwODY1ODgifQ"
+        },
+        {
+          "resource": "repo://src/search.rs#L79-L85",
+          "version": "repo-lines-v1:sha256:960611dc179d851a91d27b947083d01bbc9a2ab1e526a85a850b2af0637676b6:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWE4YmE4NDQyZWJiNWEzOWU1NGY2MDg5NWZmNjhmOGFmOGY2MTM4MjQzNTI4OTI3NTQxMmMyZDM5MzAzMWYyZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTlkZjBjZDlmZmM0ZTAzYWJmNDE2OTM5ODcwNzcwMTJiNGFjOGQxOTNiMDUzOGQyOWQyNTVmMmEyMDAyZjA5NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDc3ZTdmOWU4OGQ5Y2U5MDI1ZjU0MGU2ZGU0ZDU3YjgwZTUyM2U1ZTQ5YjVjMGUzYjBjMDYxZjUxYjlkN2UwYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTQ5MGNjZjc0ZDYwOWI1MmM1YjAwMWNjZTViNjczZmVjYTIzNDQyZjhhMGUyMjA2OWYyZGM3OTgxZjM1Mzg5MiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_e694c24c1c374f7283a4421f623904d9",
+      "statement": "Without explicit paths the CLI selects piped stdin or the current directory for terminal use; '-' explicitly selects stdin and explicit paths do not add it implicitly.",
+      "evidence": [
+        {
+          "resource": "repo://src/main.rs#L111-L135",
+          "version": "repo-lines-v1:sha256:cef89453f030213dfc3e18a58661b0c332710504b480144be9f41959a5b9ff84:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA3NjAwYWVhZmM5MTkwOGJmZmExMTRkOWM4YTY3MzFmMzRjOTFkMjQ0NzVkZDNhZWM0NTI2YTcxMzEwNGIyYjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImViYjJlMjY3Y2RhM2VhMmQ5OTEwZGE2OGM1YWI5MDE2MGM5ZTAxOTY0OTIxYTIxYTEzMTM2MGFhZDFmMWUwMWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJmY2EzNTFiNTEwMjcxZTgwYTQyYzEyNTFhNmIzZGMzOGI1ZDYzZGYxMDkxMGE5ZmNjNjMyOTAwMzBmNDY3NTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIxNWMwMGQ4YjM4YWJkYmZhNjA5ODc5MjhkOWU5MjU1MWVkNDc0NWMwNmQ1YTQ1NzA1ZWI4ODM1MzRmNzYxOWMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_dfb0988878014b488ae09d01e33a783b",
+      "statement": "Text records preserve original UTF-8 line endings and final unterminated lines, while log-jsonl decodes only string text fields and inserts one additional LF between joined records.",
+      "evidence": [
+        {
+          "resource": "repo://src/fragment.rs#L43-L63",
+          "version": "repo-lines-v1:sha256:b7fc9536907e9b4653ff346da7526d97f34840e0552d3622a23ff0c976223860:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJlNTAxMWQzYWIwNmIwZDYyZDQ5YjM5MzEyOWUzOWY0YWRlZWYwMGUwZTgyNmMxMGRiOWU0ZTlhNzgxYjMxYzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZlZDgzNWI5ZGM1ZWU2NWRmMmU5NGRmNTFkM2E1NWMwMjVlY2I2ZjUwODEyODU0ZTkxMzgxZjFlNjgzYjA2NzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://src/input.rs#L158-L238",
+          "version": "repo-lines-v1:sha256:03f27c251b842fa22242b2e02626edbeec12cf5522af6af6dbd6763bf37e4170:eyJzZWxlY3RlZExpbmVDb3VudCI6ODEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNiNWQ1NmQzM2YxYTljODIzODlhNWI3ODRiYmU0ZWUyZWQ4YjE4Yzc2MzEyYjBiN2I0YTg4Mzg1MjlhNTc4YzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViOWEwOGJjMjlmNmViZWJlOWE1ZjAxOTAzZDk4NDVkYmNiNTg0MmE0NTVmMDdkNWY0MDAyZGFjMzJhNWM2MDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdiYzk4ZDZiMGRjNDkyYzUwMTZkZjEwODA1YTNhNTRlYjljMTg0YTVhNjEzN2U3ZjRiZWNmYTBjMjIwNTUwZDAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_25cbfd7df8ae485aa159ebaed9535084",
+      "statement": "Log-jsonl ignores extra metadata fields and rejects non-object, blank, malformed, missing-text or non-string-text records; text and JSONL reject invalid UTF-8 and NUL including decoded JSONL NUL.",
+      "evidence": [
+        {
+          "resource": "repo://src/input.rs#L185-L233",
+          "version": "repo-lines-v1:sha256:6b455bed2747aafd191cb99a042db6e4fd1c0f897624375912ee0f347035cbff:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMzMzY0YzdmYTgyMjA1MWJiNDQ3YWM1Y2M5NTFmMWIxMTJmM2Y5Yjk3YWVjOTkyMTAzNDg1MjQzMjdlYjQzODAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZhNGEzY2E4ZGU2YWRjZGY1MzY5M2M1MmUzODNhNzI4ZmRjZThiODliYjI2NmI0NGQ5Y2UyN2JmNWFmOGQxZjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVkZWVlZDRmNDUwNjMyMWJlNDJlMDc3MWFmN2YxNDI5YWFiNTU3NDEzNWExOTVlNjA1MDUyOWVjMTRhZGRmNDkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_40373f7f1c824d11b739804e1773328a",
+      "statement": "Log fragment coordinates are 1-based inclusive physical lines and 0-based half-open received-input byte ranges; JSONL decoded-records text is not a source byte slice and escaped newlines do not change physical coordinates.",
+      "evidence": [
+        {
+          "resource": "repo://src/fragment.rs#L1-L5",
+          "version": "repo-lines-v1:sha256:87df62e6946e2faf54f2825b62ee16d85fd92a91ad31dbee18668f2faa59c947:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDNmNTc1Zjg0MmUwNGQ5YTA2OGViODJkYmZhZmE5YzE4Y2NhNGNjZjliZjZjZTYxYzEwMzQwYzM5YWNmZGVlNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDQ1MWI3ZGZjODk1MWJkNjgxNjIyZjkyNjUyODkwY2E3ZjMxN2ExNjI0ODhkODczZTY0ZDJhYTYwNjU4YmI1YyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGQ3OTI3YzZkNjFmYjEyODI1YjVmYjhkMGVmMTNmZjc2OWY5MmJkYmJkOTRkZmM1NDRmYjMyODY3ODE4OTkyOSJ9"
+        },
+        {
+          "resource": "repo://src/fragment.rs#L23-L63",
+          "version": "repo-lines-v1:sha256:fb9cd93fca3d99f75baafd3fa569e06053202cf474f0052e6ec5949dd70af26f:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEwZThjZjllZjZjYTMxZTVmZjllMmE2NGVlYjEwYWM4Nzc2MmE1NzNlN2M4ZTJlODA3NWJkMDdjNzY2YWY1YjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE5ZTc2MzU1Y2YxMTk5NDgwYzNmOTk4MzZiMTQ4NmM4NDFkODkxZmFhZDkwNGM2MDhlMDkzMDIyZDM3NTdhZWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://src/input.rs#L180-L226",
+          "version": "repo-lines-v1:sha256:95e1f68c3207a4335d586bbc8c62af568618c8ff690e521b19a1ea8518e61c4f:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUwNzIzNTM3ODQ3NGQzYzk5ZTcyYTIxZTkyYTNmZTZmM2UwNjk4MTZkMWYxNTgwZjYyYzNmMjg4M2QwNmI2MTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUxNmQ4MTdhNjk4ZWY5ZTg5YmFiN2FlMDk5ZTBmOTRlNmIzYWVjZDc4MzQ1MThmYWI2NmRlYTAxYTFhMjhiNmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJkNzllOWFmNTU1ZmU5MDI3ZThjYzMwNDIxNmM0ZGVjNmI4NmNjZmQ2NjhlMTZhMTM5MmE4YWIzODg1MzBmNjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE5ZTc2MzU1Y2YxMTk5NDgwYzNmOTk4MzZiMTQ4NmM4NDFkODkxZmFhZDkwNGM2MDhlMDkzMDIyZDM3NTdhZWUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c3b1e23af96b48c1848dcbe43a6c4829",
+      "statement": "The first log record receives a standalone match evaluation and becomes pending regardless of selection relevance.",
+      "evidence": [
+        {
+          "resource": "repo://src/api.rs#L44-L54",
+          "version": "repo-lines-v1:sha256:00b208257a173e5339fcc558d0da7f86812816799e035508e361576cc940d744:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxM2E1NDExZDYyNzJlODA0MjAyYWUxM2NlNzlmMDlmZGUwNDRhMjFiYWIyMjQxN2I0ZGRmMGY5NDEwZDhiMmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViOWEwOGJjMjlmNmViZWJlOWE1ZjAxOTAzZDk4NDVkYmNiNTg0MmE0NTVmMDdkNWY0MDAyZGFjMzJhNWM2MDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE0YzUyOTE1NjVkMjI2NGJhMjUzMDA2YWNkZDFkODNkODBlM2NkODk3NzcxYWIzZjgyNjQwZmU4MjU4YzhkOTIifQ"
+        },
+        {
+          "resource": "repo://src/search.rs#L201-L206",
+          "version": "repo-lines-v1:sha256:156854d3f643ccd3ed06c10a75d36bd90ad3a32f6e79a3beaedfd6adf9525fe2:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODY5ODI1MTc5MjRmZThkM2UxNTY2NzExNWIxZjVhMjAxOGUwZDU1Y2U1YTAwMWIxZTJkNWUzMWI4YjI0MTIyYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTZiMDQ0OTE0Njk3MjJlODM2M2E5NGU0MDQ0NTM4ZTAxM2EyYTIxN2UzNmIxZTU2OGJhNjBhY2I3YjRjOGYyZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjM2Y2FhYWNmOGRlZjJmOTdkOWRmOWU1YWI0NTE2OTBjNGNjNDgwYTgxNmM0YTM2NjcwOTUyMWY4ZGM3NTJkOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjMyNWM5YzQ1MTc2NzNmNGU1MzI1YzIyM2ZlMjE0NGJhZDJhMTNmMGQ4YTVmODBiMDE4MmI0NTU2Nzc3YzU2MiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_33411701be554cdc8cda21af314be5d2",
+      "statement": "An eligible boundary uses one logical model request with current_fragment and next_record and four questions: same_event, useful_context, match_next and match_extended; relation prompts exclude shared-topic-only and independent-match-only justification.",
+      "evidence": [
+        {
+          "resource": "repo://src/api.rs#L56-L85",
+          "version": "repo-lines-v1:sha256:9b96da98284f9690322cfddd9d0fdb1200715c3b229169f12d7248643205a466:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhlZDI2MTliNDJhNTg5ODBjYmU1MWFlZjhkMjVkMDNmZWQ3NDk0NmQ3OTFmMDAwNWEwMWFmNTdhNzUxNGM2YjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViMDdkMWY0MTY5NzEwYTllNzlkOWRhM2M5Yjc2ZTE0MjgxMzQ0NGE5ZDM4ZTY2ZTBjYjRlZTVmZmQyY2JlZmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjliZjY2NDc2NzUzZWIyM2UxODY1NWJiOTg5M2JlNDIyYThmZmNkODdkZWFmYzAwODliMDQzMmNhZTE5MjViOGUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0c60015a21cc4ef897f0dd1891000504",
+      "statement": "Adjacent records join when same_event or useful_context reaches join-threshold, including equality; joining appends text, preserves split-before and replaces saved relevance with match_extended.",
+      "evidence": [
+        {
+          "resource": "repo://src/search.rs#L163-L170",
+          "version": "repo-lines-v1:sha256:88ce5c637fb4ab00562e19c98e9f395a44cffec3614626e790fd663235f64933:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiN2FkNzMxNzlhOGEzMTczYmFlNTExNTIwMjIzZDY4MGU4NDBlN2ExMDZhMTY3NDJhZjQ5MDBmZDkwNzI2NGRkYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzQ5NjhmYmQ0YzZiMDI3ZjFjY2Y3YzliZjBlYmY0MzYzMWI4ODcxY2M1OWYxYzk1NTYzZDg4Y2QxYWRhNmIxMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmJmZmM0MWJiZWYyMDU5NGEzZjBjOWE2NDVkOTFjYmFhYmE0YzdiMTZhZmE0YmZmYmNjZjg5YmFhNjBmYTA0OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjI4ZDNmYTgyMzNiZWRiZTgwYTgyYTYwODEyMTRlYWEzYjAzOTk1NTUyMDc0ZjdmNzJjZWEwNWQ0OTBjNmJjMiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_33c97b405abc4d92abaef317f15cbb53",
+      "statement": "On rejected joining the old fragment completes with its saved score, not match_extended, and continuing search reuses match_next for the new pending fragment without a standalone evaluation.",
+      "evidence": [
+        {
+          "resource": "repo://src/search.rs#L171-L199",
+          "version": "repo-lines-v1:sha256:5cb77d600b4acfc602a53b031e3b2b63744173524c1130530c634e3261fa8143:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg3YWM0OTA1ZTZkMGM4YTI1ZDUxYTk2OGNjYjVmZGUxZGY5ZjhkZDc4NTllY2ZkN2U1MWRlMjY2NTU5NGYxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBjNjQ3OWNjMjMwNDQwZmQ0MWU4MjI0MjE4Njc5Njk4NTU5ZDI4OTNiZDY3YjQzODBhZmFiODExYjM4YTU1YWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM2OTY0M2EwZDU2MDhiYzY0NjAzNjI4NDkwMzU4YzdkMjUzNjBlNmY1ZmY5ZmE2ZjMyN2IwNTBhZTIyM2I4ZWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAzMThhOTFmNzhiZjhhMTQ3NmY1Mzk0ZjdlNTUzNWYzZjMzMDUxMDEwMTQyZTMzMDU3MWU1ZDZkZDVkNWQzNDUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_64f5280b62e54a969e7e7a8380d4983a",
+      "statement": "EOF completes any pending log fragment with its saved probability and no extra evaluation; empty input selects nothing.",
+      "evidence": [
+        {
+          "resource": "repo://src/search.rs#L201-L220",
+          "version": "repo-lines-v1:sha256:cdb007c55d7f1165d0492347cb2ee2bcfdf30b185e0c597981eea198d86b1026:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg2OTgyNTE3OTI0ZmU4ZDNlMTU2NjcxMTViMWY1YTIwMThlMGQ1NWNlNWEwMDFiMWUyZDVlMzFiOGIyNDEyMmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkODVkOTg1ZTI4MWQ1YmY2NjNjMjZkYjIwYjQyNmYxN2EyNTZhODE0NWM0OGJiMGMxMmE2OWI5ZmVmYjZmMDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYzNmNhYWFjZjhkZWYyZjk3ZDlkZjllNWFiNDUxNjkwYzRjYzQ4MGE4MTZjNGEzNjY3MDk1MjFmOGRjNzUyZDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE4MjUzN2YzNDgyMzk1ZjU3MjU3ZDhmMjgzZTRjZDFhNDQzZTRkYjQ0ODQzZDQ5NjhlZDQzMDc0ZGIzYWUzNDMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_83482bfa949b44cd98f26a90d571674f",
+      "statement": "Grouping validates all four finite numeric probabilities in [0,1] before returning; evaluation failures propagate without treating pending text as EOF output and retries do not commit duplicate appends.",
+      "evidence": [
+        {
+          "resource": "repo://src/api.rs#L273-L284",
+          "version": "repo-lines-v1:sha256:05421c589e4ef9eab6e839e94341833097b075220037e10aebdf75e40b9676b7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUzYTNiNzA1N2NhOGJmZDMxNmIzN2IxYzhlNTAyMDc1YmE2Zjk0YjUyZDI0OGY5NTQyYmRhMjQ4OTNhZGVkODgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ5NTdhZjVjMzdkMWZmMmY3ODBlOTE3ZGFmYTcwNmRhZjM1MWZjMTczYjA5NWRlNGVkNWRmNzkwOTAzMzczMjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdiYzk4ZDZiMGRjNDkyYzUwMTZkZjEwODA1YTNhNTRlYjljMTg0YTVhNjEzN2U3ZjRiZWNmYTBjMjIwNTUwZDAifQ"
+        },
+        {
+          "resource": "repo://src/api.rs#L76-L84",
+          "version": "repo-lines-v1:sha256:41a5d1ad3f07a20d1a8aa599ae2aec5317f2134dec78464dcce00ae0f3f497f0:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTdjNzJhMWJmNzJiNWEzN2E5MjkxMzY3NDgwNDdkNzdmNTJkZWI5NzljOTgzYjgyZjFkNTE0MDk3ZTdlOGYyNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjliMTk4MmU4ZGQ3NDgxMTgxNDZiMzlhMmQwMDYyZjQwODFlMzQ3NzliODY3NWMyMzRjNGZiMTI0ZGMzOTM5MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjdmMWMwNWVlNzVlMDFhMGNhNzcyZGMyMDM0ZWNmZjJkYTQ3MGYzZTQ3YzU1N2U0NGUxYjhmYTczZDQ2ZTIyZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzI3M2QyNWZiYmIyMzIxNzZhYmMxMjVhYWZmYTczMGE0NTAzNTRlNDMyODI1MjAxNzI4MjgyODhlOTI4MjMwZiJ9"
+        },
+        {
+          "resource": "repo://src/search.rs#L163-L170",
+          "version": "repo-lines-v1:sha256:88ce5c637fb4ab00562e19c98e9f395a44cffec3614626e790fd663235f64933:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiN2FkNzMxNzlhOGEzMTczYmFlNTExNTIwMjIzZDY4MGU4NDBlN2ExMDZhMTY3NDJhZjQ5MDBmZDkwNzI2NGRkYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzQ5NjhmYmQ0YzZiMDI3ZjFjY2Y3YzliZjBlYmY0MzYzMWI4ODcxY2M1OWYxYzk1NTYzZDg4Y2QxYWRhNmIxMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmJmZmM0MWJiZWYyMDU5NGEzZjBjOWE2NDVkOTFjYmFhYmE0YzdiMTZhZmE0YmZmYmNjZjg5YmFhNjBmYTA0OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjI4ZDNmYTgyMzNiZWRiZTgwYTgyYTYwODEyMTRlYWEzYjAzOTk1NTUyMDc0ZjdmNzJjZWEwNWQ0OTBjNmJjMiJ9"
+        },
+        {
+          "resource": "repo://tests/test_cli.py#L174-L188",
+          "version": "repo-lines-v1:sha256:ae8d0139210711eeb13eb413f889ca1d02f73c1319d74331c6cf11bb9ab4cce9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlZjUzYzJjODFlZTgxZjIyMjQ5OWRmYjE1MjNhZWI0MDZmNmE0NjFhYzM1NTdlZmY2MTZmOTY1NDE1NmU3MjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxN2I5NDNiZWIxZjVlZTYzN2M3YTRmZTg0ZTVkYTFkNjg2MTAzNjEyNTRiOGQ0OTk1N2U0ZjVhMGI2MzVkODQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBjMDE0YzBlOGJmMjc3ZmRkNGE2YTIzYjVhMTdmZWY2NDhlOTAzYzJlNDRiZDY0NDcwMTI2ODNiNTMwNmEwZDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNlOWQxOTBiY2UwYzFkYTc1ZjY2MTBhM2JhNzM5NWI4NTE2Mzg0MTg1ODBiYjg0MjZjYTNjMGI0Nzc4YmQzYjIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3bb06df5a922436db711b2a04af67365",
+      "statement": "Physical-line and fragment caps both default to 16384 bytes but measure different representations: physical bytes including line endings versus evaluated UTF-8 text including the JSONL joining LF; reader overflow detection reads at most line cap plus one byte.",
+      "evidence": [
+        {
+          "resource": "repo://src/input.rs#L158-L179",
+          "version": "repo-lines-v1:sha256:4aaf78eec04d0e68bcdfc51437984d9603c2f12aef1ab6987103a06d0b6bd493:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNiNWQ1NmQzM2YxYTljODIzODlhNWI3ODRiYmU0ZWUyZWQ4YjE4Yzc2MzEyYjBiN2I0YTg4Mzg1MjlhNTc4YzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFlNzVjNzBkOTQ2MzYyNWUxMDc5ZmQ4ZmM4ZWU2MmFkMmU5MmM0MmJlYWFiZmQ4NWI3OGQ4ZTBhNDk3OWI5NGEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViOWEwOGJjMjlmNmViZWJlOWE1ZjAxOTAzZDk4NDVkYmNiNTg0MmE0NTVmMDdkNWY0MDAyZGFjMzJhNWM2MDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY1ODVlZGU1MWRjNGIwZWJlYmY1NzE4MTFmOTRmOGU5YmU5OWJjNDM3NTNkMDM3ZjNhNzYwZjA2ODAyYTQ0NDEifQ"
+        },
+        {
+          "resource": "repo://src/main.rs#L71-L76",
+          "version": "repo-lines-v1:sha256:9506b774bfd373b9189c2c6f4bc38ae654b7b8f078f6b0bebdfaac27ad9d29b2:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjY3YjQ4NmYyY2Y1MjBkZjNhNTA0ODg0NDc0YTU5MDdhNDk1OGQ3ZTczNzVhZjA2NTg0NzY4ODI0ODc5NTFhZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2IxM2NkMGU0YWExMjk0YWRlMDM4ZGE3ODQyZmZkNDIxMzU4NTA3ZjVhYzM1YTViZGY4MDBiZTI0NjY2OGY0OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmJiNjU5YWY3YmIxNDZkOTQ4MzgzY2YwMzAwYmZjYmMzMGJhMTQyYWQ0OWFmMjRkMGQzMWVkODJlZWRhOGZjMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGZlM2MzMDUzMjgyNDMwZmY2OTMxYjZiZDMzMjRlODRmYWE3MGI1NGE5NzNkYzU0NWQwYWVkNTRiNmFhMTkxZiJ9"
+        },
+        {
+          "resource": "repo://src/search.rs#L132-L144",
+          "version": "repo-lines-v1:sha256:6ae3d5dc5fd07fc2a226c3c5222b7e2e45d303fdd1f659ecf853a254b745890e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4ODExMzU1MWY5ZjJmYTI3NDk1ODIzZjEzYTIwZTYzNzkxOWMzNzAxMDJjMWExMGQ1ZjEyMDFkMzJjMmMxNTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIwZWY0ZDE1ODU3OTc0MDc4Y2YzYTBhNDY4M2M4N2Y1ZDMzZjc5YmMyYThjYWViZjk4NTg4NTM1NDJiMmJkNTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRhMWY5MjlkODU0YWRkOGQ1ZDBhYWRjOTRlYzk2ODg3YTAzODliNzBlMTljMzkxODdkOGZjZjliOTg4Y2E0YTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFmMDZmZGQ2OWM0YmUwMjIwMTk5YTQyNzEwMTUwZWU1ZTE4MDVkMzNkM2ZlZTc4YWY4Yjg0ZmY1ZDJiMWY1ZTAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a84f0ca3f37c438aa59f60359ac9b7dc",
+      "statement": "A single log record exceeding max-fragment-bytes is indivisible and errors before an existing pending fragment is completed.",
+      "evidence": [
+        {
+          "resource": "repo://src/search.rs#L132-L137",
+          "version": "repo-lines-v1:sha256:52b758d1b857571bc20ac217ea52cf2fa82a0df2f2b1fd2b0a67e16b50a21023:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjg4MTEzNTUxZjlmMmZhMjc0OTU4MjNmMTNhMjBlNjM3OTE5YzM3MDEwMmMxYTEwZDVmMTIwMWQzMmMyYzE1NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjk2Y2VjYzQ3NjFkMGUyYWI3YzYwZTEzZmZkZjJhY2JjYzlkMGI2ZTE1NzhlZDhkZDg4MDliOTQ5ZmMwYWYxZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNGExZjkyOWQ4NTRhZGQ4ZDVkMGFhZGM5NGVjOTY4ODdhMDM4OWI3MGUxOWMzOTE4N2Q4ZmNmOWI5ODhjYTRhMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTVkZjU5MTBmZjNmZGQyOWYyNDFmYWMyZjU4MTllOWIwNzNjMDEwNjFjYTUxZDk1MDFiYTA4ZTQ1Y2Q3ZmFiZSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_22a4c2df63f94d55a17cffeb9e6e0096",
+      "statement": "A combined-size overflow forces a between-record split before semantic grouping: the old fragment completes with saved score and split_after, and if continuing the next receives standalone match and split_before.",
+      "evidence": [
+        {
+          "resource": "repo://src/search.rs#L137-L162",
+          "version": "repo-lines-v1:sha256:3c91c18d23387a2a61437cb5e51aa09a9dd189bb041bc89089bf0e8a5d6c21e1:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5NmNlY2M0NzYxZDBlMmFiN2M2MGUxM2ZmZGYyYWNiY2M5ZDBiNmUxNTc4ZWQ4ZGQ4ODA5Yjk0OWZjMGFmMWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkNGZkOThmZDhiODhjMzI5NTAyZjE0Y2M4MzVmNTRjNTA2ZDhlZTM0YWU3MjZjODQwYzI0NmVjY2QxYWM5ZjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVjOGU5M2YyMzQzMDRmNmYxMTU3YWJjZWE1NDA0NDMwNWUzMGJhODk0ZTcyOWY1YjJmOWZmMTIxNjIzMGJkNmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhOTQwNGE4MjRhNDdhYWYwMmFiYzc0ODVlYjcwYzNkYmFkMTU1MDRkYTI0ODU3MjA2MWUxYjZiMDZiZTc4MTcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_bacaec8986c54da8a995a1127216c311",
+      "statement": "Exactly reaching the fragment byte cap does not complete a fragment because overflow is a strict greater-than check performed only on arrival of another record.",
+      "evidence": [
+        {
+          "resource": "repo://src/search.rs#L137-L170",
+          "version": "repo-lines-v1:sha256:ef60bd2fb830212534f76cc5194fed860e147678b9228a56a88cf2a3c08f3582:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5NmNlY2M0NzYxZDBlMmFiN2M2MGUxM2ZmZGYyYWNiY2M5ZDBiNmUxNTc4ZWQ4ZGQ4ODA5Yjk0OWZjMGFmMWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc0OTY4ZmJkNGM2YjAyN2YxY2NmN2M5YmYwZWJmNDM2MzFiODg3MWNjNTlmMWM5NTU2M2Q4OGNkMWFkYTZiMTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVjOGU5M2YyMzQzMDRmNmYxMTU3YWJjZWE1NDA0NDMwNWUzMGJhODk0ZTcyOWY1YjJmOWZmMTIxNjIzMGJkNmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIyOGQzZmE4MjMzYmVkYmU4MGE4MmE2MDgxMjE0ZWFhM2IwMzk5NTU1MjA3NGY3ZjcyY2VhMDVkNDkwYzZiYzIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_219653d115a745ab802f8628b799852c",
+      "statement": "Only completed fragments are selected and counted: normal selection is saved probability at least threshold, inversion selects strictly below it, and threshold and join-threshold independently default to 0.5.",
+      "evidence": [
+        {
+          "resource": "repo://src/main.rs#L33-L38",
+          "version": "repo-lines-v1:sha256:c21ce886efe99e058588e67c83827c74d5b989145cebb2731ff07203a6fa45ab:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTk4NDZiNzk5YzZmNmI1OWIwM2ZhYTE1NjljYjUwNDI0MjM1ODk3NTMwZTU0NDFmY2RjYjE3MzZlYjFiOWUyMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTk1OGIxYjM1ZTlhYzI4OGE3NGIzMThiN2Q0NGRkNTJlM2M3YmE1YzI5YmM4OTc1NTUyZjAxNTk0NjQyNzEwMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTg0ZWRhYTA0OWM0NzhlOWI4MDM4ZDc1YTA2YzExNzc0ZWFlMWRjZTc1ZDc2Y2M5NWE4NDE5MTJkODM0MGRlNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYWY5MTExMDNiODliZjEwNzU4NWZmODVhNDI1MGFkM2UwZTViNjk4Y2E4YzYyY2E3OTU4YjRhMWRmNmM0YjljMiJ9"
+        },
+        {
+          "resource": "repo://src/search.rs#L316-L342",
+          "version": "repo-lines-v1:sha256:68c10315b3595f05fe656f6ab442a2441a4e11b6d4c62d190d5c957aef569dde:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkNjEzZjZiOTM3YWI0MDc0ZGJkNGY2OTEyMjQ0OGFiNDA1OTU1ZDFmYTg4NjhjMmYxMTMwNzE0MDYzMWU0OGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI5ZGU3NjNlOGYwODJkYTk4Y2Y2N2RkYTcxNjk0ZDFjZTQxODJjNmYxNmQzYmJkNjFhNTY3N2JhNDExZDI3ZmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNlMWZhYmVhZjQ4ODEzNGI4NDZhZTRiNjhmNmZhMmZkNmUxOTUwNWE4YjE2YWUyNTFlNjg5Y2EyMjhkY2NkYjgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ea23fde2e8d24b21876bd53331dc7426",
+      "statement": "Selected normal log output is flushed immediately, JSON output includes located log fields and split flags, while count suppresses bodies and flushes name:selected at EOF or count-limit stopping.",
+      "evidence": [
+        {
+          "resource": "repo://src/search.rs#L145-L156",
+          "version": "repo-lines-v1:sha256:348590f2fdb933ea0deb6b8d4ec52c3be976f2fe86e9172d0b0cf34ea1b9bc19:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5ZjI0M2UxOTBmZDNkYWVlMmI2NzRlYWQ2OWMxZGQ4MWFlZjI0NjI1YzEyNDUxZjNlYTc4YzhhNjE2YWM2NzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5OGY2MTMzZjczZDQzZmIxNTdiZTYwODJkNzZiMTJlZGJkMWVlNmVlNzNmMzljOTM3NjE3ZmI2NDEyNTIzNzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA0YmNiMTY5MWUyNzY2ZjdhMDNmNDQ0NTdhMjRmODcyNDk5MTRlMWQ1NGFlZGI3NzEwYTYwYzAwNDE4OTA4NDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA4NTdlZGJhYjA3YzFjZThkZmQzOGY4ZDY3ZDNhNGFkNTQ2ODMwNzQxNzYwOWNjMWU4YjdkNjNkNDEwNTA2ZTcifQ"
+        },
+        {
+          "resource": "repo://src/search.rs#L216-L219",
+          "version": "repo-lines-v1:sha256:fc03228f3b111a2ac9d687f6baad1485e358ea9e63c4aefcfef036aa8e37561a:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTJkOGQyZGJhZTIzMjU3YjgyODM3NTAwZTM3YzEzODQxOTJhZjgxZmRjMTVlODM3YWU2MTM2ZGRkODFjZDk4YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDg5M2Y0MGUzNzgxZWI4OTZjODJkMDQ2YTA4MDY3YTExZTM1Y2RmMmYxZGZhZjI2ZmVhOTBiOGRiNjY3NjQxMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmM0NDQ3NzliZWZkMTkxMDE3MDEzYzU4ZjZiNGU3NWJkNmI0ZGMxZGUxZDUwZDk1YjIxNTU1MDA4ZGM2ZjhjYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjc3M2I2ZGE5MWRlOGMzMDI4M2NlZGMwNWRjOGE3ZmFiMDIwNDVkYWQ0N2I0ZTQ3ZTBmYjBhMDU2NDRkMDM2ZSJ9"
+        },
+        {
+          "resource": "repo://src/search.rs#L316-L395",
+          "version": "repo-lines-v1:sha256:89d1a2b027ecf289b7e1e37e3c766f08f58bfc1d238d44f0e8038aa816756e7a:eyJzZWxlY3RlZExpbmVDb3VudCI6ODAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkNjEzZjZiOTM3YWI0MDc0ZGJkNGY2OTEyMjQ0OGFiNDA1OTU1ZDFmYTg4NjhjMmYxMTMwNzE0MDYzMWU0OGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI5ZGU3NjNlOGYwODJkYTk4Y2Y2N2RkYTcxNjk0ZDFjZTQxODJjNmYxNmQzYmJkNjFhNTY3N2JhNDExZDI3ZmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7ba9d7ae0cf44dd89583c510ad36584b",
+      "statement": "Log files-with-matches stops each input after printing its first completed selection, quiet stops the invocation without output, and positive max-count stops each input after its selected-fragment limit.",
+      "evidence": [
+        {
+          "resource": "repo://src/main.rs#L110-L110",
+          "version": "repo-lines-v1:sha256:970e65a6e38da0a4f7069d36ed45ae0065385d8c30c3c93ee093f66714785e38:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTcwZTY1YTZlMzhkYTBhNGY3MDY5ZDM2ZWQ0NWFlMDA2NTM4NWQ4YzMwYzNjOTNlZTA5M2Y2NjcxNDc4NWUzOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTcwZTY1YTZlMzhkYTBhNGY3MDY5ZDM2ZWQ0NWFlMDA2NTM4NWQ4YzMwYzNjOTNlZTA5M2Y2NjcxNDc4NWUzOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2QyZWQzZDgyZTgyMTgyYjFkNWZlZmNmMTBlZjYyYWVkZDAxMjM0MmQ3MWE3MjI1YjljNTdmY2IyYjRjYTMxYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGFmMzBhMTY5NTUwMTFmYjQ4Y2FhN2IyM2JiYmYzM2M4YmQ4NDhhYzg1Zjg5MzFjMjg5NDBiNTZlZjkyOTJjNyJ9"
+        },
+        {
+          "resource": "repo://src/main.rs#L171-L178",
+          "version": "repo-lines-v1:sha256:9c232b77f6a455db70b7c6b8c83e350dca01842b36098316589566a90830f178:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzEzNzUwNjU5YjkwNWQxY2YxNjFhZDgzOTMxNzg2MWRhMjExYTBjZDc0YTQ2OTRiOTEyYzFiNmJmM2I1MjQ1NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTZiMDQ0OTE0Njk3MjJlODM2M2E5NGU0MDQ0NTM4ZTAxM2EyYTIxN2UzNmIxZTU2OGJhNjBhY2I3YjRjOGYyZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzU0Zjc3NmE3ODc4MzFiZWE0NjY3MDRmNmQ2ZGJjOTU0MTAyMjAxZjI1M2FlMTI2MjZmNzg2OTNmYzFlYmE5NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZWZlZjhlNDA1MGNjYzdiYWY0MDhmNTgxM2RhZTM5NWY0OWUwNGZmMThlY2E5YjA0ODdkMGRlZTIzODA4NjU4OCJ9"
+        },
+        {
+          "resource": "repo://src/search.rs#L145-L157",
+          "version": "repo-lines-v1:sha256:a8e90f9be042068b4243b2f31ea0e32ed1e6e58ec03caead37c1c6fca2cf8c78:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5ZjI0M2UxOTBmZDNkYWVlMmI2NzRlYWQ2OWMxZGQ4MWFlZjI0NjI1YzEyNDUxZjNlYTc4YzhhNjE2YWM2NzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBjNjQ3OWNjMjMwNDQwZmQ0MWU4MjI0MjE4Njc5Njk4NTU5ZDI4OTNiZDY3YjQzODBhZmFiODExYjM4YTU1YWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA0YmNiMTY5MWUyNzY2ZjdhMDNmNDQ0NTdhMjRmODcyNDk5MTRlMWQ1NGFlZGI3NzEwYTYwYzAwNDE4OTA4NDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg3YzBhMDEwYjM1Y2I5NGYzYzM3NTA5NGVmMjBmYjg2MzA0YTNkNzFmZThmZmNhZDIwYmQ3NmVhNjZmNTY1MmQifQ"
+        },
+        {
+          "resource": "repo://src/search.rs#L184-L193",
+          "version": "repo-lines-v1:sha256:1c53974180a2a028d93bd48e30428b4d68eee7d2d3098f8ec1c0ca675283f120:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlNDAwNmVhYmFkMzlkYmEzZTY0NTdlODc2ZTVhMzZjODY4NjAyODI3NDEwYmExMjU5ZmYxYjJiZjJlY2FjYWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhkYjMzOWMxN2Q0Y2M1NGU3MGM0ZmNmZWNiNjExYmI5ZTdkMzYzZjI1YjE4ZTA5MjNhMWQzMDZjYzk1OTI0ZTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhhNDE3OWM5NzMzMmIxZmQzOGY4MDA0OWMwMDY2NjFhNjBhNDY1YTM5M2E3NTkzYjdjZTFjNGVlMTJjMzRhMTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY2YWYwOTYwNjRjYzg4YWZmMTdlZjM3ZDU5OTFiZDM0NzRlMTJkZjU3MmM3OTJmYzIxYWMwZTA4MmUxODAzZWUifQ"
+        },
+        {
+          "resource": "repo://src/search.rs#L331-L342",
+          "version": "repo-lines-v1:sha256:b3d927d71cfa8db0990dc0f3eac22303accf88ce78f89dcd0827e602196322fe:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFhMzc5OTE3NDhkM2QzZDU5NzI0MjYzNTQ3MmUwNjZjOWJiNzlhODAzNDgwOTBhZDA1YTJiZjRmNWQ0NDM2MDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ1OTQ4ZWFkNDk0NWVlODFjNjc3YTQzOGY2NDczM2VhZGVmMDhlOTNiZTA4YTk0Yjg4YzJiNmE2YTE3OTI1MTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNlMWZhYmVhZjQ4ODEzNGI4NDZhZTRiNjhmNmZhMmZkNmUxOTUwNWE4YjE2YWUyNTFlNjg5Y2EyMjhkY2NkYjgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7ee8370f1b0c4d888d57a1288acb8d84",
+      "statement": "Semantic-boundary stopping occurs after the four-question evaluation but before new pending installation; forced-split stopping occurs before the fresh standalone evaluation of the next record.",
+      "evidence": [
+        {
+          "resource": "repo://src/search.rs#L145-L199",
+          "version": "repo-lines-v1:sha256:6819fd332b6dba1a765ae9dc38789c1263de84f98624c18781b6b4d1790d0e49:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5ZjI0M2UxOTBmZDNkYWVlMmI2NzRlYWQ2OWMxZGQ4MWFlZjI0NjI1YzEyNDUxZjNlYTc4YzhhNjE2YWM2NzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBjNjQ3OWNjMjMwNDQwZmQ0MWU4MjI0MjE4Njc5Njk4NTU5ZDI4OTNiZDY3YjQzODBhZmFiODExYjM4YTU1YWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA0YmNiMTY5MWUyNzY2ZjdhMDNmNDQ0NTdhMjRmODcyNDk5MTRlMWQ1NGFlZGI3NzEwYTYwYzAwNDE4OTA4NDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAzMThhOTFmNzhiZjhhMTQ3NmY1Mzk0ZjdlNTUzNWYzZjMzMDUxMDEwMTQyZTMzMDU3MWU1ZDZkZDVkNWQzNDUifQ"
+        },
+        {
+          "resource": "repo://tests/test_cli.py#L329-L332",
+          "version": "repo-lines-v1:sha256:ae820f89f6a41908be73082b417e280555bf47fb4d37d5d183fb7470c9316688:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjEyZGVjMThkYTJhZmU2OWU0MGU3YTIxYzFhZDlmZWQyM2I1YjViZjBkZmRkYTgwNGQ4YWUxMWYwMjNkZjMxZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTI3NGNjY2Y2NjRhYzZlMDgzNmE1MGYyNjdmYTFmNmRjZmYzNTA1MTYzZjJkNTdjZDBmNjUyMDJjNjlmOTI0ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmY0MzRmMmQzNmVlMjkxMDg1NjU5NWRiNTllZDg1NWI5MmQyZjEwM2UzYmNhZjEyZjRhOTc0Yzk0MGQ1NmIxMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTRiYTQ0YjVlOWY2ZDc5ZDA1ZTA2OWE4NmVkYjI0ZGVmNDhlNTZkMzJmZmI2MjQyZjQyMWVmMGU3MmEwODEyYyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_65df6995c93b4140b5a4eeb55f799d57",
+      "statement": "A pause in live input does not finish pending fragments; timeout defaults to 30 seconds per model evaluation including retries and response reading rather than serving as an input-idle timeout.",
+      "evidence": [
+        {
+          "resource": "repo://docs/logs.md#L81-L94",
+          "version": "repo-lines-v1:sha256:34437ca4432cb3152d6274e80e2ffe724e41c51ef6dd249d0db0b6dbf2519ffd:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5MTg4ZmRiNjNkYzhkZDk5YjhhMDI5ZTlkYWRmMDIyMzI2OTcyYjkyMjJjZjQzN2EyZDFlMTYwMTY0YzUxZTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNlNzhmZjFhYTIzZmQ0NjM2YzdkOTYzMTcxNmIwYjQ3MzhmMTRhOWE5MGQ0MjlmMjczZTcyM2MyYmMwOTg0NjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ5YzgyMmNlNTUzYTQ1ZTdjNjM5MGM3MDRmMTdjOGQzODJhMTg0YzY0NjM3NDQ3MjNiNjZmYzFiMWQ1NDEwOTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgyYmIyMGQ0ZjQ5ZDA4ZTRlNzFkMDE4MTI2Nzk0NjllYjc4ZjJjZjU5YzM0MTJiNjY4MWE2OGEzNjQ3Y2U3OGEifQ"
+        },
+        {
+          "resource": "repo://src/api.rs#L87-L184",
+          "version": "repo-lines-v1:sha256:c4570dca2e4000d1416926fe5e83aee2ba2f733bd3cf77d1d98e63a953e94115:eyJzZWxlY3RlZExpbmVDb3VudCI6OTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFkYjcyODM3Nzg5NmZiMzU2MTZiODJiOTVjNDVkNzQwYTljMmVmODZjMjA5NzY1NmRkZjA4MGI0NzBiODEyMjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViOWEwOGJjMjlmNmViZWJlOWE1ZjAxOTAzZDk4NDVkYmNiNTg0MmE0NTVmMDdkNWY0MDAyZGFjMzJhNWM2MDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNjYzBkMGU5MjM1ZGE3NzVkMDM0MWUxMTBmNDc5NTQxNTJhMDQzYTAxYTA4OWYxMzA4YjRjOTEyYjY4NTU1YTYifQ"
+        },
+        {
+          "resource": "repo://src/main.rs#L77-L79",
+          "version": "repo-lines-v1:sha256:0fe3c3053282430ff6931b6bd3324e84faa70b54a973dc545d0aed54b6aa191f:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODY2NTMzOGYyNmQxMDYzOTBhZDhkN2YxMzU0ZDlkZjZiN2RjMDBhNWU4NTUyYTQ2MTcwOTMzNjkwM2YxNmViNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjg0Yjc1YjI5NTM5YzE2OGM5MDNjZmZhZGE2NmMxN2Y4MWUxYmQwYTcyNDc5ZDkxOWE3Y2I1YzQwYzM4MGIwNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmJiZTJhM2U1OTU2ZGYzNzJiNTQ2NDFlNWI2NWQxMGRiNGRlMDcwNzM0ZTU3ZDJkMDg5NDI3MzExNzA1OTk3NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjQ3NjIzMzE5NGU5MWNhZmRjOWI5OGNjM2EyZjc3OTFiYWQ2OGNjNTExNDUyMDEwMjQzMzQ2MGU2Mjg5YTNiMiJ9"
+        },
+        {
+          "resource": "repo://tests/test_cli.py#L525-L539",
+          "version": "repo-lines-v1:sha256:dbf42f3599bfee27c2086ee6fb82639ad5b33524e315c33a90f8ad11f818f2a5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQwYTIxNjRkODRkMGFhZDhkNWZjNmQ1NGMwMDFjMTMwMzY0MjViYzA1NDI4ZDBkM2MwYWM5ODUyNjljNGI0MDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjViM2VlZWRkMThkNDI2MzgzZDhiMWQ1NDgwZDNjNzM3MzdhMWUxYjQyMjk1ZDZjMDZiZjM1OWY0NTlkMTg5OTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUwMDA0ZjkyOTk5MTk4NTQ1M2VlZjc2NzU4Zjg5NjFmYWM2NTM4Njk1ZTE5YjE3OWI4MzRlNWY3NjI0ODdhNWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFmYmU3Zjg1NjE5M2FiNjFkYjVhNzRkODQ3Nzc3M2JmZTI2ZDRiZjJlNDg1ZjE5MmNmNjg5NjAwNTcxMWVkNWQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_caff8ac881cd4708b6425c0676946e81",
+      "statement": "Transient model failures may retry a logical evaluation up to four total HTTP attempts within a shared evaluation budget.",
+      "evidence": [
+        {
+          "resource": "repo://src/api.rs#L14-L15",
+          "version": "repo-lines-v1:sha256:c3c46b99f427da30ceac2bcaf950285234c90e9d61744f986a9335ab0e5fa68a:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRlM2M3YjcwMTMxYTEzZjAyMjNlZjdiOTcwOTc2MzhjMDJiOWQwNDMwZWU5YzlhZTVlZDk4YTc4ODBlNGQ1OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzg5YWZkMjU1MjA0NDY2OTM3NGRmOWRlZjkyODAwNzZjNzNlNGQ0MjU0YWQ0N2QxZTE4ZThmN2JjZmMxYzRjZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDY3OWJlNTY5MTM3YTYwYmRlYTkwMzNjYzg0ZmRkM2E1YzgzZmZjYzgxY2E4YmYzNmE2MTc1MjBjZmVjYjJlYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDI1ZDkyNmE5NDBlY2ZkNTg4MWQ3NWU1ZmMyZDI5NjEwZjVkMTc4OTJhYTZmYzRhNmQxZmQyYWYxMDY4M2JmMSJ9"
+        },
+        {
+          "resource": "repo://src/api.rs#L87-L184",
+          "version": "repo-lines-v1:sha256:c4570dca2e4000d1416926fe5e83aee2ba2f733bd3cf77d1d98e63a953e94115:eyJzZWxlY3RlZExpbmVDb3VudCI6OTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFkYjcyODM3Nzg5NmZiMzU2MTZiODJiOTVjNDVkNzQwYTljMmVmODZjMjA5NzY1NmRkZjA4MGI0NzBiODEyMjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViOWEwOGJjMjlmNmViZWJlOWE1ZjAxOTAzZDk4NDVkYmNiNTg0MmE0NTVmMDdkNWY0MDAyZGFjMzJhNWM2MDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNjYzBkMGU5MjM1ZGE3NzVkMDM0MWUxMTBmNDc5NTQxNTJhMDQzYTAxYTA4OWYxMzA4YjRjOTEyYjY4NTU1YTYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_90288ee4eac74c0f92824c7f8c895916",
+      "statement": "Stdin coordinates refer to the received stream, not the producer's full original file; tail-f results need not have full-file line numbers and transformed JSONL names and coordinates belong to the prepared input.",
+      "evidence": [
+        {
+          "resource": "repo://docs/logs.md#L167-L182",
+          "version": "repo-lines-v1:sha256:ef6837f9c489c9989e4fda4ab23fa11a268c6fcf1544ef3a8e6f862d01750d7f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYzYzJhNThhNWE2ZDc2ZjIxMjBmMzg3NGYzODg5ZDY0MGY5MDE1ODczNDgzYWU3ZWFiNjNlMjNmZWI4OTg1ZWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVjNGZhOWY3ZDg1NGJlMmYyM2M5OGU4NmE5ZWQxYTM5MWY1ZDA0ZDAxOGFmZmY5YjhhYWZmOGEyYWM3OTkyMjIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYzMmZhNGFmM2M5MmY5NWU2MjE4OTNiZDQwNzI2OTY5NTYzZTJjNmM5NmFiNWNhNjZhZjcxMWFjMzI4NjQ0YmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://docs/logs.md#L59-L63",
+          "version": "repo-lines-v1:sha256:cc288f4e35b569f883c039b69c2fd51fdb2ff75c85c73e5538f5f496323ceb26:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODkwMzhkMmYwZTBjZjdiODg1NWM0YjFjNGNiZDYyY2YxODJhZWFmYzg5ZTZiNTVhZWRmMmYzYTQyODllYmVhMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTYwOTIyYWIwZWZiNzUwODM3MzBiNmJlYTZhNzcxOWY5MjRkOGY1Nzg1ZWZjYjA0MGZlMTk1YzIxNGRlYTVmZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWNhYWRiZmRjMTEwYWEwM2JlYWIyNzQzMTAyNTk5NTFiODk5NzgxNWFlZTUxYjkwM2RkNzc3YzQyNmVjNTlkZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTFlMzM3Zjk4OTlmNTBhNGI1MmNjOTIxNWVmMzJhZDUxNGIzZTY3ZmJmZDVkOWE0NzFhYjIxZDA5NmIyZGY2MiJ9"
+        },
+        {
+          "resource": "repo://src/search.rs#L343-L371",
+          "version": "repo-lines-v1:sha256:747f5f9ef48a3438867dd28cfa23e83fd0949cff1cb99d3ed42510393897263b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZhMjgyZTU4Zjg2MTU0ZGVkZGVlOTk0ZDliNGIxNzBhYzYwYjY4ZTdmNDliOTMwNzEwM2Y2YWQ0ZDQzOGE0ODIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQwOTNkY2UwMmZhM2U1YzBiOGMxYzg2YWM2N2U4NzYzZTNhMjQ5YWFhZDAxZjlhOGVkZTJkNjcyNzE1MGJkNzgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcyZjcyM2RkMzdjYjk2OGNmMDczYjRlMzRkYzJjMmFlN2VlNTE0MzBmYWJlYjIwZTBkNmYzM2U4NjNkYTQyYjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRiYzlkMDlhY2Y1YTZjNWNkYTViODFhY2Y4ZTM4ZThlNmNlNDIyNDM0MmM4MDY3ZjcyY2YyYWViOWJmNWIxODcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b276258db59e4e6aa088c4c3ff928b7b",
+      "statement": "agrind is an external record-preparation boundary: messages must become string text, relevant level metadata must be included in text, and adjacent prepared records are still grouped by jev-grep.",
+      "evidence": [
+        {
+          "resource": "repo://docs/logs.md#L113-L145",
+          "version": "repo-lines-v1:sha256:a5ad6d3e34aa8536c097e98a0d2c81b496bfdd6997d013a85e70af4726735e05:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5NWFhOTVjZDM2ZmQ5YzA5YjE5NWFmYTBiZmE0MmQ2NmRmMmQyMmVlOWU3MDQyM2Y5MDM4ZjUzZTIyYmFkZjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3YzA2YzU2MWQ1YzMyNzM0MzY4NTI2OGE0NmIzMzkxZjM5OThlZWU4OTBkMmJlNTFmMGQyMWNjNGE1M2FlNmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdjZmQwOTZiM2FkYzdhMDQ5OTA1ODNhMGU3NWZlMzU4ZWE2N2EyNjY0YjY0OWJiZmVjNTg3N2Q4NGQ1MTMwOTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBmNzcyMDJhMmY3ZDFjY2QzNGI2NTgxYWZiNTQ0YWZmZjlhYjQxZTkwODNmNzdkYzdhMDQ3N2U0NjZiNGI4OTAifQ"
+        },
+        {
+          "resource": "repo://docs/logs.md#L161-L165",
+          "version": "repo-lines-v1:sha256:17c07f76b5ca4c0bb9ab2228f90ab0163616b23579b23ac8d1fda3c743667be9:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWQwMmUyM2Q5ZmFkNTE0Yzk3MjE5YjNiMTJmNDA0NGNiNmYzMDc1OGEyMGJlZDAyZTc3OWI3NDVkZTk4YjEzYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTM4MzExYzFjNTUyNThmNWRjZTcyNjQ5ZWE4MzFjNDdjYjk0MWU4MWFkNjkzNGU4YTA0NTc2N2NjNWM0OTQxMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDEwMmZiNTYxNWRkZWQxY2IyNWRiODNkNDJlYmM0MDJlNTk4NWVkNGM3YTNhZTc3Nzc0MmU0OGNkMWExYTgzZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTFmYjMxM2U5MzNlMjdhZjExYzNjZDdmMzYxNDY4ZDMzNzMwZmQzZTNmMzhiODcwNjkzYzljZDA1NDg4OWNiNCJ9"
+        },
+        {
+          "resource": "repo://src/input.rs#L230-L233",
+          "version": "repo-lines-v1:sha256:decc58e0c3e6515c6795be29603f0898b9e4aee5fa0b3d3882f52adb565bb78f:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTk2MDIxYmM0ODA5OTdiNTFmZWI4OWRiMDhhOGIzNzZhYTg2MGUxZTY5YWM0YzljZDU5NmQwNzdiODkzMzRkNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTllNzYzNTVjZjExOTk0ODBjM2Y5OTgzNmIxNDg2Yzg0MWQ4OTFmYWFkOTA0YzYwOGUwOTMwMjJkMzc1N2FlZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWRlZWVkNGY0NTA2MzIxYmU0MmUwNzcxYWY3ZjE0MjlhYWI1NTc0MTM1YTE5NWU2MDUwNTI5ZWMxNGFkZGY0OSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_ff6bc398dd65423a8b7ced09fe3993d0",
+      "statement": "agrind parse wrapping with noconvert preserves numeric-looking strings but strips surrounding whitespace; agrind json can drop invalid JSON and parse without nodrop can drop unmatched lines, losses or transformations the consumer cannot detect.",
+      "evidence": [
+        {
+          "resource": "repo://docs/logs.md#L147-L165",
+          "version": "repo-lines-v1:sha256:f9fe678e0aea84fe5eac89f8cd01dcca68f12f4ecd718aed910a2c8391e7ce0b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNlZTEyZmE1NGM0YWM3ZGQwYTZiMDQ3ODNhNzAyOGZmZjQwMjlmZDNjNzRmM2QzMTBkM2RmMDU3M2VhMzFhMjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkzODMxMWMxYzU1MjU4ZjVkY2U3MjY0OWVhODMxYzQ3Y2I5NDFlODFhZDY5MzRlOGEwNDU3NjdjYzVjNDk0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ1NmUxMmM5ZTA1YWRmNzkzNTE3ODAzOTA0YWQzYmI3MDE2N2QzYTBmMmMxOGNjMzg4NzYwZmE0Yjk2ODE1NDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkxZmIzMTNlOTMzZTI3YWYxMWMzY2Q3ZjM2MTQ2OGQzMzczMGZkM2UzZjM4Yjg3MDY5M2M5Y2QwNTQ4ODljYjQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_255d7383c95d46f284936d48852ce7ba",
+      "statement": "The consumer exits 0 for selections, 1 for none, 2 for errors and treats broken stdout pipes as clean exit 0; shell pipefail can additionally expose producer errors and early consumer stopping can cause producer SIGPIPE, so pipeline status differs from consumer status.",
+      "evidence": [
+        {
+          "resource": "repo://docs/logs.md#L40-L41",
+          "version": "repo-lines-v1:sha256:8c9bcf0deeebc2a369cda3295b4816825c1f7047cab515cfcd9b39bb78375f96:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOGMyMTZmMTk4OGRjYzQwNzRmZGU0Y2I0MDNmMTg2MDUxZDU3ZWFkYzVlNGExYTg1ODBjYzI3ZjE3OGJmNjUxYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTE0ZDRiZDRlNzUzMjFjNjc3YmE2MDg2ZGRjZjI0NWQyZDQ2OWEzMTg5YWZhNDlkMTlmNjFlYTBkNWZiOTNiYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTM2MGVjYmU0M2Y5ZmE1OTk3NTM1OGViOTIyNjhmNWE1ZDNlZmExZDFkZWIxOTk5MGZhYjZhY2VkODdjYjk5NyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmMwMzk1OGQzY2Q4MjY0MTZmNmU0YWVmY2QyNDYxMGRhNmQ5Y2I5NTYxMWRlYmRiYTRhMjQ0ZWRkMTBkMTQ5YiJ9"
+        },
+        {
+          "resource": "repo://src/main.rs#L186-L204",
+          "version": "repo-lines-v1:sha256:32a35070a881c02d92398a1cd963bd79cb863d411e2a84ce3dc702ae1ccc257c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAwYjllZWU5MWJjMGIxYTc3YjVmMjI0ZmQ2OTQ1ZjNkZWMyMzRlNTU5NmI5NDc1YzkwYzVhZWM5ZTZhZTIwYjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY3NzNiNmRhOTFkZThjMzAyODNjZWRjMDVkYzhhN2ZhYjAyMDQ1ZGFkNDdiNGU0N2UwZmIwYTA1NjQ0ZDAzNmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://src/search.rs#L145-L157",
+          "version": "repo-lines-v1:sha256:a8e90f9be042068b4243b2f31ea0e32ed1e6e58ec03caead37c1c6fca2cf8c78:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5ZjI0M2UxOTBmZDNkYWVlMmI2NzRlYWQ2OWMxZGQ4MWFlZjI0NjI1YzEyNDUxZjNlYTc4YzhhNjE2YWM2NzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBjNjQ3OWNjMjMwNDQwZmQ0MWU4MjI0MjE4Njc5Njk4NTU5ZDI4OTNiZDY3YjQzODBhZmFiODExYjM4YTU1YWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA0YmNiMTY5MWUyNzY2ZjdhMDNmNDQ0NTdhMjRmODcyNDk5MTRlMWQ1NGFlZGI3NzEwYTYwYzAwNDE4OTA4NDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg3YzBhMDEwYjM1Y2I5NGYzYzM3NTA5NGVmMjBmYjg2MzA0YTNkNzFmZThmZmNhZDIwYmQ3NmVhNjZmNTY1MmQifQ"
+        },
+        {
+          "resource": "repo://tests/test_cli.py#L362-L381",
+          "version": "repo-lines-v1:sha256:a64b96ca0fbc4b8f6317281bbf0930d2cafa72e61f6919ff50e25fed8b155e66:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA1OWZkOTdiZTNkZjc3MDc0ZjUwYmFiZTdkMTJhZTRhODdkNjA0OGNmYjNmNTNjYTdhZmZiNTExNDViZThhZjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEwN2FkYzMzMTgxYzJkNTA0NzVmMzg0MWM4NDI2YWY1ODg3ODc3M2E1MjYwNjdiNWMwMmMzYTczZjYyNGFkYWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYzOTdhYWNmMWIyNmJmYTQ2ODkzMjRlMTVjNjM3MWUwMTA2ODI3ODE0NzgzZTQ0M2YzOGVkMGMxZDU0NzI5MjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQyMTNlNzk0NTViNzRlOGU1MjczYjBjOTkwZThiZWQzNDE4YzQ2Mzc3NzhhOTIxY2EzNjAzOTVjZWMwMzIxNzcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4d55ead537b944cba93113d653e9d5b4",
+      "statement": "ast-grep uses independently evaluated code candidates instead of the pending log-grouping lifecycle.",
+      "evidence": [
+        {
+          "resource": "repo://src/search.rs#L85-L131",
+          "version": "repo-lines-v1:sha256:5afdbbef4cac46c1059b7cc5c31d60267da1ea1b28be52230b05b41ed1599b2f:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5ZGYwY2Q5ZmZjNGUwM2FiZjQxNjkzOTg3MDc3MDEyYjRhYzhkMTkzYjA1MzhkMjlkMjU1ZjJhMjAwMmYwOTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2YjA0NDkxNDY5NzIyZTgzNjNhOTRlNDA0NDUzOGUwMTNhMmEyMTdlMzZiMWU1NjhiYTYwYWNiN2I0YzhmMmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNjMGRkNGEzYmVlYmRkODhmODdmNWJkOGJkZWRjYzQ5OTYwOGMxMjkxYjRiNmFlZWY3YzU5MWJhZTI2Yjk5NTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVjMzdhYjZjZjY3OTViNDhhNzE5OTgwNGY1NmRlODk2ZTRiNzAxMjhlNTljYzRhMmYzODc5MmI4ZTU0YzhlYWEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_537f3406dc424f45b83f0801d73c2e2d",
+      "statement": "Offline acceptance tests use a controlled local HTTP server to verify four-question requests, saved-score rejection, equality context joins, split flags, completed-selection stopping, retry commit behavior and pre-EOF streaming; reader unit tests verify byte preservation and input validation.",
+      "evidence": [
+        {
+          "resource": "repo://src/input.rs#L257-L333",
+          "version": "repo-lines-v1:sha256:7d591f45dfe0151c3a222b3493d5f93134ac8f97f1700123449e6d408313596f:eyJzZWxlY3RlZExpbmVDb3VudCI6NzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkyYjVlZGY1OTQ5Y2ZlYTY3ODIyY2Y2OTExMzIzNjNkNjhkNmYxZTE2OWY1ZTBkNGY3YzE0ZTVmYTFlNmQ0ZTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc5YWNlMWY3OWY0YzcxNjA0MDg4ODBmZGUxYTUzOWM5ODU5MjczNzUwNTEzMWE3MGQwOGE2Mzc1MzA1ZjgxNmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://tests/test_cli.py#L174-L188",
+          "version": "repo-lines-v1:sha256:ae8d0139210711eeb13eb413f889ca1d02f73c1319d74331c6cf11bb9ab4cce9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlZjUzYzJjODFlZTgxZjIyMjQ5OWRmYjE1MjNhZWI0MDZmNmE0NjFhYzM1NTdlZmY2MTZmOTY1NDE1NmU3MjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxN2I5NDNiZWIxZjVlZTYzN2M3YTRmZTg0ZTVkYTFkNjg2MTAzNjEyNTRiOGQ0OTk1N2U0ZjVhMGI2MzVkODQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBjMDE0YzBlOGJmMjc3ZmRkNGE2YTIzYjVhMTdmZWY2NDhlOTAzYzJlNDRiZDY0NDcwMTI2ODNiNTMwNmEwZDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNlOWQxOTBiY2UwYzFkYTc1ZjY2MTBhM2JhNzM5NWI4NTE2Mzg0MTg1ODBiYjg0MjZjYTNjMGI0Nzc4YmQzYjIifQ"
+        },
+        {
+          "resource": "repo://tests/test_cli.py#L23-L73",
+          "version": "repo-lines-v1:sha256:7e13a634667e6958ada1525f94b429dd7dfade463088c124e60b0d657c2531b9:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAzNDU5MjRiYTA1MTc4ODY3NjdlZGIzODk1ZjZkYWRjMjE1ODFiNzg5N2E0ZmU2MzA0ZTk0YTY4OTk5Y2M5Y2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU0NThmMzhlNDE5OTY1MDhiZWU1MTMyM2JmNTY3OWFjNWNiMjdlYzE4YjMyMjkxZWY5ZDdmY2I3YjZlYjQwNmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFlYzIzZTJjMTE3YTU5Y2M2NzEwNzBiZDcwY2E0NzY1OWJkNzE4YTA1NTJkNDJlNWQ1ODlmOWQwNTBiMmE5ZGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ0ZTI5ZGFiYjM4ZjY1ZDk5NTRiYzQ1NWU4NDEzYzQ4YmM1OWFjM2NlNjM1MTM2NTNhMGNkMzlkY2Y5MzY1YzAifQ"
+        },
+        {
+          "resource": "repo://tests/test_cli.py#L232-L336",
+          "version": "repo-lines-v1:sha256:9b2210376dc0ce81526f8ef90d2efab7f71a1401d2e4f9c05080ee54e654221b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA1LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI1NzM5YTM4NDJkZDRiZTEwZTY4YTdlOGVlMzIzYzY2ZDEyMmZlYjY0ZDk2MzU5MmE5YWMyMDYxZGIyMmU0MGJkIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJkOTMyNjljMmViMDQ0OGExNGVhNDZmZTAwNzY4NWYzYzM2NGE2MzFmOWM5YjZiMTE1ODhkZjc2N2ZjMDljMGZlIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJjZGRkYjZiNDY5NzllMWJiY2Q5ZjQ2NTkyYTlkMmNjY2E2NmNiNTAzNTdkMTYwNzhjZTA3MjJmOGNiNzY2YWUxIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJhMzE1ODY0MGNlZmU4OGJmNjhiNWVlMTkxNGM4NzEyYmU4ZTg5MTg5MGQ1MThmOTQ5ZDY4N2RjNDM1NjBhNTI0In0"
+        },
+        {
+          "resource": "repo://tests/test_cli.py#L525-L543",
+          "version": "repo-lines-v1:sha256:0e9adbbbb185734ff8c6a347c7d8786dc2697b0e63eff344e3ebce88082ee302:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQwYTIxNjRkODRkMGFhZDhkNWZjNmQ1NGMwMDFjMTMwMzY0MjViYzA1NDI4ZDBkM2MwYWM5ODUyNjljNGI0MDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg0Mzk5ZThmMThkZmI1YmIwNWRhZjlmODNiN2U2ZTAzODE4MjExNDUzMTEyMWIxN2U1YWM0MGE3ZmE1NGY1Y2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUwMDA0ZjkyOTk5MTk4NTQ1M2VlZjc2NzU4Zjg5NjFmYWM2NTM4Njk1ZTE5YjE3OWI4MzRlNWY3NjI0ODdhNWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIwMjY5NzZiOTI4ZmJjYjU3NjJhZDBiZWYyYzM4MTViNDMyNDRiZDlkMDYwZGRkMjhiM2U5NWNjZmIyNTQxYzEifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.1",
+    "at": "2026-09-30T19:07:23.717Z"
+  }
+}
