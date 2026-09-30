@@ -130,7 +130,7 @@ test('semantic-release plans and tags the same Cargo version against a local rem
     repositoryUrl: `file://${remote}`,
     tagFormat: 'v${version}',
     // Resolve from the real tooling installation, not the temporary repository.
-    plugins: [[fileURLToPath(import.meta.resolve('@semantic-release/commit-analyzer')), analysisPlugins[0][1]]],
+    plugins: analysisPlugins.map(([name, config]) => [fileURLToPath(import.meta.resolve(name)), config]),
   };
   const env = {
     PATH: process.env.PATH,
@@ -149,6 +149,8 @@ test('semantic-release plans and tags the same Cargo version against a local rem
   }
   const planned = runRelease({ ...options, dryRun: true });
   assert.equal(planned.nextRelease.version, '0.1.1');
+  assert.match(planned.nextRelease.notes, /Bug Fixes/);
+  assert.match(planned.nextRelease.notes, /handle timeout/);
   assert.equal(git('-C', repo, 'tag', '--list', 'v0.1.1'), '');
 
   mkdirSync(join(repo, 'dist'));
