@@ -1,16 +1,16 @@
 # jev-grep
 
-Семантический поиск **фрагментов логов и кода** через HTTP API
-[Jev в OpenCode Zen](https://opencode.ai/docs/zen/#jev). Вместо регулярного выражения задайте
-критерий на естественном языке. `jev-grep` возвращает подходящий текст с источником,
-диапазоном строк и, в JSONL, байтовыми координатами.
+**English** | [Русский](README.ru.md)
 
-Два способа обработки:
+Semantic search for **log and code fragments** using
+[Jev on OpenCode Zen](https://opencode.ai/docs/zen/#jev). Describe what you want
+in natural language instead of writing a regular expression. `jev-grep` returns
+matching text with its source, line range, and, in JSONL output, byte offsets.
 
-- **Логи:** `jev-grep` читает текст или JSONL, с помощью модели объединяет соседние
-  записи в смысловые фрагменты и оценивает результат целиком.
-- **Код:** `ast-grep` выделяет функции, методы или другие AST-узлы; `jev-grep`
-  независимо оценивает каждый готовый кандидат, сохраняя его координаты.
+- **Logs:** read text or JSONL, group adjacent records into meaningful fragments,
+  and evaluate each fragment as a whole.
+- **Code:** use `ast-grep` to extract functions, methods, or other AST nodes;
+  evaluate each candidate independently while preserving its location.
 
 ```text
 text logs -------------------------------+
@@ -18,537 +18,42 @@ logs --> agrind --> JSONL {text: ...} ----+--> jev-grep --> human / JSONL
 code --> ast-grep --> JSONL matches -----+
 ```
 
-`jev-grep` — локальный Rust CLI, а inference выполняет настроенный сервер Jev on OpenCode Zen.
-Внешние CLI запускаются явно в shell-конвейере. Индекс репозитория не требуется.
+The Rust CLI runs locally; model inference runs at the configured API endpoint.
+External tools are invoked explicitly in shell pipelines. No repository index
+is required.
 
-Разделы: [установка](#установка-и-подключение-модели),
-[текстовые логи](#самостоятельное-использование-текстовые-логи),
-[agrind и JSONL](#подготовленные-логи-jsonl-и-agrind),
-[ast-grep и код](#поиск-кода-ast-grep--jev-grep),
-[вывод](#вывод-human-и-jsonl), [лимиты](#пороги-лимиты-и-краткие-режимы).
+## Quick start
 
-## Установка и подключение модели
-
-Из корня этого репозитория:
+Install from the repository root (Rust with edition 2024 support required):
 
 ```sh
 cargo install --path . --locked
 jev-grep --help
 ```
 
-Нужен Rust с поддержкой edition 2024; сборка проверена на Rust 1.98.1.
-Зависимости закреплены в `Cargo.lock`. Python/PyTorch не нужны самому клиенту.
-
-Для подключения см. [руководство по Jev и OpenCode Zen](docs/deployment.md). По умолчанию
-`jev-grep` обращается к `https://opencode.ai/zen/v1/systemone` с моделью `jev-1.13`.
-Автоматического переключения endpoint или модели нет.
+Follow the [credential setup guide](docs/deployment.md) to store your Zen API key
+with fnox, then run from the repository root:
 
 ```sh
-export JEV_GREP_API_URL=https://opencode.ai/zen/v1/systemone
-export JEV_GREP_MODEL=jev-1.13
-
-# Ключ задавайте через fnox; см. руководство по развёртыванию.
-jev-grep 'Certificate validation failure' application.log
+fnox exec -- jev-grep 'Certificate validation failure' application.log
+fnox exec -- jev-grep --format json 'Unresolved network failure' build.log
 ```
 
-Endpoint и модель также можно передать флагами `--api-url` и `--model`.
-Язык критерия и входа должен поддерживаться выбранной моделью; переопределения
-поддерживаются через `JEV_GREP_API_URL`, `JEV_GREP_MODEL` и `JEV_GREP_API_KEY`.
+Input text is sent to the selected API. Only use data you are authorized to
+disclose. Selection is probabilistic: validate your criterion and thresholds on
+your own examples.
 
-## Быстрый выбор режима
+## Documentation
 
-| Вход | Опция `jev-grep` | Единица поиска | Координаты результата |
-| --- | --- | --- | --- |
-| Обычный текстовый лог | `--input-format text` (по умолчанию) | Сгруппированные моделью соседние строки | В прочитанном файле/stdin |
-| JSONL с полем `text` | `--input-format log-jsonl` | Сгруппированные моделью соседние записи | В физическом JSONL-файле/stdin |
-| Совпадения `ast-grep scan --json=stream` | `--input-format ast-grep` | Один готовый AST-кандидат | В исходном коде по данным ast-grep |
+Full documentation: [English](docs/README.md) · [Русский](docs/ru/README.md).
 
-Формат вывода выбирается независимо: `--format human` (по умолчанию) или
-`--format json` (JSONL). `--json` — сокращение для `--format json`.
-
-## Самостоятельное использование: текстовые логи
-
-### Файл или каталог
-
-```sh
-# Один файл, вывод для человека.
-jev-grep 'Certificate validation or trust chain failure' application.log
-
-# Рекурсивно искать только в .log-файлах, повысить порог отбора.
-jev-grep -g '*.log' --threshold 0.8 'Database connection failure' ./logs
-
-# Машинный вывод.
-jev-grep --format json 'Unresolved network failure' build.log
-
-# До трёх выбранных фрагментов на каждый входной файл.
-jev-grep -m 3 'Dependency resolution failure' first.log second.log
-```
-
-Без путей `jev-grep` читает перенаправленный stdin, а при запуске из терминала обходит
-текущий каталог. `-` явно обозначает stdin. При указанных путях stdin автоматически
-не добавляется. Записи из разных входных файлов не объединяются.
-
-Каталоги обходятся с учётом `.ignore` и применимых Git ignore-правил. Скрытые файлы
-по умолчанию исключены, симлинки внутри каталогов не обходятся. Используйте
-`--hidden` и `--no-ignore`, если нужно расширить область поиска. Включающий `-g`
-не отменяет hidden/ignore-фильтры. Для каталога с бинарными файлами задайте glob:
-некорректный UTF-8 и NUL приводят к ошибке.
-
-### Вывод команды или живой поток
-
-Примеры конвейеров ниже рассчитаны на Bash. Включите `pipefail`, чтобы ошибка
-производителя данных также влияла на код завершения конвейера:
-
-```bash
-set -o pipefail
-
-./gradlew --console=plain build 2>&1 |
-  jev-grep 'Build failure caused by dependencies or certificate validation'
-
-npm run build 2>&1 |
-  jev-grep --format json 'Compilation or dependency error'
-
-buildah bud . 2>&1 |
-  jev-grep 'Image build failed because a command or download failed'
-
-tail -f application.log |
-  jev-grep 'Connection failure that was not resolved by a retry'
-```
-
-`2>&1` направляет stdout и stderr команды в один входной поток. У stdin координаты
-начинаются с начала **полученного потока**. Например, `tail -f` не передаёт всю
-историю файла: номера в результате не являются номерами строк полного
-`application.log`. Чтобы получить координаты в сохранённом логе, передавайте
-путь непосредственно: `jev-grep 'Build failure' build.log`.
-
-### Как собирается фрагмент
-
-Первая запись получает оценку `match`. Для текущего фрагмента и следующей записи
-`jev-grep` отправляет **один HTTP-запрос с четырьмя вопросами**:
-
-- `same_event` — продолжает ли запись то же конкретное событие;
-- `useful_context` — существенно ли она объясняет, уточняет, разрешает или
-  опровергает текущий фрагмент относительно критерия;
-- `match_next` — подходит ли новая запись сама по себе;
-- `match_extended` — подходит ли фрагмент вместе с новой записью.
-
-Запись присоединяется, если `same_event` **или** `useful_context` достигает
-`--join-threshold` (по умолчанию `0.5`). Общей темы самой по себе недостаточно.
-При присоединении оценка заменяется на `match_extended`; при отказе текущий
-фрагмент сохраняет прежнюю оценку, а новая запись начинает следующий.
-
-Фрагмент завершается при смысловой границе, EOF входного источника или разбиении
-по лимиту размера. После завершения он выводится, если его оценка не ниже
-`--threshold` (по умолчанию `0.5`). Поэтому сообщение об успешном retry может
-изменить отбор ранее найденной ошибки.
-
-**Пауза в живом потоке не завершает фрагмент.** Даже подходящий текст ждёт следующую
-границу или EOF; уже завершённые совпадения выводятся сразу со сбросом буфера stdout.
-`--timeout` (по умолчанию 30 секунд) ограничивает одну полную модельную оценку,
-включая отправку, чтение ответа, повторы и паузы. Временные HTTP/сетевые сбои
-повторяются максимум четыре раза всего; паузы растут (200/400/800 мс) с jitter
-и учитывают `Retry-After`. Ошибки авторизации, TLS и некорректные/слишком большие
-ответы не повторяются. Повтор после сетевого сбоя может тарифицироваться повторно;
-exactly-once inference не гарантируется.
-
-## Подготовленные логи: JSONL и `agrind`
-
-### Входной контракт `log-jsonl`
-
-Каждая физическая строка должна быть JSON-объектом со строковым полем `text`:
-
-```jsonl
-{"text":"Connection failed: PKIX path building failed"}
-{"text":"Retrying connection"}
-{"text":"Connection established"}
-```
-
-```sh
-jev-grep --input-format log-jsonl --format json \
-  'Connection failure that was not resolved' prepared.jsonl
-```
-
-Поле `text` может содержать экранированные `\n`, то есть одну уже многострочную
-запись. Соседние JSONL-записи всё равно проходят модельную проверку объединения.
-
-**Используется только `text`.** Дополнительные `level`, `task`, `source`, `range`
-и другие поля игнорируются, не передаются модели и не заменяют координаты.
-Если эти сведения нужны для оценки, включите их в строковое поле `text`.
-JSON-массив, пустая физическая строка, отсутствие `text` или его нестроковый тип
-считаются ошибкой входа.
-
-### `agrind`: переименовать сообщение в `text`
-
-[Angle Grinder](https://github.com/rcoh/angle-grinder) устанавливается отдельно;
-имя исполняемого файла — `agrind`. Примеры проверены с версией 0.19.6.
-
-Для исходных JSONL-записей вида
-`{"level":"error","message":"PKIX failure"}`:
-
-```bash
-set -o pipefail
-
-agrind --output json '* | json | message as text | fields text' < app.jsonl |
-  jev-grep --input-format log-jsonl --format json 'Certificate validation failure'
-```
-
-Здесь `message` должно быть строкой в каждой записи. Если для критерия важен
-уровень сообщения и оба поля строковые, включите его в оцениваемый текст:
-
-```bash
-set -o pipefail
-
-agrind --output json \
-  '* | json | concat(level, ": ", message) as text | fields text' < app.jsonl |
-  jev-grep --input-format log-jsonl 'Unresolved application error'
-```
-
-Для обычного текста возможна упаковка каждой строки:
-
-```bash
-set -o pipefail
-
-agrind --output json '* | parse "*" as text noconvert' < build.log |
-  jev-grep --input-format log-jsonl 'Dependency resolution failure'
-```
-
-`noconvert` оставляет числоподобные строки строками, как требует `jev-grep`.
-При этом `agrind parse` удаляет крайние пробелы, включая отступы stack trace.
-Чтобы сохранить исходный лог точно, используйте `jev-grep ... build.log` без преобразования.
-
-Роль `agrind` — подготовка записей; **сборку многострочного фрагмента выполняет
-модель внутри `jev-grep`**. Не добавляйте предварительный фильтр только по `error`, если
-нужны продолжения stack trace или сообщения о восстановлении. Оператор `json`
-в agrind отбрасывает невалидные JSON-строки; оператор `parse` без `nodrop` отбрасывает
-несовпавшие строки. Такие потери upstream `jev-grep` обнаружить не сможет.
-
-### Где искать совпадение после преобразования
-
-Для `log-jsonl` диапазон относится к **фактически прочитанным JSONL-записям**,
-а не к первоначальному логу. Текст результата — декодированные поля `text`,
-соединённые одним дополнительным LF между записями (`text_basis: decoded-records`).
-
-Если нужен файл, по которому можно открыть найденный диапазон, сохраните
-подготовленный поток и ищите в нём:
-
-```bash
-agrind --output json '* | json | message as text | fields text' < app.jsonl > prepared.jsonl
-jev-grep --input-format log-jsonl 'Certificate validation failure' prepared.jsonl
-```
-
-В результате будет путь `prepared.jsonl`. Путь `app.jsonl` и его исходные координаты
-через произвольные поля JSON не переносятся.
-
-## Поиск кода: `ast-grep` + `jev-grep`
-
-[ast-grep](https://ast-grep.github.io/) определяет структурные границы, `jev-grep`
-проверяет смысл. Используйте **`scan --json=stream`**: один объект на совпадение.
-Примеры проверены с ast-grep 0.45.3.
-
-### Найти подходящие функции Rust
-
-Команда работает из корня Rust-проекта с каталогом `src`:
-
-```bash
-set -o pipefail
-
-ast-grep scan --json=stream --inline-rules '
-id: rust-functions
-language: Rust
-severity: hint
-rule:
-  kind: function_item
-' ./src |
-  jev-grep --input-format ast-grep --max-line-bytes 262144 \
-    'Function that validates input or rejects malformed data'
-```
-
-Для машинного вывода добавьте `--format json` к `jev-grep`.
-`severity: hint` позволяет использовать правило для извлечения кандидатов;
-error-level правило ast-grep может давать ненулевой exit code из-за самих совпадений.
-
-Здесь лимит физической JSONL-строки повышен отдельно: ast-grep может повторять текст
-в `text`, `lines`, `labels`, поэтому сериализованный объект больше тела функции.
-Лимит самого тела `--max-fragment-bytes` остаётся по умолчанию 16384 байта.
-
-### Проверить AST-кандидаты изменённых Rust-файлов
-
-Из корня Git-репозитория следующий Bash-пример сравнивает tracked index и
-рабочее дерево с `HEAD`, а затем сканирует текущую (рабочую) версию каждого
-изменённого существующего `.rs` файла. Он намеренно выбирает **все** функции
-этих файлов, а не только функции, пересекающие изменённые hunks. Удалённая
-сторона diff не анализируется; такой поиск не обнаруживает удалённое поведение.
-Untracked файлы не входят в список.
-
-```bash
-set -e
-set -o pipefail
-
-tmp=$(mktemp)
-trap 'rm -f "$tmp"' EXIT
-
-# Проверить Git отдельно: process substitution скрыла бы его exit status.
-if ! git diff --name-only -z --diff-filter=ACMRTUXB HEAD -- >"$tmp"; then
-  echo 'git diff failed' >&2
-  exit 2
-fi
-
-files=()
-while IFS= read -r -d '' path; do
-  # Ограничить источники Rust; проверка существования исключает удаления.
-  [[ $path == *.rs && -f $path ]] && files+=("./$path")
-done < "$tmp"
-
-if ((${#files[@]})); then
-  ast-grep scan --json=stream --inline-rules '
-id: rust-functions
-language: Rust
-severity: hint
-rule:
-  kind: function_item
-' -- "${files[@]}" |
-    jev-grep --input-format ast-grep --max-line-bytes 262144 \
-      'Function that handles an error or validates input'
-fi
-```
-
-NUL-разделение Git и Bash-массив сохраняют пути с пробелами и другими
-специальными символами. Ветка пустого списка важна: запуск ast-grep без путей
-может сканировать каталог по умолчанию. Ошибка Git останавливает пример до
-сканирования и API-запроса. `jev-grep` получает только кандидатов ast-grep и
-не читает историю Git и не разбирает diff.
-
-### Python-код через stdin
-
-```bash
-set -o pipefail
-
-cat service.py |
-  ast-grep scan --stdin --json=stream --inline-rules '
-id: python-functions
-language: Python
-severity: hint
-rule:
-  kind: function_definition
-' |
-  jev-grep --input-format ast-grep --max-line-bytes 262144 --format json \
-    'Function that retries a failed network request'
-```
-
-В этой цепочке источником кода будет `stdin`, а не `service.py`: ast-grep получает
-код без пути. Чтобы сохранить имя файла, передайте `service.py` непосредственно
-в ast-grep вместо `cat ... | ... --stdin`.
-
-Сам ast-grep читает код из stdin до EOF. Полученные готовые JSONL-кандидаты `jev-grep`
-оценивает и выводит по одному, без ожидания EOF всего потока кандидатов.
-
-### Собственные правила и сохранённые кандидаты
-
-Типы AST-узлов зависят от языка. Для своего набора функций, методов или объявлений
-задайте правило ast-grep, например в `rule.yml`, с подходящими `language`, `kind`
-и `severity: hint`:
-
-```bash
-set -o pipefail
-
-ast-grep scan --json=stream --rule rule.yml ./src |
-  jev-grep --input-format ast-grep --max-line-bytes 262144 --format json \
-    'Code that handles authentication failures'
-```
-
-Либо сохраните результат ast-grep и повторяйте семантические запросы:
-
-```sh
-jev-grep --input-format ast-grep --max-line-bytes 262144 \
-  'Code that handles authentication failures' candidates.jsonl
-```
-
-Особенности кодового режима:
-
-- Каждый кандидат получает один вопрос `match`. Соседние совпадения не группируются;
-  `--join-threshold` на этот режим не влияет.
-- Оценивается именно `text`, не контекст из `lines`. Вложенные, пересекающиеся
-  и повторные узлы остаются отдельными кандидатами. Их выбор задаётся upstream-правилом.
-- Принимаются поля `text`, `file`, `range.byteOffset.start/end`,
-  `range.start.line/column`, `range.end.line/column`; `language` необязателен.
-  `jev-grep` проверяет согласованность текста и диапазонов, но не открывает исходный файл
-  заново и не проверяет, изменился ли он после запуска ast-grep.
-- Обычный JSON-массив от `--json`/`--json=compact` и объекты `outline` не подходят.
-- `-g`, `--hidden`, `--no-ignore` у `jev-grep` применяются к входным файлам JSONL,
-  а не к `file` внутри кандидатов. Отбор исходных файлов кода настройте в ast-grep.
-
-## Вывод: human и JSONL
-
-### Human
-
-Источник и диапазон выводятся всегда, даже без `-n` и `-H`:
-
-```text
-build.log:1-2
-PKIX failure
-    at Client.connect(Client.java:42)
-```
-
-Для кода заголовок дополнительно содержит байтовый диапазон, например:
-
-```text
-src/client.rs:1-3 bytes 0-95
-```
-
-Для подготовленных логов заголовок содержит `(JSONL line coordinates)`, чтобы
-не путать номер записи с номером строки внутри декодированного stack trace.
-Разбиение по размеру обозначается `[split-before]` и `[split-after]`.
-
-### JSONL
-
-`--format json` выводит один JSON-объект на выбранный фрагмент. Например, для
-первой строки `PKIX failure\n` в `build.log` объект имеет следующую форму
-(здесь он развёрнут для чтения, вероятность приведена условно):
-
-```json
-{
-  "kind": "log",
-  "source": {"kind": "file", "path": "build.log"},
-  "range": {
-    "start_line": 1,
-    "end_line": 1,
-    "start_byte": 0,
-    "end_byte": 13
-  },
-  "text": "PKIX failure\n",
-  "text_basis": "source",
-  "probability": 0.93,
-  "split_before": false,
-  "split_after": false
-}
-```
-
-- `kind`: `log` или `code`; для кода возможно дополнительное поле `language`.
-- `source`: исходный файл либо `{"kind":"stdin","path":null}`.
-- `range`: строки с **1**, включительно; байты UTF-8 с **0**, диапазон **[start,end)**.
-  У ast-grep строки преобразуются из нулевой нумерации, байтовые границы сохраняются.
-- `text_basis: source`: исходный текст, включая CRLF и отсутствие завершающего LF.
-  Для кода это текст, переданный ast-grep.
-- `text_basis: decoded-records`: соединённые поля `text` из log-jsonl;
-  байтовый диапазон описывает JSONL-записи, а не байты этого декодированного текста.
-- `probability`: сохранённая оценка соответствия критерию, не оценка группировки.
-- `split_before` / `split_after`: принудительные границы по лимиту; для кода всегда `false`.
-
-Оба представления используют одинаковый отбор при одинаковых ответах модели.
-Human-вывод добавляет завершающий LF для удобства чтения, если его нет в тексте;
-поле `text` в JSON сохраняется без такого дополнения.
-
-Для пользователей прежнего построчного режима: старый JSON-контракт
-`path/line_number/text/probability` заменён контрактом фрагмента выше.
-`--json` сохранён как псевдоним, но скрипты чтения прежней схемы нужно обновить.
-
-## Пороги, лимиты и краткие режимы
-
-| Опция | Поведение |
+| Guide | Contents |
 | --- | --- |
-| `--threshold P` | Отбор завершённого фрагмента при оценке ≥ P; по умолчанию `0.5` |
-| `--join-threshold P` | Присоединение логовой записи при связи или полезности ≥ P; по умолчанию `0.5` |
-| `--max-line-bytes N` | Размер физической входной строки, включая перевод строки; по умолчанию `16384` |
-| `--max-fragment-bytes N` | Размер текста фрагмента в байтах UTF-8; по умолчанию `16384` |
-| `--timeout SECONDS` | Общий тайм-аут модельной оценки с повторами; по умолчанию `30` |
-| `-v`, `--invert-match` | Выбрать фрагменты с оценкой ниже порога; группировка не меняется |
-| `-c`, `--count` | Вывести `source:count`, количество выбранных фрагментов, включая ноль |
-| `-l`, `--files-with-matches` | Вывести источники с совпадениями |
-| `-q`, `--quiet` | Без вывода; остановиться после первого завершённого выбранного фрагмента |
-| `-m`, `--max-count N` | Ограничить число выбранных фрагментов на источник |
-
-```sh
-jev-grep -c 'Certificate validation failure' application.log
-jev-grep -l -g '*.log' 'Database connection failure' ./logs
-jev-grep -q 'Build failure' build.log
-jev-grep -v 'Routine successful operation' application.log
-```
-
-Для text/log-jsonl источник — входной файл или stdin. Для ast-grep — upstream-поле
-`file`, даже когда кандидаты одного файла перемежаются с другими или читаются из
-нескольких JSONL-файлов. В кодовом режиме:
-
-- `-l` печатает каждый upstream-путь один раз;
-- `-c` выводит итоги после EOF в порядке первого появления путей; файлы, от которых
-  не пришло ни одного кандидата, неизвестны `jev-grep` и не появляются в счётчиках;
-- после достижения `-m` дальнейшие кандидаты этого пути валидируются, но не
-  отправляются модели; кандидаты других файлов продолжают обрабатываться.
-
-`-c`, `-l`, `-q` взаимно несовместимы и не принимают `--format` (даже `human`)
-или `--json`. `--json` нельзя совмещать с `--format`. Пороги должны быть конечными
-числами в [0,1], размеры, timeout и `-m` — положительными. `-n` и `-H` принимаются
-для совместимости, но местоположение уже обязательно; `--no-filename` — ошибка.
-
-### Что происходит при большом фрагменте
-
-Если следующая запись не помещается в `--max-fragment-bytes`, логовый фрагмент
-разбивается **между записями**, до запроса на объединение. Обе части проходят
-собственный отбор и получают отметки разбиения, даже если одна из частей не выбрана.
-Точное достижение лимита само по себе не завершает фрагмент.
-
-Одна текстовая строка, одно декодированное поле `text` или один AST-кандидат,
-превышающие этот предел, вызывают ошибку: внутри неделимой записи `jev-grep` не режет.
-Превышение `--max-line-bytes` — отдельная ошибка до декодирования JSONL.
-
-**Байтовый лимит клиента не увеличивает токеновый контекст модели.** Увеличивать
-размеры следует с учётом настроек Jev on OpenCode Zen: сервер может обрезать длинный вход, включая
-новую запись при оценке границы. `jev-grep` не передаёт настройку `max_len` в HTTP-запросе.
-
-## Коды завершения и конвейеры
-
-- **0** — есть выбранный фрагмент;
-- **1** — выбранных фрагментов нет;
-- **2** — ошибка входа, опций или API.
-
-stdout содержит результат, stderr — диагностику. Ошибка останавливает обработку;
-уже выданные результаты не отменяются. Незавершённый фрагмент при ошибке не
-выдаётся как успешно завершённый. Закрытие downstream pipe обрабатывается без
-диагностики BrokenPipe.
-
-`jev-grep` не может узнать exit status предыдущей команды по EOF. Используйте
-`set -o pipefail` в Bash: код всего конвейера может отличаться от кода `jev-grep`.
-Например, сама сборка может завершиться ошибкой при успешно найденном фрагменте.
-Ранняя остановка через `-q`/`-m` также может закрыть pipe и вызвать SIGPIPE upstream.
-
-## Производительность и качество
-
-HTTP-запросы выполняются последовательно с переиспользованием соединения; временные
-ошибки повторяются в пределах общего deadline согласно политике retry.
-В обычном успешном проходе логов нужен один HTTP-запрос на входную запись: для первой
-или после принудительного разбиения — `match`, для остальных — четыре вопроса в
-одном запросе. Для кода — один `match` на оцениваемый кандидат. Четыре вопроса не
-означают четыре HTTP-запроса, но увеличивают объём inference.
-
-Быстрый предварительный разбор ast-grep/agrind не заменяет оценку моделью.
-Параллельная и пакетная отправка независимых состояний в клиенте не реализованы.
-
-Reader ограничен физической строкой, текущим фрагментом и HTTP-ответом (64 KiB).
-Дополнительно используются транспортные буферы, состояние обхода файлов и, для
-ast-grep, учёт всех встреченных upstream-путей.
-
-Группировка и отбор вероятностные. Будущая методика оценки описана в
-[backlog](docs/BACKLOG.md); синтетический seed находится в
-[tests/fixtures](tests/fixtures/jev-quality-seed.jsonl), без исполненных результатов
-или оценки качества Jev. Проверяйте критерий, модель Jev и пороги на своих примерах;
-приведённые команды не гарантируют качество конкретной модели.
-
-Оцениваемый текст отправляется указанному API. Для локальной обработки используйте
-локальный сервер. Поддерживаются bearer-аутентификация через `JEV_GREP_API_KEY` и HTTPS
-с проверкой TLS; HTTP redirects и credentials внутри URL не принимаются.
-
-## Проверки для разработчиков
-
-Автоматические релизы из `main` и Conventional Commits: [выпуск релиза](docs/releasing.md).
-
-```sh
-cargo test --locked
-cargo build --locked
-python3 -m unittest discover -s tests -v
-cargo fmt --check
-cargo clippy --locked --all-targets -- -D warnings
-```
-
-Acceptance-тесты используют Python standard library и локальный mock HTTP API.
-Они проверяют группировку при заданных модельных ответах, форматы входа/вывода,
-координаты, лимиты, фильтры и ошибки. Сервер Jev on OpenCode Zen и веса не требуются;
-точность настоящей модели эти тесты не измеряют.
+| [Installation](docs/installation.md) | Requirements, defaults, and configuration |
+| [Deployment](docs/deployment.md) | Zen credentials, fnox, data handling, and integration smoke evidence |
+| [Logs](docs/logs.md) | Files, live streams, JSONL, and Angle Grinder pipelines |
+| [Code search](docs/code-search.md) | ast-grep, changed Git files, and AST input contract |
+| [CLI reference](docs/reference.md) | Output schema, coordinates, options, limits, and exit codes |
+| [Development](docs/development.md) | Offline checks and test scope |
+| [Releases](docs/releasing.md) | Conventional Commits and automatic releases |
+| [Backlog](docs/BACKLOG.md) | Deferred work and quality-evaluation methodology |

@@ -1,5 +1,7 @@
 # Zen deployment and local credentials
 
+**English** | [Русский](ru/deployment.md) · [Documentation](README.md)
+
 `jev-grep` is a client for OpenCode Zen; fnox supplies its API key at process
 launch. The application defaults to the Zen System One endpoint
 `https://opencode.ai/zen/v1/systemone` and model `jev-1.13`. The model is sent
@@ -7,7 +9,7 @@ explicitly. `fnox` is a launcher, not a runtime dependency of the binary.
 
 ## Requirements
 
-- Install the `jev-grep` binary using the project installation instructions.
+- Install the `jev-grep` binary using the [installation instructions](installation.md).
 - Install fnox and make it available on `PATH` for credential-backed runs.
 - On Linux, provide an available, unlocked Secret Service (commonly through a
   desktop keyring such as GNOME Keyring, or another Secret Service-compatible

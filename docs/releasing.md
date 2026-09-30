@@ -1,89 +1,93 @@
-# Автоматические релизы и Conventional Commits
+# Automatic releases and Conventional Commits
 
-Каждый push в `main` запускает [Release](../.github/workflows/release.yml).
-`semantic-release` анализирует коммиты после последнего тега `v*`, определяет
-новую версию и генерирует release notes. Ручное повышение версии не требуется.
+**English** | [Русский](ru/releasing.md) · [Documentation](README.md)
 
-## Формат коммитов
+Every push to `main` starts [Release](../.github/workflows/release.yml).
+`semantic-release` analyzes commits after the last `v*` tag, determines the
+next version, and generates release notes. No manual version bump is required.
+
+## Commit format
 
 ```text
-fix: исправить обработку timeout
-feat(cli): добавить новый формат вывода
-docs: уточнить установку
-feat(api)!: изменить формат ответа
+fix: correct timeout handling
+feat(cli): add a new output format
+docs: clarify installation
+feat(api)!: change the response format
 ```
 
-| Изменение | Версия |
+| Change | Version |
 | --- | --- |
 | `fix:`, `perf:` | patch |
 | `feat:` | minor |
-| `!` после типа/scope или footer `BREAKING CHANGE: ...` | major |
-| `docs:`, `chore:`, `test:`, `ci:`, `build:`, `refactor:`, `style:` без breaking change | Без релиза |
+| `!` after type/scope or a `BREAKING CHANGE: ...` footer | major |
+| `docs:`, `chore:`, `test:`, `ci:`, `build:`, `refactor:`, `style:` without a breaking change | No release |
 
-Выбирается наибольшее повышение среди всех новых коммитов. Breaking change
-означает major и для версий `0.x`. Заголовки PR и все коммиты PR проверяются
-`commitlint`; при squash merge сохраните Conventional Commit в итоговом сообщении.
-Коммиты каждого push в `main` также проверяются перед выпуском.
+The largest bump among all new commits wins. A breaking change means major
+even for `0.x` versions. PR titles and all PR commits are checked by
+`commitlint`; preserve a Conventional Commit in the final squash-merge
+message. Commits in each push to `main` are also checked before release.
 
-Локальная проверка (Node.js 24.10+):
+Local checks (Node.js 24.10+):
 
 ```sh
 npm ci
-printf '%s\n' 'feat(cli): добавить новый формат' | npm run commitlint
+printf '%s\n' 'feat(cli): add a new output format' | npm run commitlint
 npm run commitlint -- --last --verbose
 npm run test:release
 ```
 
-## Что делает workflow
+## What the workflow does
 
-1. Проверяет сообщения коммитов, release tooling, форматирование Rust, Clippy,
-   Rust-тесты и Python acceptance-тесты с локальным mock API.
-2. Вычисляет версию через dry-run semantic-release. Если релиз не нужен,
-   сборка архивов и публикация пропускаются.
-3. Обновляет версии пакета в `Cargo.toml` и `Cargo.lock` в каждой сборке,
-   сохраняя версии зависимостей. Собирает `cargo build --release --locked`:
+1. Checks commit messages, release tooling, Rust formatting, Clippy, Rust tests,
+   and Python acceptance tests with a local mock API.
+2. Computes the version with a semantic-release dry run. If no release is
+   needed, archive builds and publication are skipped.
+3. Updates package versions in `Cargo.toml` and `Cargo.lock` for each build,
+   preserving dependency versions. Builds with `cargo build --release --locked`:
 
-   | Платформа | Target | Архив |
+   | Platform | Target | Archive |
    | --- | --- | --- |
    | Linux x86-64 (glibc, Ubuntu 24.04) | `x86_64-unknown-linux-gnu` | `.tar.gz` |
    | macOS Apple Silicon | `aarch64-apple-darwin` | `.tar.gz` |
    | Windows x86-64 | `x86_64-pc-windows-msvc` | `.zip` |
 
-4. Проверяет `--help` и точное совпадение `--version` с рассчитанной версией.
-5. Только после всех успешных сборок формирует `SHA256SUMS` и повторно проверяет
-   рассчитанную версию перед публикацией.
-6. Коммитит `Cargo.toml` и `Cargo.lock` в `main` сообщением
-   `chore(release): X.Y.Z [skip ci]`, создаёт тег `vX.Y.Z` и GitHub Release
-   с архивами и release notes. Публикацией управляет semantic-release.
+4. Checks `--help` and that `--version` exactly matches the computed version.
+5. Only after all builds succeed, creates `SHA256SUMS` and rechecks the computed
+   version before publication.
+6. Commits `Cargo.toml` and `Cargo.lock` to `main` with the message
+   `chore(release): X.Y.Z [skip ci]`, creates a `vX.Y.Z` tag, and publishes a
+   GitHub Release with archives and release notes. semantic-release manages
+   publication.
 
-Архивы содержат бинарник и README. Проверка скачанных файлов на Linux:
+Archives contain the binary and README. Verify downloaded files on Linux:
 
 ```sh
 sha256sum --ignore-missing -c SHA256SUMS
 ```
 
-Сборка и публикация выполняются одним workflow: отдельный запуск по тегу
-не требуется. Workflow использует встроенный `GITHUB_TOKEN`; доступ к Zen
-и ключ модели не нужны. npm-пакет и пакет на crates.io не публикуются.
+Builds and publication run in one workflow: no separate tag-triggered run is
+needed. The workflow uses the built-in `GITHUB_TOKEN`; Zen access and a model
+key are not required. Neither an npm package nor a crates.io package is
+published.
 
-## Первый релиз и настройки GitHub
+## First release and GitHub settings
 
-При отсутствии предыдущих release-тегов semantic-release начинает с **1.0.0**,
-независимо от текущей версии в `Cargo.toml`. Если нужно продолжить линию `0.1.x`,
-сначала обозначьте уже выпущенный коммит тегом `v0.1.0` и отправьте этот тег
-в GitHub. Следующий релиз будет рассчитан по коммитам после него.
+Without previous release tags, semantic-release starts at **1.0.0**, regardless
+of the current version in `Cargo.toml`. To continue the `0.1.x` line, first tag
+an already released commit with `v0.1.0` and push that tag to GitHub. The next
+release is computed from commits after it.
 
-GitHub Actions должны иметь возможность записывать contents. Если `main`
-защищена правилами, разрешите release-боту push version-коммита; иначе публикация
-остановится. В репозитории рекомендуется сделать `Conventional Commits / commitlint`
-обязательной проверкой PR и настроить squash merge с заголовком PR в качестве
-сообщения коммита. Эти настройки выполняются в GitHub, а не YAML-файлами.
+GitHub Actions must have contents write access. If `main` is protected, allow
+the release bot to push the version commit; otherwise publication stops.
+Making `Conventional Commits / commitlint` a required PR check and configuring
+squash merge to use the PR title as its commit message are recommended. These
+settings are configured in GitHub, not in YAML files.
 
-Запуски релиза сериализованы. При продвижении `main` во время сборки устаревший
-запуск может не опубликовать релиз; следующий запуск обработает новые коммиты.
-Для повтора доступен ручной запуск Release на ветке `main`.
+Release runs are serialized. If `main` advances during a build, an outdated
+run may not publish; the next run handles the new commits. Release can also be
+started manually on `main` to retry.
 
-Если ошибка случилась после отправки version-коммита/тега, проверьте существующий
-тег и GitHub Release перед повтором: semantic-release не перепубликует автоматически
-уже помеченную версию. Сохранённые workflow artifacts можно использовать для
-восстановления недостающих release assets.
+If a failure occurs after pushing the version commit/tag, check the existing
+tag and GitHub Release before retrying: semantic-release does not automatically
+republish an already tagged version. Saved workflow artifacts can be used to
+restore missing release assets.

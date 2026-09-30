@@ -1,5 +1,7 @@
 # Deferred directions
 
+**English** | [Русский](ru/BACKLOG.md) · [Documentation](README.md)
+
 This backlog records future work only; none of these capabilities is implemented by the current change. The synthetic examples in [`tests/fixtures/jev-quality-seed.jsonl`](../tests/fixtures/jev-quality-seed.jsonl) are an unexecuted seed, not Jev quality evidence.
 
 ## 1. Estimate
