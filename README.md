@@ -2,9 +2,21 @@
 
 **English** | [Русский](README.ru.md)
 
-Semantic search for **log and code fragments** using
-[Jev on OpenCode Zen](https://opencode.ai/docs/zen/#jev). Describe what you want
-in natural language instead of writing a regular expression. `jev-grep` returns
+An [agent skill](docs/skill/jev-grep/SKILL.md) helps coding agents choose input
+modes, build pipelines, and interpret results. Install it with the Skills CLI:
+
+```sh
+npx skills add https://github.com/m407/jev-grep/tree/main/docs/skill/jev-grep --skill jev-grep
+```
+
+The skill does not install the CLI; see [Quick start](#quick-start) below.
+
+Semantic search for **log and code fragments** using the Jev model over an API.
+You can use OpenRouter or other providers offering the model through an API,
+provided their endpoint supports the System One request/response protocol used
+by `jev-grep`; an OpenAI-compatible chat endpoint alone is not sufficient.
+Describe what you want in natural language instead of writing a regular
+expression. `jev-grep` returns
 matching text with its source, line range, and, in JSONL output, byte offsets.
 
 - **Logs:** read text or JSONL, group adjacent records into meaningful fragments,
@@ -31,8 +43,12 @@ cargo install --path . --locked
 jev-grep --help
 ```
 
-Follow the [credential setup guide](docs/deployment.md) to store your Zen API key
-with fnox, then run from the repository root:
+Configure your provider's endpoint, model, and API key using `JEV_GREP_API_URL`,
+`JEV_GREP_MODEL`, and `JEV_GREP_API_KEY` (or `--api-url` and `--model`). See the
+[configuration guide](docs/installation.md#connect-the-model). The
+[credential setup guide](docs/deployment.md) shows a Zen example with fnox;
+Zen is the default, not a required provider. With credentials configured in
+fnox, run from the repository root:
 
 ```sh
 fnox exec -- jev-grep 'Certificate validation failure' application.log
@@ -50,7 +66,7 @@ Full documentation: [English](docs/README.md) · [Русский](docs/ru/README
 | Guide | Contents |
 | --- | --- |
 | [Installation](docs/installation.md) | Requirements, defaults, and configuration |
-| [Deployment](docs/deployment.md) | Zen credentials, fnox, data handling, and integration smoke evidence |
+| [Deployment](docs/deployment.md) | Credentials with fnox (Zen example), data handling, and integration smoke evidence |
 | [Logs](docs/logs.md) | Files, live streams, JSONL, and Angle Grinder pipelines |
 | [Code search](docs/code-search.md) | ast-grep, changed Git files, and AST input contract |
 | [CLI reference](docs/reference.md) | Output schema, coordinates, options, limits, and exit codes |
