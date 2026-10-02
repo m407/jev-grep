@@ -13,6 +13,19 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 const versionScript = join(root, 'scripts/set-release-version.py');
 const logger = { log() {} };
 
+test('commitlint accepts long body lines while enforcing Conventional Commit headers', () => {
+  const lint = (message) => spawnSync(process.execPath, [
+    join(root, 'node_modules/@commitlint/cli/cli.js'),
+  ], { cwd: root, input: message, encoding: 'utf8' });
+  const valid = lint(`docs: explain CLI usage\n\n${'Detailed documentation. '.repeat(10)}\n`);
+  assert.equal(valid.status, 0, valid.stdout + valid.stderr);
+  for (const message of ['Add documentation\n', 'unknown: add documentation\n']) {
+    const invalid = lint(message);
+    assert.equal(invalid.status, 1, invalid.stdout + invalid.stderr);
+    assert.match(invalid.stdout, /type-(empty|enum)/);
+  }
+});
+
 for (const [message, expected] of [
   ['fix: handle timeout', 'patch'],
   ['perf: reuse connections', 'patch'],
