@@ -1,8 +1,7 @@
 name: Conventional Commits
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, edited]
+  workflow_call:
 
 permissions:
   contents: read
