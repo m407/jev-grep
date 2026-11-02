@@ -1,0 +1,63 @@
+name: Dependabot auto-merge
+
+on:
+  workflow_run:
+    workflows: [Release]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: dependabot-auto-merge
+  cancel-in-progress: false
+
+jobs:
+  merge:
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-24.04
+    steps:
+      # Never check out or execute PR code in this write-enabled workflow.
+      - uses: actions/github-script@v8
+        with:
+          script: |
+            const run = context.payload.workflow_run;
+            const repository = `${context.repo.owner}/${context.repo.repo}`;
+            const pulls = await github.paginate(
+              github.rest.repos.listPullRequestsAssociatedWithCommit,
+              { ...context.repo, commit_sha: run.head_sha }
+            );
+            for (const candidate of pulls) {
+              const { data: pr } = await github.rest.pulls.get({
+                ...context.repo,
+                pull_number: candidate.number,
+              });
+              if (pr.state !== 'open' || pr.draft ||
+                  pr.user.login !== 'dependabot[bot]' ||
+                  pr.head.repo?.full_name !== repository ||
+                  pr.base.ref !== 'main' || pr.head.sha !== run.head_sha) {
+                continue;
+              }
+              const { data: result } = await github.rest.pulls.merge({
+                ...context.repo,
+                pull_number: pr.number,
+                sha: run.head_sha,
+                merge_method: 'squash',
+                commit_title: `${pr.title} (#${pr.number})`,
+              });
+              if (!result.merged) {
+                throw new Error(`PR #${pr.number}: ${result.message}`);
+              }
+              core.info(`Merged Dependabot PR #${pr.number}: ${result.sha}`);
+              // GITHUB_TOKEN merges do not trigger push workflows.
+              await github.rest.actions.createWorkflowDispatch({
+                ...context.repo,
+                workflow_id: 'release.yml',
+                ref: 'main',
+              });
+            }

@@ -6,6 +6,21 @@ Every push to `main` starts [Release](../.github/workflows/release.yml).
 `semantic-release` analyzes commits after the last `v*` tag, determines the
 next version, and generates release notes. No manual version bump is required.
 
+## Dependabot auto-merge
+
+Pull requests run the same release-tooling, formatting, Clippy, Rust, and Python
+checks as releases, plus Conventional Commit validation. After the entire PR
+workflow succeeds, [Dependabot auto-merge](../.github/workflows/dependabot-auto-merge.yml)
+squash-merges Dependabot PRs into `main`, including major and security updates.
+It verifies the author, source repository, and tested head SHA before merging.
+Failed checks and merge conflicts block automatic merging.
+
+The merge workflow uses `workflow_run` and the built-in `GITHUB_TOKEN`, without
+checking out PR code or requiring a personal token. It explicitly dispatches
+Release on `main` afterward because merges made with `GITHUB_TOKEN` do not
+trigger push workflows. The successful CI workflow is the merge gate; this
+does not depend on branch protection being enabled.
+
 ## Commit format
 
 ```text
