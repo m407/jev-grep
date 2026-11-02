@@ -14,7 +14,10 @@ BIN = str(Path(__file__).resolve().parents[1] / 'target/debug/jev-grep')
 
 def clean_test_env(overrides=None):
     env = {k: v for k, v in os.environ.items()
-           if not k.startswith(('LG_', 'JEV_GREP_'))}
+           if k not in ('SSL_CERT_FILE', 'SSL_CERT_DIR')
+           and not k.lower().endswith('_proxy')
+           and not k.startswith(('LG_', 'JEV_GREP_'))}
+    env['NO_PROXY'] = env['no_proxy'] = 'localhost,127.0.0.1'
     if overrides:
         env.update(overrides)
     return env
@@ -189,36 +192,110 @@ class CliTests(unittest.TestCase):
 
     def test_tls_certificate_validation_failure_is_not_retried(self):
         with tempfile.TemporaryDirectory() as folder:
-            cert, key = Path(folder, 'cert.pem'), Path(folder, 'key.pem')
-            subprocess.run(['openssl', 'req', '-x509', '-newkey', 'rsa:2048', '-nodes',
-                            '-keyout', str(key), '-out', str(cert), '-days', '1',
-                            '-subj', '/CN=localhost'], check=True, capture_output=True)
-            owner = self
+            ca, cert, key, expired_cert, expired_key = self.make_test_certificates(folder)
+            self.assert_tls_rejected(cert, key, 'localhost')
+            self.assert_tls_rejected(cert, key, '127.0.0.1', {'SSL_CERT_FILE': str(ca)})
+            self.assert_tls_rejected(expired_cert, expired_key, 'localhost', {'SSL_CERT_FILE': str(ca)})
 
-            class TLSHTTPServer(ThreadingHTTPServer):
-                connection_count = 0
-                def get_request(self):
-                    sock, address = super().get_request()
-                    self.connection_count += 1
-                    return self.context.wrap_socket(sock, server_side=True), address
+    def test_tls_trusted_ca_allows_single_and_group_evaluation(self):
+        with tempfile.TemporaryDirectory() as folder:
+            ca, cert, key, _, _ = self.make_test_certificates(folder)
+            cert_dir = Path(folder, 'empty-certs')
+            cert_dir.mkdir()
+            with self.run_tls_server(cert, key) as server:
+                url = f'https://localhost:{server.server_port}/v1/systemone'
+                env = {'SSL_CERT_FILE': str(ca), 'SSL_CERT_DIR': str(cert_dir),
+                       'HTTPS_PROXY': 'http://127.0.0.1:1', 'https_proxy': 'http://127.0.0.1:1'}
+                result = self.run_lg('--api-url', url, 'criterion', data='PKIX\n',
+                                     use_default_url=False, env_overrides=env)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(len(self.requests), 1)
+                self.requests.clear()
+                result = self.run_lg('--api-url', url, '--format', 'json', 'criterion',
+                                     data='PKIX first\njoin continuation\n',
+                                     use_default_url=False, env_overrides=env)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(len(self.requests), 2)
+                self.assertEqual(len(result.stdout.splitlines()), 1)
 
-            server = TLSHTTPServer(('127.0.0.1', 0), type(self.server.RequestHandlerClass.__name__,
-                                    (self.server.RequestHandlerClass,), {}))
-            context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-            context.load_cert_chain(cert, key)
-            server.context = context
-            thread = threading.Thread(target=server.serve_forever, daemon=True)
-            thread.start()
-            try:
-                result = self.run_lg('--api-url', f'https://localhost:{server.server_port}/v1/systemone',
-                                     'criterion', data='PKIX\n', use_default_url=False)
-                self.assertEqual(result.returncode, 2)
-                self.assertEqual(server.connection_count, 1)
-                self.assertEqual(self.requests, [])
-            finally:
+    @staticmethod
+    def make_test_certificates(folder):
+        folder = Path(folder)
+        ca, ca_key = folder / 'ca.pem', folder / 'ca-key.pem'
+        subprocess.run(['openssl', 'req', '-x509', '-newkey', 'rsa:2048', '-nodes',
+                        '-keyout', str(ca_key), '-out', str(ca), '-days', '2',
+                        '-subj', '/CN=jev-grep test CA', '-addext', 'basicConstraints=critical,CA:TRUE',
+                        '-addext', 'keyUsage=critical,keyCertSign,cRLSign'],
+                       check=True, capture_output=True)
+        csr, key = folder / 'server.csr', folder / 'server-key.pem'
+        subprocess.run(['openssl', 'req', '-new', '-newkey', 'rsa:2048', '-nodes',
+                        '-keyout', str(key), '-out', str(csr), '-subj', '/CN=localhost'],
+                       check=True, capture_output=True)
+        ext = folder / 'server.ext'
+        ext.write_text('basicConstraints=critical,CA:FALSE\nkeyUsage=critical,digitalSignature,keyEncipherment\nextendedKeyUsage=serverAuth\nsubjectAltName=DNS:localhost\n')
+        cert = folder / 'server.pem'
+        subprocess.run(['openssl', 'x509', '-req', '-in', str(csr), '-CA', str(ca),
+                        '-CAkey', str(ca_key), '-CAcreateserial', '-out', str(cert),
+                        '-days', '1', '-extfile', str(ext)], check=True, capture_output=True)
+
+        # A fixed historical validity interval creates an expired leaf without clock changes.
+        db, new_certs = folder / 'index.txt', folder / 'newcerts'
+        db.touch()
+        new_certs.mkdir()
+        serial = folder / 'serial'
+        serial.write_text('1000\n')
+        config = folder / 'ca.cnf'
+        config.write_text(f'[ ca ]\ndefault_ca = local\n[ local ]\ndatabase = "{db.as_posix()}"\nnew_certs_dir = "{new_certs.as_posix()}"\ncertificate = "{ca.as_posix()}"\nprivate_key = "{ca_key.as_posix()}"\nserial = "{serial.as_posix()}"\ndefault_md = sha256\npolicy = policy\n[ policy ]\ncommonName = supplied\n[ server_ext ]\nbasicConstraints = critical,CA:FALSE\nkeyUsage = critical,digitalSignature,keyEncipherment\nextendedKeyUsage = serverAuth\nsubjectAltName = DNS:localhost\n')
+        expired_key, expired_csr, expired_cert = (folder / 'expired-key.pem', folder / 'expired.csr', folder / 'expired.pem')
+        subprocess.run(['openssl', 'req', '-new', '-newkey', 'rsa:2048', '-nodes',
+                        '-keyout', str(expired_key), '-out', str(expired_csr), '-subj', '/CN=localhost'],
+                       check=True, capture_output=True)
+        subprocess.run(['openssl', 'ca', '-batch', '-config', str(config), '-extensions', 'server_ext',
+                        '-startdate', '20200101000000Z', '-enddate', '20200102000000Z',
+                        '-in', str(expired_csr), '-out', str(expired_cert)], check=True, capture_output=True)
+        return ca, cert, key, expired_cert, expired_key
+
+    def run_tls_server(self, cert, key):
+        class TLSHTTPServer(ThreadingHTTPServer):
+            connection_count = 0
+
+            def get_request(server_self):
+                sock, address = super(TLSHTTPServer, server_self).get_request()
+                server_self.connection_count += 1
+                return server_self.context.wrap_socket(sock, server_side=True), address
+
+        server = TLSHTTPServer(('127.0.0.1', 0), type(self.server.RequestHandlerClass.__name__,
+                                (self.server.RequestHandlerClass,), {}))
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        context.load_cert_chain(cert, key)
+        server.context = context
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+
+        class RunningServer:
+            def __enter__(self):
+                return server
+
+            def __exit__(self, *_):
                 server.shutdown()
                 server.server_close()
                 thread.join()
+
+        return RunningServer()
+
+    def assert_tls_rejected(self, cert, key, hostname, env=None):
+        with self.run_tls_server(cert, key) as server:
+            url = f'https://{hostname}:{server.server_port}/v1/systemone'
+            for args, data in ((('criterion',), 'PKIX\n'),
+                               (('--format', 'json', 'criterion'), 'PKIX first\njoin continuation\n')):
+                server.connection_count = 0
+                result = self.run_lg('--api-url', url, *args, data=data, use_default_url=False,
+                                     env_overrides=env)
+                self.assertEqual(result.returncode, 2, result.stderr)
+                self.assertEqual(server.connection_count, 1)
+                self.assertEqual(self.requests, [])
+                self.assertEqual(result.stdout, '')
+        self.requests.clear()
 
     def run_lg(self, *args, data='', cwd=None, env_overrides=None, use_default_url=True):
         env = clean_test_env(env_overrides)
