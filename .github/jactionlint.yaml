@@ -1,0 +1,11 @@
+ignores:
+  - rule: dangerous-triggers
+    file: .github/workflows/dependabot-auto-merge.yml
+    reason: >-
+      The merge job requires privileged workflow_run execution after successful
+      Release PR validation. It checks the Dependabot author, same repository,
+      main base branch and exact tested head, and passes that SHA to the merge
+      API. It performs no checkout, artifact consumption or untrusted code
+      execution. Contents write permits merging; actions write permits the
+      explicit Release dispatch.
+    expires: "2027-02-04"

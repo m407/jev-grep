@@ -26,14 +26,16 @@ jobs:
 
   check:
     runs-on: ubuntu-24.04
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+          persist-credentials: false
+      - uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
         with:
-          node-version: '24'
-          cache: npm
+          version: '2026.11.1'
+          cache: false
       - run: npm ci
       - name: Check commit messages
         if: github.event_name == 'push'
@@ -41,37 +43,34 @@ jobs:
           BEFORE: ${{ github.event.before }}
         run: |
           if [[ "$BEFORE" == 0000000000000000000000000000000000000000 ]]; then
-            npm run commitlint -- --last --verbose
+            mise run check:commits -- --last --verbose
           else
-            npm run commitlint -- --from "$BEFORE" --to "$GITHUB_SHA" --verbose
+            mise run check:commits -- --from "$BEFORE" --to "$GITHUB_SHA" --verbose
           fi
-      - run: npm run test:release
-      - name: Install Rust
-        run: rustup toolchain install stable --profile minimal --component rustfmt --component clippy
       - name: Validate
-        run: |
-          cargo +stable fmt --check
-          cargo +stable clippy --locked --all-targets -- -D warnings
-          cargo +stable test --locked
-          cargo +stable build --locked
-          python3 -m unittest discover -s tests -v
+        run: mise run check
 
   plan:
     needs: check
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      MISE_ENABLE_TOOLS: node
     permissions:
+      # semantic-release verifies push access even in dry-run mode.
       contents: write
     outputs:
       version: ${{ steps.release.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+          persist-credentials: false
+      - uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
         with:
-          node-version: '24'
-          cache: npm
+          version: '2026.11.1'
+          cache: false
       - run: npm ci
       - id: release
         run: npm run release:plan
@@ -95,26 +94,32 @@ jobs:
             target: x86_64-pc-windows-msvc
             binary: jev-grep.exe
     runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    env:
+      MISE_ENABLE_TOOLS: rust,python
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          python-version: '3.12'
+          persist-credentials: false
+      - uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
+        with:
+          version: '2026.11.1'
+          cache: false
       - name: Set release version
         env:
           RELEASE_VERSION: ${{ needs.plan.outputs.version }}
         run: python scripts/set-release-version.py "$RELEASE_VERSION"
-      - name: Install Rust
+      - name: Install Rust target
         env:
           TARGET: ${{ matrix.target }}
-        run: rustup toolchain install stable --profile minimal --target "$TARGET"
+        run: mise exec -- rustup target add --toolchain "$(mise current rust)" "$TARGET"
       - name: Build and smoke-test
         env:
           TARGET: ${{ matrix.target }}
           BINARY: ${{ matrix.binary }}
           RELEASE_VERSION: ${{ needs.plan.outputs.version }}
         run: |
-          cargo +stable build --release --locked --target "$TARGET"
+          cargo build --release --locked --target "$TARGET"
           test "$("target/$TARGET/release/$BINARY" --version)" = "jev-grep $RELEASE_VERSION"
           "target/$TARGET/release/$BINARY" --help
       - name: Package
@@ -143,7 +148,7 @@ jobs:
                   for path, member in files:
                       archive.add(path, arcname=member)
           PY
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: release-${{ matrix.target }}
           path: dist/*
@@ -152,18 +157,23 @@ jobs:
   publish:
     needs: [plan, build]
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      MISE_ENABLE_TOOLS: node,python
     permissions:
+      # Publish the version commit, tag, and GitHub Release.
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+          persist-credentials: false
+      - uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
         with:
-          node-version: '24'
-          cache: npm
+          version: '2026.11.1'
+          cache: false
       - run: npm ci
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           pattern: release-*
           merge-multiple: true

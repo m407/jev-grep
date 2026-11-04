@@ -5,10 +5,7 @@ on:
     workflows: [Release]
     types: [completed]
 
-permissions:
-  contents: write
-  pull-requests: write
-  actions: write
+permissions: {}
 
 concurrency:
   group: dependabot-auto-merge
@@ -16,14 +13,20 @@ concurrency:
 
 jobs:
   merge:
+    permissions:
+      # Merge the exact tested head; read associated PRs; dispatch Release.
+      contents: write
+      pull-requests: read
+      actions: write
     if: >-
       github.event.workflow_run.event == 'pull_request' &&
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.head_repository.full_name == github.repository
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
       # Never check out or execute PR code in this write-enabled workflow.
-      - uses: actions/github-script@v8
+      - uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         with:
           script: |
             const run = context.payload.workflow_run;

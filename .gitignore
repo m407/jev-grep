@@ -5,3 +5,6 @@ __pycache__/
 fnox.local.toml
 /node_modules/
 /dist/
+/.ruff_cache/
+/mise.local.toml
+/hk.local.pkl
