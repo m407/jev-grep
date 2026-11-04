@@ -10,9 +10,9 @@ if (mode === 'publish' && !process.env.RELEASE_VERSION) {
   throw new Error('RELEASE_VERSION must identify the version built by the matrix');
 }
 
-const result = await semanticRelease(mode === 'plan'
-  ? { dryRun: true, plugins: analysisPlugins }
-  : {});
+const result = await semanticRelease(
+  mode === 'plan' ? { dryRun: true, plugins: analysisPlugins } : {},
+);
 
 if (mode === 'plan') {
   const version = result?.nextRelease?.version ?? '';

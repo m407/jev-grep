@@ -9,16 +9,22 @@ export default {
   plugins: [
     ...analysisPlugins,
     './scripts/release-prepare.mjs',
-    ['@semantic-release/git', {
-      assets: ['Cargo.toml', 'Cargo.lock'],
-      message: 'chore(release): ${nextRelease.version} [skip ci]',
-    }],
-    ['@semantic-release/github', {
-      assets: ['dist/*.tar.gz', 'dist/*.zip', 'dist/SHA256SUMS'],
-      successComment: false,
-      failComment: false,
-      failTitle: false,
-      releasedLabels: false,
-    }],
+    [
+      '@semantic-release/git',
+      {
+        assets: ['Cargo.toml', 'Cargo.lock'],
+        message: 'chore(release): ${nextRelease.version} [skip ci]',
+      },
+    ],
+    [
+      '@semantic-release/github',
+      {
+        assets: ['dist/*.tar.gz', 'dist/*.zip', 'dist/SHA256SUMS'],
+        successComment: false,
+        failComment: false,
+        failTitle: false,
+        releasedLabels: false,
+      },
+    ],
   ],
 };
