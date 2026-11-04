@@ -8,13 +8,20 @@
 
 ## Автоматическое слияние Dependabot
 
-Pull requests проходят те же проверки release tooling, форматирования, Clippy,
-Rust и Python, что и релизы, а также проверку Conventional Commits. После успеха
-всего PR workflow [Dependabot auto-merge](../../.github/workflows/dependabot-auto-merge.yml)
+Pull requests и релизы выполняют общий набор `mise run check` из
+[руководства для разработчиков](development.md) и проверку Conventional Commits.
+После успеха всего PR workflow
+[Dependabot auto-merge](../../.github/workflows/dependabot-auto-merge.yml)
 выполняет squash-слияние PR Dependabot в `main`, включая major-обновления и
 исправления безопасности. Перед слиянием проверяются автор, исходный репозиторий
 и совпадение head SHA с проверенным коммитом. Ошибки проверок и конфликты
 блокируют автоматическое слияние.
+
+[Конфигурация Dependabot](../../.github/dependabot.yml) охватывает Cargo, npm и
+GitHub Actions с периодом ожидания (cooldown) для обновлений версий. Это не
+заменяет проверку успешного workflow и точного head SHA перед слиянием.
+Плановое сканирование OSV описано в
+[руководстве для разработчиков](development.md#безопасность-и-найденные-проблемы).
 
 Workflow слияния использует `workflow_run` и встроенный `GITHUB_TOKEN`, не
 выгружая код PR и не требуя персонального токена. После слияния он явно запускает
@@ -43,19 +50,20 @@ feat(api)!: change the response format
 `commitlint`; при squash merge сохраните Conventional Commit в итоговом сообщении.
 Коммиты каждого push в `main` также проверяются перед выпуском.
 
-Локальная проверка (Node.js 24.10+):
+После [настройки окружения](development.md#настройка) установленный commit-msg hook
+проверяет сообщения локальных коммитов. Ручная проверка и полный набор:
 
 ```sh
-npm ci
-printf '%s\n' 'feat(cli): add a new output format' | npm run commitlint
-npm run commitlint -- --last --verbose
-npm run test:release
+mise run check:commits -- --last --verbose
+mise run check
 ```
+
+`commitlint` — псевдоним задачи `check:commits`.
 
 ## Что делает workflow
 
-1. Проверяет сообщения коммитов, release tooling, форматирование Rust, Clippy,
-   Rust-тесты и Python acceptance-тесты с локальным mock API.
+1. Проверяет сообщения коммитов и выполняет `mise run check`, включая существующие
+   тесты release tooling, Rust и Python и общие проверки качества.
 2. Вычисляет версию через dry-run semantic-release. Если релиз не нужен,
    сборка архивов и публикация пропускаются.
 3. Обновляет версии пакета в `Cargo.toml` и `Cargo.lock` в каждой сборке,

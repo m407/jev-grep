@@ -1,3 +1,11 @@
+## Development quality gates
+
+- For setup, check failures, or tool/config changes, read `docs/development.md`; for commit messages, release workflows, or Dependabot changes, read `docs/releasing.md`.
+- Keep pinned tools in `mise.toml` and shared hook checks in `hk.pkl`. Preserve Rust/Python/JavaScript tests and Commitlint when changing the gates.
+- Before declaring implementation complete, run `mise run check` successfully. Targeted checks support iteration; the whole-project aggregate is the completion gate. Report blocked or failing checks with their complete output.
+- Fix findings at their source. Suppressions, baselines, disabled rules, and skipped checks require an explicit human decision. Approved exceptions must name the reason, affected path, and rule; security exceptions also require an enforced expiration.
+- Keep English and Russian development/release guides synchronized when their commands or policies change.
+
 <!-- OPENWIKI:START -->
 
 ## OpenWiki

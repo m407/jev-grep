@@ -8,12 +8,18 @@ next version, and generates release notes. No manual version bump is required.
 
 ## Dependabot auto-merge
 
-Pull requests run the same release-tooling, formatting, Clippy, Rust, and Python
-checks as releases, plus Conventional Commit validation. After the entire PR
-workflow succeeds, [Dependabot auto-merge](../.github/workflows/dependabot-auto-merge.yml)
+Pull requests and releases run the shared `mise run check` aggregate described
+in the [development guide](development.md), with Conventional Commit validation.
+After the entire PR workflow succeeds,
+[Dependabot auto-merge](../.github/workflows/dependabot-auto-merge.yml)
 squash-merges Dependabot PRs into `main`, including major and security updates.
 It verifies the author, source repository, and tested head SHA before merging.
 Failed checks and merge conflicts block automatic merging.
+
+[Dependabot configuration](../.github/dependabot.yml) covers Cargo, npm, and
+GitHub Actions with a cooldown for version updates. This does not replace the
+successful-workflow and exact-head-SHA merge gate. Scheduled OSV scanning is
+described in the [development guide](development.md#security-and-findings).
 
 The merge workflow uses `workflow_run` and the built-in `GITHUB_TOKEN`, without
 checking out PR code or requiring a personal token. It explicitly dispatches
@@ -42,19 +48,20 @@ even for `0.x` versions. PR titles and all PR commits are checked by
 `commitlint`; preserve a Conventional Commit in the final squash-merge
 message. Commits in each push to `main` are also checked before release.
 
-Local checks (Node.js 24.10+):
+After [development setup](development.md#setup), the installed commit-msg hook
+checks local commit messages. For a manual check and full validation:
 
 ```sh
-npm ci
-printf '%s\n' 'feat(cli): add a new output format' | npm run commitlint
-npm run commitlint -- --last --verbose
-npm run test:release
+mise run check:commits -- --last --verbose
+mise run check
 ```
+
+`commitlint` is an alias for the `check:commits` task.
 
 ## What the workflow does
 
-1. Checks commit messages, release tooling, Rust formatting, Clippy, Rust tests,
-   and Python acceptance tests with a local mock API.
+1. Checks commit messages and runs `mise run check`, including the existing
+   release-tooling, Rust, and Python tests and the shared quality gates.
 2. Computes the version with a semantic-release dry run. If no release is
    needed, archive builds and publication are skipped.
 3. Updates package versions in `Cargo.toml` and `Cargo.lock` for each build,
