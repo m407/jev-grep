@@ -1,0 +1,23 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/v17.11.2/schemas/config.json",
+  "release-type": "rust",
+  "versioning": "default",
+  "bump-minor-pre-major": false,
+  "bump-patch-for-minor-pre-major": false,
+  "include-component-in-tag": false,
+  "include-v-in-tag": true,
+  "separate-pull-requests": false,
+  "skip-github-release": true,
+  "changelog-path": "CHANGELOG.md",
+  "changelog-sections": [
+    { "type": "feat", "section": "Features" },
+    { "type": "fix", "section": "Bug Fixes" },
+    { "type": "perf", "section": "Performance Improvements" }
+  ],
+  "bootstrap-sha": "34610d0bed5d374d0ccd0c1304f363614668cb30",
+  "label": "autorelease: pending",
+  "release-label": "autorelease: tagged",
+  "packages": {
+    ".": {}
+  }
+}

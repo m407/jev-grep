@@ -2,6 +2,19 @@ name: Conventional Commits
 
 on:
   workflow_call:
+    inputs:
+      pr_title:
+        description: Pull request title to validate as the squash commit
+        type: string
+        required: true
+      base_sha:
+        description: Pull request base commit SHA
+        type: string
+        required: true
+      head_sha:
+        description: Exact pull request head commit SHA
+        type: string
+        required: true
 
 permissions:
   contents: read
@@ -19,6 +32,7 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
+          ref: ${{ inputs.head_sha }}
           fetch-depth: 0
           persist-credentials: false
       - uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
@@ -28,10 +42,10 @@ jobs:
       - run: npm ci
       - name: Validate PR title (squash commit)
         env:
-          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_TITLE: ${{ inputs.pr_title }}
         run: printf '%s\n' "$PR_TITLE" | mise run check:commits -- --verbose
       - name: Validate PR commits
         env:
-          BASE: ${{ github.event.pull_request.base.sha }}
-          HEAD: ${{ github.event.pull_request.head.sha }}
+          BASE: ${{ inputs.base_sha }}
+          HEAD: ${{ inputs.head_sha }}
         run: mise run check:commits -- --from "$BASE" --to "$HEAD" --verbose
