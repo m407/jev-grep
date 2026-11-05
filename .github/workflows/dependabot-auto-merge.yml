@@ -1,14 +1,11 @@
-name: Dependabot auto-merge
+name: Bot PR auto-merge
 
 on:
   workflow_run:
     workflows: [Release]
     types: [completed]
 
-permissions:
-  contents: write
-  pull-requests: write
-  actions: write
+permissions: {}
 
 concurrency:
   group: dependabot-auto-merge
@@ -16,18 +13,80 @@ concurrency:
 
 jobs:
   merge:
+    permissions:
+      # Merge the exact tested head; read associated PRs; dispatch Release.
+      contents: write
+      pull-requests: read
+      actions: write
     if: >-
-      github.event.workflow_run.event == 'pull_request' &&
+      (github.event.workflow_run.event == 'pull_request' ||
+       github.event.workflow_run.event == 'workflow_dispatch') &&
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.head_repository.full_name == github.repository
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
       # Never check out or execute PR code in this write-enabled workflow.
-      - uses: actions/github-script@v8
+      - uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         with:
           script: |
-            const run = context.payload.workflow_run;
             const repository = `${context.repo.owner}/${context.repo.repo}`;
+            const releaseBranch = 'release-please--branches--main';
+            // Treat the event as a run identifier, not proof of successful CI.
+            const { data: run } = await github.rest.actions.getWorkflowRun({
+              ...context.repo,
+              run_id: context.payload.workflow_run.id,
+            });
+            const { data: workflow } = await github.rest.actions.getWorkflow({
+              ...context.repo,
+              workflow_id: 'release.yml',
+            });
+            if (run.workflow_id !== workflow.id ||
+                workflow.path !== '.github/workflows/release.yml' ||
+                run.status !== 'completed' || run.conclusion !== 'success' ||
+                run.repository?.full_name !== repository ||
+                run.head_repository?.full_name !== repository ||
+                !['pull_request', 'workflow_dispatch'].includes(run.event) ||
+                (run.event === 'workflow_dispatch' && run.head_branch !== releaseBranch)) {
+              core.info('Run is not an eligible successful Release validation.');
+              return;
+            }
+            const jobs = await github.paginate(github.rest.actions.listJobsForWorkflowRun, {
+              ...context.repo,
+              run_id: run.id,
+              filter: 'latest',
+              per_page: 100,
+            });
+            // Keep these names aligned with release.yml and reusable commits.yml.
+            for (const name of ['check', 'commitlint / commitlint']) {
+              const matches = jobs.filter(job => job.name === name);
+              if (matches.length !== 1 || matches[0].run_id !== run.id ||
+                  matches[0].status !== 'completed' || matches[0].conclusion !== 'success') {
+                core.info(`Required Release job did not succeed: ${name}`);
+                return;
+              }
+            }
+            const eligible = pr => {
+              if (pr.state !== 'open' || pr.draft ||
+                  pr.head.repo?.full_name !== repository ||
+                  pr.base.repo?.full_name !== repository ||
+                  pr.base.ref !== 'main' || pr.head.sha !== run.head_sha ||
+                  pr.head.ref !== run.head_branch) {
+                return false;
+              }
+              if (pr.user.login === 'dependabot[bot]') {
+                return run.event === 'pull_request';
+              }
+              const labels = pr.labels.map(label => label.name);
+              return pr.user.login === 'github-actions[bot]' &&
+                pr.head.ref === releaseBranch &&
+                labels.includes('autorelease: pending') &&
+                !labels.includes('autorelease: tagged') &&
+                !labels.includes('autorelease: snooze');
+            };
+            const releaseFiles = new Set([
+              'Cargo.toml', 'Cargo.lock', '.release-please-manifest.json', 'CHANGELOG.md',
+            ]);
             const pulls = await github.paginate(
               github.rest.repos.listPullRequestsAssociatedWithCommit,
               { ...context.repo, commit_sha: run.head_sha }
@@ -37,10 +96,27 @@ jobs:
                 ...context.repo,
                 pull_number: candidate.number,
               });
-              if (pr.state !== 'open' || pr.draft ||
-                  pr.user.login !== 'dependabot[bot]' ||
-                  pr.head.repo?.full_name !== repository ||
-                  pr.base.ref !== 'main' || pr.head.sha !== run.head_sha) {
+              if (!eligible(pr)) continue;
+              if (pr.user.login === 'github-actions[bot]') {
+                const files = await github.paginate(github.rest.pulls.listFiles, {
+                  ...context.repo,
+                  pull_number: pr.number,
+                  per_page: 100,
+                });
+                // Check both sides of renames and reject incomplete API listings.
+                if (files.length === 0 || files.length !== pr.changed_files ||
+                    files.some(file => !releaseFiles.has(file.filename) ||
+                      (file.previous_filename && !releaseFiles.has(file.previous_filename)))) {
+                  core.info(`PR #${pr.number} changes files outside the release allowlist.`);
+                  continue;
+                }
+              }
+              // Re-read mutable metadata after all other checks, immediately before merging.
+              const { data: latest } = await github.rest.pulls.get({
+                ...context.repo,
+                pull_number: pr.number,
+              });
+              if (!eligible(latest) || latest.changed_files !== pr.changed_files) {
                 continue;
               }
               const { data: result } = await github.rest.pulls.merge({
@@ -48,16 +124,17 @@ jobs:
                 pull_number: pr.number,
                 sha: run.head_sha,
                 merge_method: 'squash',
-                commit_title: `${pr.title} (#${pr.number})`,
+                commit_title: `${latest.title} (#${pr.number})`,
               });
               if (!result.merged) {
                 throw new Error(`PR #${pr.number}: ${result.message}`);
               }
-              core.info(`Merged Dependabot PR #${pr.number}: ${result.sha}`);
+              core.info(`Merged ${latest.user.login} PR #${pr.number}: ${result.sha}`);
               // GITHUB_TOKEN merges do not trigger push workflows.
               await github.rest.actions.createWorkflowDispatch({
                 ...context.repo,
                 workflow_id: 'release.yml',
                 ref: 'main',
+                inputs: {},
               });
             }

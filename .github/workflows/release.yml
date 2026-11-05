@@ -1,4 +1,6 @@
 name: Release
+run-name: >-
+  ${{ inputs.verify_builds && format('Verify builds - {0} @ {1}', github.ref_name, github.sha) || inputs.release_pr != '' && format('Release validation PR #{0} @ {1}', inputs.release_pr, inputs.release_sha) || format('Release - {0}', github.ref_name) }}
 
 on:
   push:
@@ -7,6 +9,22 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, edited, ready_for_review]
   workflow_dispatch:
+    inputs:
+      verify_builds:
+        description: Read-only three-platform build verification on the selected ref
+        type: boolean
+        required: false
+        default: false
+      release_pr:
+        description: Release PR number to validate
+        type: string
+        required: false
+        default: ''
+      release_sha:
+        description: Exact release PR head SHA to validate
+        type: string
+        required: false
+        default: ''
 
 permissions:
   contents: read
@@ -20,20 +38,59 @@ defaults:
     shell: bash
 
 jobs:
+  context:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: read
+    env:
+      MISE_ENABLE_TOOLS: node,python
+    outputs:
+      check_sha: ${{ steps.context.outputs.check_sha }}
+      version: ${{ steps.context.outputs.version }}
+      pr_number: ${{ steps.context.outputs.pr_number }}
+      pr_title: ${{ steps.context.outputs.pr_title }}
+      base_sha: ${{ steps.context.outputs.base_sha }}
+      head_sha: ${{ steps.context.outputs.head_sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
+        with:
+          version: '2026.11.1'
+          cache: false
+      - name: Resolve and validate workflow context
+        id: context
+        run: node scripts/release.mjs context
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
   commitlint:
-    if: github.event_name == 'pull_request'
+    needs: context
+    if: ${{ !inputs.verify_builds && needs.context.outputs.pr_number != '' }}
     uses: ./.github/workflows/commits.yml
+    with:
+      pr_title: ${{ needs.context.outputs.pr_title }}
+      base_sha: ${{ needs.context.outputs.base_sha }}
+      head_sha: ${{ needs.context.outputs.head_sha }}
 
   check:
+    needs: context
     runs-on: ubuntu-24.04
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
+          ref: ${{ needs.context.outputs.check_sha }}
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+          persist-credentials: false
+      - uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
         with:
-          node-version: '24'
-          cache: npm
+          version: '2026.11.1'
+          cache: false
       - run: npm ci
       - name: Check commit messages
         if: github.event_name == 'push'
@@ -41,46 +98,77 @@ jobs:
           BEFORE: ${{ github.event.before }}
         run: |
           if [[ "$BEFORE" == 0000000000000000000000000000000000000000 ]]; then
-            npm run commitlint -- --last --verbose
+            mise run check:commits -- --last --verbose
           else
-            npm run commitlint -- --from "$BEFORE" --to "$GITHUB_SHA" --verbose
+            mise run check:commits -- --from "$BEFORE" --to "$GITHUB_SHA" --verbose
           fi
-      - run: npm run test:release
-      - name: Install Rust
-        run: rustup toolchain install stable --profile minimal --component rustfmt --component clippy
       - name: Validate
-        run: |
-          cargo +stable fmt --check
-          cargo +stable clippy --locked --all-targets -- -D warnings
-          cargo +stable test --locked
-          cargo +stable build --locked
-          python3 -m unittest discover -s tests -v
+        run: mise run check
 
-  plan:
-    needs: check
-    if: github.ref == 'refs/heads/main'
+  prepare:
+    needs: [context, check, commitlint]
+    if: >-
+      always() && !cancelled() && !inputs.verify_builds && github.ref == 'refs/heads/main' &&
+      github.event_name != 'pull_request' && needs.check.result == 'success' &&
+      (needs.commitlint.result == 'success' || needs.commitlint.result == 'skipped')
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      MISE_ENABLE_TOOLS: node,python
     permissions:
       contents: write
+      pull-requests: write
+      actions: write
     outputs:
+      release_sha: ${{ steps.release.outputs.release_sha }}
       version: ${{ steps.release.outputs.version }}
+      release_pr_number: ${{ steps.release.outputs.release_pr_number }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
+          ref: ${{ needs.context.outputs.check_sha }}
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+          persist-credentials: false
+      - uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
         with:
-          node-version: '24'
-          cache: npm
+          version: '2026.11.1'
+          cache: false
       - run: npm ci
       - id: release
-        run: npm run release:plan
+        run: npm run release:prepare
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
+  release-check:
+    needs: prepare
+    if: >-
+      always() && !cancelled() && !inputs.verify_builds &&
+      needs.prepare.result == 'success' && needs.prepare.outputs.version != ''
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ needs.prepare.outputs.release_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
+        with:
+          version: '2026.11.1'
+          cache: false
+      - run: npm ci
+      - name: Validate release snapshot
+        run: mise run check
+
   build:
-    needs: plan
-    if: needs.plan.outputs.version != ''
+    needs: [context, check, prepare]
+    if: >-
+      always() && !cancelled() && needs.context.result == 'success' && needs.check.result == 'success' &&
+      ((inputs.verify_builds && github.event_name == 'workflow_dispatch' &&
+        needs.context.outputs.check_sha == github.sha && needs.context.outputs.version != '') ||
+       (!inputs.verify_builds && needs.prepare.result == 'success' && needs.prepare.outputs.version != ''))
     strategy:
       fail-fast: false
       matrix:
@@ -95,31 +183,46 @@ jobs:
             target: x86_64-pc-windows-msvc
             binary: jev-grep.exe
     runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    env:
+      MISE_ENABLE_TOOLS: rust,python
+      RELEASE_SHA: ${{ inputs.verify_builds && needs.context.outputs.check_sha || needs.prepare.outputs.release_sha }}
+      RELEASE_VERSION: ${{ inputs.verify_builds && needs.context.outputs.version || needs.prepare.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          python-version: '3.12'
-      - name: Set release version
-        env:
-          RELEASE_VERSION: ${{ needs.plan.outputs.version }}
-        run: python scripts/set-release-version.py "$RELEASE_VERSION"
-      - name: Install Rust
+          ref: ${{ env.RELEASE_SHA }}
+          persist-credentials: false
+      - uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
+        with:
+          version: '2026.11.1'
+          cache: false
+      - name: Validate release version
+        run: |
+          python - <<'PY'
+          import os
+          import tomllib
+          from pathlib import Path
+
+          version = tomllib.loads(Path('Cargo.toml').read_text())['package']['version']
+          if version != os.environ['RELEASE_VERSION']:
+              raise SystemExit(f'Cargo version {version} does not match release version')
+          PY
+      - name: Install Rust target
         env:
           TARGET: ${{ matrix.target }}
-        run: rustup toolchain install stable --profile minimal --target "$TARGET"
+        run: mise exec -- rustup target add --toolchain "$(mise current rust)" "$TARGET"
       - name: Build and smoke-test
         env:
           TARGET: ${{ matrix.target }}
           BINARY: ${{ matrix.binary }}
-          RELEASE_VERSION: ${{ needs.plan.outputs.version }}
         run: |
-          cargo +stable build --release --locked --target "$TARGET"
+          cargo build --release --locked --target "$TARGET"
           test "$("target/$TARGET/release/$BINARY" --version)" = "jev-grep $RELEASE_VERSION"
           "target/$TARGET/release/$BINARY" --help
       - name: Package
         env:
-          TAG: v${{ needs.plan.outputs.version }}
+          TAG: v${{ env.RELEASE_VERSION }}
           TARGET: ${{ matrix.target }}
           BINARY: ${{ matrix.binary }}
         run: |
@@ -143,36 +246,57 @@ jobs:
                   for path, member in files:
                       archive.add(path, arcname=member)
           PY
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: release-${{ matrix.target }}
+          name: release-${{ env.RELEASE_VERSION }}-${{ matrix.target }}
           path: dist/*
           if-no-files-found: error
 
   publish:
-    needs: [plan, build]
+    needs: [prepare, release-check, build]
+    if: >-
+      always() && !cancelled() && !inputs.verify_builds && github.ref == 'refs/heads/main' &&
+      needs.prepare.result == 'success' &&
+      needs.prepare.outputs.version != '' && needs.release-check.result == 'success' &&
+      needs.build.result == 'success'
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      MISE_ENABLE_TOOLS: node,python
     permissions:
       contents: write
+      pull-requests: write
+      actions: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
+          ref: ${{ needs.prepare.outputs.release_sha }}
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+          persist-credentials: false
+      - uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
         with:
-          node-version: '24'
-          cache: npm
+          version: '2026.11.1'
+          cache: false
       - run: npm ci
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
-          pattern: release-*
-          merge-multiple: true
+          name: release-${{ needs.prepare.outputs.version }}-x86_64-unknown-linux-gnu
+          path: dist
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: release-${{ needs.prepare.outputs.version }}-aarch64-apple-darwin
+          path: dist
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: release-${{ needs.prepare.outputs.version }}-x86_64-pc-windows-msvc
           path: dist
       - name: Generate checksums
         working-directory: dist
         run: sha256sum -- *.tar.gz *.zip > SHA256SUMS
-      - name: Publish semantic release
+      - name: Publish release
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          RELEASE_VERSION: ${{ needs.plan.outputs.version }}
-        run: npm run release
+          RELEASE_SHA: ${{ needs.prepare.outputs.release_sha }}
+          RELEASE_VERSION: ${{ needs.prepare.outputs.version }}
+          RELEASE_PR_NUMBER: ${{ needs.prepare.outputs.release_pr_number }}
+        run: npm run release:publish

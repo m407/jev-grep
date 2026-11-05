@@ -1,0 +1,116 @@
+amends "package://github.com/jdx/hk/releases/download/v2.11.1/hk@2.11.1#/Config.pkl"
+
+min_hk_version = "2.11.1"
+fail_fast = false
+
+local secretFlags = List("--redact=100", "--no-banner", "--validation=false", "--ignore-gitleaks-allow")
+
+local worktreeSecrets = new Step {
+  glob = "**/*"
+  allow_binary = true
+  check = new Command { argv = List("betterleaks", "dir") + secretFlags + List("--", "{{files}}") }
+  output_summary = "combined"
+}
+
+local machete = new Step {
+  // No file arguments: removing the last use of a crate must trigger a scan.
+  check = new Command { argv = List("mise", "run", "check:machete") }
+  output_summary = "combined"
+}
+
+// Commands live here once; hk selects staged files in pre-commit and all files
+// in `mise run check:lint`. Structured argv preserves unusual file names.
+steps {
+  ["ruff"] {
+    glob = "**/*.py"
+    check = new Command { argv = List("ruff", "check", "--", "{{files}}") }
+    fix = new Command { argv = List("ruff", "check", "--fix", "--", "{{files}}") }
+    output_summary = "combined"
+  }
+  ["ruff-format"] {
+    glob = "**/*.py"
+    depends = "ruff"
+    check = new Command { argv = List("ruff", "format", "--check", "--", "{{files}}") }
+    fix = new Command { argv = List("ruff", "format", "--", "{{files}}") }
+    output_summary = "combined"
+  }
+  ["oxlint"] {
+    glob = List("**/*.js", "**/*.mjs", "**/*.cjs")
+    check = new Command { argv = List("oxlint", "--deny-warnings", "--config", ".oxlintrc.json", "--", "{{files}}") }
+    output_summary = "combined"
+  }
+  ["oxfmt"] {
+    glob = List("**/*.js", "**/*.mjs", "**/*.cjs")
+    check = new Command { argv = List("oxfmt", "--check", "--config", ".oxfmtrc.json", "--", "{{files}}") }
+    fix = new Command { argv = List("oxfmt", "--write", "--config", ".oxfmtrc.json", "--", "{{files}}") }
+    output_summary = "combined"
+  }
+  ["rustfmt"] {
+    glob = "**/*.rs"
+    // Do not follow `mod` declarations and rewrite files outside the staged set.
+    check = new Command {
+      argv = List("rustfmt", "--check", "--edition", "2024", "--config", "skip_children=true", "--", "{{files}}")
+    }
+    fix = new Command {
+      argv = List("rustfmt", "--edition", "2024", "--config", "skip_children=true", "--", "{{files}}")
+    }
+    output_summary = "combined"
+  }
+  ["jactionlint"] {
+    glob = List(".github/workflows/*.yml", ".github/workflows/*.yaml", ".github/dependabot.yml", ".github/dependabot.yaml", "**/action.yml", "**/action.yaml")
+    check = new Command { argv = List("jactionlint", "--strict-exit", "--no-online", "--", "{{files}}") }
+    output_summary = "combined"
+  }
+  ["cargo-machete"] = machete
+}
+
+hooks {
+  ["secrets-worktree"] {
+    steps {
+      ["betterleaks"] = worktreeSecrets
+    }
+  }
+  ["check"] {
+    steps {
+      ["betterleaks-history"] {
+        check = new Command {
+          argv = List("betterleaks", "git", ".", "--log-opts=--all --full-history -m") + secretFlags
+        }
+        output_summary = "combined"
+      }
+    }
+  }
+  ["pre-commit"] {
+    fix = false
+    stage = false
+    stash = "git"
+    steps {
+      ["betterleaks"] {
+        check = new Command {
+          argv = List("betterleaks", "git", ".", "--pre-commit", "--staged") + secretFlags
+        }
+        output_summary = "combined"
+      }
+      ["cargo-machete"] = (machete) {
+        // Git's status lists retain deleted paths, unlike the existing-file list.
+        step_condition = #"any(git.staged_files, {hasSuffix(#, ".rs") or hasSuffix(#, "Cargo.toml") or hasSuffix(#, "Cargo.lock")}) or any(git.staged_deleted_files, {hasSuffix(#, ".rs") or hasSuffix(#, "Cargo.toml") or hasSuffix(#, "Cargo.lock")}) or git.staged_renamed_files != []"#
+      }
+    }
+  }
+  ["commit-msg"] {
+    steps {
+      ["commitlint"] {
+        check = new Command { argv = List("mise", "run", "check:commits", "--", "--edit", "{{commit_msg_file}}", "--verbose") }
+        output_summary = "combined"
+      }
+    }
+  }
+  ["pre-push"] {
+    steps {
+      ["check"] {
+        check = new Command { argv = List("mise", "run", "check:offline") }
+        output_summary = "combined"
+      }
+    }
+  }
+}

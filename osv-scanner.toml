@@ -1,0 +1,6 @@
+# User-approved temporary exception for the release-please migration.
+# Expires at the start of 2026-12-05 UTC; OSV then reports the advisory again.
+[[IgnoredVulns]]
+id = "GHSA-g3hv-75wg-m249"
+ignoreUntil = 2026-12-05T00:00:00Z
+reason = "Temporary acceptance through 2026-12-05 for package-lock.json: release-please@17.11.2 -> @google-automations/git-file-utils@3.2.1 -> minimatch@10.2.6. The fix starts at minimatch 11.0.1, outside the parent's ^10.2.4 range; no compatible fixed 10.x release is available. Remove this exception after an upstream compatible dependency fix."

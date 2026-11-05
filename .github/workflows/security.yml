@@ -1,0 +1,37 @@
+name: Security
+
+on:
+  schedule:
+    - cron: '23 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  security:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install security toolchain
+        uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
+        with:
+          version: '2026.11.1'
+          install_args: github:jdx/hk github:jdx/jactionlint aqua:google/osv-scanner node
+      - name: Scan dependency lockfiles and enforce security exception expiry
+        env:
+          # Security tools were installed above; avoid installing unrelated build tools.
+          MISE_TASK_RUN_AUTO_INSTALL: 'false'
+        run: mise run check:security

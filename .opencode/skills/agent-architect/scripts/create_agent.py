@@ -54,7 +54,11 @@ ACTION_ALIASES = {"bash": "shell", "task": "subagent", "write": "edit", "patch":
 
 
 def contract(
-    summary: str, input_prompt: str, input_files_context: str, produces: str, output_message: str
+    summary: str,
+    input_prompt: str,
+    input_files_context: str,
+    produces: str,
+    output_message: str,
 ) -> dict:
     """Build a standard description contract."""
     return {
@@ -589,9 +593,7 @@ Examples:
     parser.add_argument(
         "--path", "-p", default=".opencode/agents", help="Output directory"
     )
-    parser.add_argument(
-        "--model", help="provider/model with optional #variant"
-    )
+    parser.add_argument("--model", help="provider/model with optional #variant")
     parser.add_argument(
         "--temperature",
         type=float,
@@ -603,7 +605,9 @@ Examples:
         help="Custom description; prefer the formal input/output contract format",
     )
     parser.add_argument("--tools", help="Comma-separated permission actions to allow")
-    parser.add_argument("--no-tools", help="Comma-separated actions to deny (wins over allows)")
+    parser.add_argument(
+        "--no-tools", help="Comma-separated actions to deny (wins over allows)"
+    )
     parser.add_argument("--dry-run", action="store_true", help="Print without writing")
     parser.add_argument(
         "--list-templates",

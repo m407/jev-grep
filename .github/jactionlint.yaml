@@ -1,0 +1,18 @@
+ignores:
+  - rule: dangerous-triggers
+    file: .github/workflows/dependabot-auto-merge.yml
+    reason: >-
+      The merge job requires privileged workflow_run execution after successful
+      Release validation, verifying the release.yml workflow ID and successful
+      check and commitlint / commitlint jobs through the API. It accepts Dependabot
+      PRs or strictly identified github-actions[bot] release-please PRs on
+      release-please--branches--main with "autorelease: pending", without
+      "autorelease: tagged" or "autorelease: snooze" labels, and only
+      Cargo.toml, Cargo.lock, .release-please-manifest.json
+      and CHANGELOG.md changes. Dispatch validation is restricted to that release
+      branch and release PR. It rechecks current author, labels, same source/base
+      repository, main base, open nondraft state and exact tested head immediately
+      before passing that SHA to the squash-merge API. It performs no checkout,
+      artifact consumption or untrusted code execution. Job-scoped contents write
+      permits merging; actions write permits the explicit Release dispatch on main.
+    expires: "2027-02-04"
