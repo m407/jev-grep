@@ -1,5 +1,4 @@
 use anyhow::{Context, Result, ensure};
-use rand::Rng;
 use reqwest::blocking::Client;
 use serde_json::{Value, json};
 use std::cell::RefCell;
@@ -284,7 +283,7 @@ fn retryable_io(error: &std::io::Error) -> bool {
 
 fn retry_delay(attempt: u32, retry_after: Option<&str>, now: SystemTime) -> Duration {
     let exponential = Duration::from_millis([200, 400, 800][(attempt - 1) as usize]);
-    let jitter = Duration::from_millis(rand::thread_rng().gen_range(0..=100));
+    let jitter = Duration::from_millis(rand::random_range(0..=100));
     let backoff = exponential + jitter;
     let server = retry_after.and_then(|value| {
         if value.bytes().all(|byte| byte.is_ascii_digit()) {
