@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/m407/jev-grep/compare/v1.2.1...v1.2.2) (2026-11-06)
+
+
+### Bug Fixes
+
+* **ci:** retain pending bot merge runs ([#19](https://github.com/m407/jev-grep/issues/19)) ([001f3fc](https://github.com/m407/jev-grep/commit/001f3fc0018fbad9e1fbdccabab155128ebb89db))
+
 ## [1.2.1](https://github.com/m407/jev-grep/compare/v1.2.0...v1.2.1) (2026-11-06)
 
 
