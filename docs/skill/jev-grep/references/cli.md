@@ -124,7 +124,7 @@ validated but not sent to the model; other sources continue to be processed.
 For a user-specified budget, run:
 
 ```sh
-jev-grep --tpm 512000 --tpm-safety-factor 1.2 \
+jev-grep --tpm "$JEV_GREP_TPM" --tpm-safety-factor 1.2 \
   'Command execution errors' build.log
 ```
 
