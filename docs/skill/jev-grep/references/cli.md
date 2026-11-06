@@ -91,7 +91,9 @@ restrict inputs to the relevant text files.
 | `--join-threshold P` | Group log records when `same_event` **or** `useful_context` ≥ P; default `0.5` |
 | `--max-line-bytes N` | Physical input line including its line ending; default `16384` |
 | `--max-fragment-bytes N` | Evaluated fragment text in UTF-8 bytes; default `16384` |
-| `--timeout SECONDS` | One evaluation including retries, reading, and waits; default `30` |
+| `--timeout SECONDS` | One evaluation including retries/reading, excluding TPM/429 waits; default `30` |
+| `--tpm N` | Local tokens/minute budget, also `JEV_GREP_TPM`; unset disables it |
+| `--tpm-safety-factor F` | Finite token-estimate multiplier ≥ 1; default `1.2` |
 | `-m N`, `--max-count N` | Up to N selected fragments per source |
 | `-v`, `--invert-match` | Select scores below the threshold; grouping is unchanged |
 | `-c`, `--count` | `source:count`, including zero |
@@ -117,6 +119,40 @@ candidates are unknown. `-l` prints each path once, but does not stop evaluating
 later candidates. After reaching `-m`, further candidates for that source are
 validated but not sent to the model; other sources continue to be processed.
 
+## TPM and retry diagnostics
+
+For a user-specified budget, run:
+
+```sh
+jev-grep --tpm 512000 --tpm-safety-factor 1.2 \
+  'Command execution errors' build.log
+```
+
+`--tpm` requires a positive integer and overrides `JEV_GREP_TPM`. Without either,
+local limiting is disabled. The budget is shared across all requests/files in one
+process; allocate separate shares when running multiple processes.
+
+Each HTTP attempt reserves the full estimate in a **sliding 60-second window**,
+independently of provider headers. Retries are charged separately, even after
+network errors. Growing log fragments resend their complete accumulated text and
+all question instructions. No model tokenizer is configured: the conservative
+fallback is `ceil((full serialized JSON UTF-8 byte length + 256) × F)`, counting
+one token per byte plus an allowance for server framing/output. Treat it as an
+estimate, not measured usage or a guarantee about hidden server prompts.
+
+When a request alone exceeds TPM, the CLI exits with code 2 immediately. Reduce
+query/fragment size or use a larger user-approved budget. Record-size limits still
+apply: indivisible records cannot be split automatically.
+
+HTTP 429 always waits 60 seconds before retrying, without reading provider headers,
+including `Retry-After`, even with TPM disabled. A model evaluation has at most
+four attempts; retries retain the body and pending fragment state. TPM waits and
+429 cooldowns are **outside `--timeout`**; other backoff and response reading are
+inside it. Allow longer wall-clock time in the calling tool or subprocess timeout.
+stderr identifies the wait reason, request estimate, occupied budget, and pause
+duration. Use these diagnostics to distinguish throttling from a stalled input
+stream; keep partial results marked partial if the command ultimately fails.
+
 ## Grouping and latency
 
 The first log record receives `match`; the next record triggers one HTTP
@@ -140,7 +176,7 @@ the absence of server-side truncation.
 Requests are sequential, without batching or caching. A complete successful
 pass typically requires one HTTP request per log record or evaluated AST
 candidate. Four questions do not mean four HTTP requests. Transient failures
-receive at most four total attempts within the shared deadline; retries after
+receive at most four total attempts within the API-time budget described above; retries after
 transport failures may incur another charge. Do not present copied, outdated
 prices or direct TypeSafe context limits as guarantees for the selected gateway.
 
