@@ -29,6 +29,9 @@ on:
 permissions:
   contents: read
 
+env:
+  RELEASE_APP_SLUG: ${{ vars.RELEASE_APP_SLUG }}
+
 concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false
@@ -134,10 +137,20 @@ jobs:
           version: '2026.11.1'
           cache: false
       - run: npm ci
+      - name: Create release PR token
+        id: release-app
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ vars.RELEASE_APP_CLIENT_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
       - id: release
         run: npm run release:prepare
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          RELEASE_PR_TOKEN: ${{ steps.release-app.outputs.token }}
+          RELEASE_APP_TOKEN_SLUG: ${{ steps.release-app.outputs.app-slug }}
 
   release-check:
     needs: prepare
