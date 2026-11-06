@@ -8,3 +8,10 @@ service = "jev-grep"
 
 [secrets]
 JEV_GREP_API_KEY= { provider = "zen-keychain", value = "JEV_GREP_API_KEY", if_missing = "error" }
+
+[providers.release-keychain]
+type = "keychain"
+service = "jev-grep"
+
+[profiles.release.secrets]
+RELEASE_APP_PRIVATE_KEY= { provider = "release-keychain", value = "RELEASE_APP_PRIVATE_KEY", if_missing = "error" }

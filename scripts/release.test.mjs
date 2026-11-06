@@ -29,13 +29,16 @@ const baseEnv = {
   GITHUB_REF: 'refs/heads/main',
   GITHUB_SHA: sha,
   GITHUB_TOKEN: 'fixture-token',
+  RELEASE_APP_SLUG: 'jev-release',
+  RELEASE_APP_TOKEN_SLUG: 'jev-release',
+  RELEASE_PR_TOKEN: 'fixture-app-token',
 };
 
 function pull(overrides = {}) {
   return {
     number: 12,
     title: 'chore(main): release 1.2.3',
-    user: { login: 'github-actions[bot]' },
+    user: { login: 'jev-release[bot]' },
     base: { ref: 'main', sha: base, repo: { full_name: repository } },
     head: { ref: RELEASE_BRANCH, sha: head, repo: { full_name: repository } },
     labels: [{ name: pending }],
@@ -461,7 +464,8 @@ test('unchanged release-please result still dispatches discovered PR validation'
   const result = await prepare({
     env: baseEnv,
     api: fixture.api,
-    createPRs: async () => {
+    createPRs: async (options) => {
+      assert.deepEqual(options, { repository, token: baseEnv.RELEASE_PR_TOKEN });
       calls++;
       return [];
     },
@@ -481,6 +485,38 @@ test('prepare retry redispatches unchanged PR so failed auto-merge can recover',
     { ref: RELEASE_BRANCH, inputs: { release_pr: '12', release_sha: head } },
     { ref: RELEASE_BRANCH, inputs: { release_pr: '12', release_sha: head } },
   ]);
+});
+
+test('PR creation fails closed for missing credentials or mismatched App identity', async () => {
+  for (const override of [
+    { RELEASE_PR_TOKEN: '' },
+    { RELEASE_APP_SLUG: '' },
+    { RELEASE_APP_SLUG: 'github-actions', RELEASE_APP_TOKEN_SLUG: 'github-actions' },
+    { RELEASE_APP_TOKEN_SLUG: 'another-app' },
+  ]) {
+    const fixture = githubFixture({ merged: false });
+    await assert.rejects(
+      prepare({
+        env: { ...baseEnv, ...override },
+        api: fixture.api,
+        createPRs: () => assert.fail('must not create PRs'),
+      }),
+    );
+    assert.deepEqual(fixture.state.dispatches, []);
+  }
+});
+
+test('legacy and unrelated bot PRs cannot authorize validation or publication', async () => {
+  for (const login of ['github-actions[bot]', 'other-app[bot]']) {
+    await assert.rejects(dispatchContext(pull({ user: { login } })), /author/);
+    const fixture = githubFixture();
+    fixture.state.pr.user.login = login;
+    await assert.rejects(prepare({ env: baseEnv, api: fixture.api }), /author/);
+    assert.equal(
+      fixture.state.calls.some((call) => call.method !== 'GET'),
+      false,
+    );
+  }
 });
 
 test('publish rejects missing or invalid assets before any API calls', async () => {
