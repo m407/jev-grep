@@ -86,9 +86,12 @@ selected.
 **A pause in a live stream does not finish a fragment.** Even matching text
 waits for the next boundary or EOF; completed matches are emitted immediately
 with stdout flushed. `--timeout` (default 30 seconds) limits one complete model
-evaluation, including sending, reading the response, retries, and waits.
+evaluation, including sending, reading the response, retries, and ordinary backoff.
+Local TPM waits and fixed 60-second HTTP 429 cooldowns are excluded; 429 ignores
+provider headers. See [local TPM budgeting](reference.md#local-tpm-budget-and-http-429).
 Transient HTTP/network failures receive at most four total attempts; waits
-grow (200/400/800 ms) with jitter and honor `Retry-After`. Authentication, TLS,
+for other retryable failures grow (200/400/800 ms) with jitter and honor `Retry-After`.
+Authentication, TLS,
 malformed responses, and oversized responses are not retried. A retry after a
 network failure may incur another charge; exactly-once inference is not
 guaranteed.

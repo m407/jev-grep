@@ -1,6 +1,7 @@
 mod api;
 mod fragment;
 mod input;
+mod rate_limit;
 mod search;
 
 use anyhow::{Context, Result, ensure};
@@ -74,7 +75,13 @@ pub struct Args {
     /// Maximum evaluated fragment bytes
     #[arg(long, default_value_t = 16384)]
     max_fragment_bytes: u64,
-    /// Total timeout for each model evaluation, including retries and response reading
+    /// Local tokens/minute budget (60-second sliding window); unset disables it
+    #[arg(long, env = "JEV_GREP_TPM")]
+    tpm: Option<u64>,
+    /// Conservative request-token estimate multiplier (finite and at least 1)
+    #[arg(long, default_value_t = 1.2)]
+    tpm_safety_factor: f64,
+    /// Evaluation timeout including retries/reading, excluding TPM and HTTP 429 waits
     #[arg(long, default_value_t = 30)]
     timeout: u64,
 }
@@ -107,6 +114,11 @@ fn run(mut args: Args) -> Result<bool> {
         "max-line-bytes must be positive and below u64::MAX"
     );
     ensure!(args.timeout > 0, "timeout must be positive");
+    ensure!(args.tpm != Some(0), "tpm must be positive");
+    ensure!(
+        args.tpm_safety_factor.is_finite() && args.tpm_safety_factor >= 1.0,
+        "tpm-safety-factor must be finite and at least 1"
+    );
     ensure!(args.max_count != Some(0), "max-count must be positive");
     if args.paths.is_empty() {
         args.paths
