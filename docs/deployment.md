@@ -196,9 +196,13 @@ System One endpoint. There is no automatic endpoint/model fallback.
 ## Data, cost, and context
 
 `--timeout` is a shared 30-second-by-default budget for each model evaluation,
-including retries, response-body reads, and waiting. Transient HTTP/network
+including retries, response-body reads, and ordinary backoff. Local TPM waits and
+fixed 60-second HTTP 429 cooldowns are excluded. HTTP 429 ignores provider headers.
+Configure `--tpm` or `JEV_GREP_TPM` for a process-local sliding-window budget;
+see [estimation and limits](reference.md#local-tpm-budget-and-http-429).
+Transient HTTP/network
 failures receive at most four total attempts with exponential backoff, jitter,
-and `Retry-After`; authentication, TLS validation, malformed responses, and
+and (except for 429) `Retry-After`; authentication, TLS validation, malformed responses, and
 oversized responses are not retried. A retry after a transport failure may incur
 a second inference charge; exactly-once inference is not guaranteed.
 

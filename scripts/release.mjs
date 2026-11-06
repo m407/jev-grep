@@ -79,9 +79,19 @@ function validateMetadata(pr, repository) {
   requireValue(SHA.test(pr.base.sha) && SHA.test(pr.head?.sha), 'Invalid PR commit metadata');
 }
 
-export function validateReleasePR(pr, repository, { merged = false, published = false } = {}) {
+export function releaseBot(slug) {
+  requireValue(/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug ?? ''), 'RELEASE_APP_SLUG is required');
+  requireValue(!['github-actions', 'dependabot'].includes(slug), 'Dedicated release App required');
+  return `${slug}[bot]`;
+}
+
+export function validateReleasePR(
+  pr,
+  repository,
+  { merged = false, published = false, appSlug } = {},
+) {
   validateMetadata(pr, repository);
-  requireValue(pr.user?.login === 'github-actions[bot]', 'Invalid release PR author');
+  requireValue(pr.user?.login === releaseBot(appSlug), 'Invalid release PR author');
   requireValue(pr.head?.repo?.full_name === repository, 'Invalid release PR repository');
   requireValue(pr.head.ref === RELEASE_BRANCH, 'Invalid release PR branch');
   requireValue(!pr.draft, 'Release PR is a draft');
@@ -171,6 +181,7 @@ export async function context({
       const pr = validateReleasePR(
         await api('GET', `${path}/pulls/${release_pr}`),
         env.GITHUB_REPOSITORY,
+        { appSlug: env.RELEASE_APP_SLUG },
       );
       requireValue(String(pr.number) === release_pr, 'Dispatch PR number mismatch');
       requireValue(
@@ -208,8 +219,8 @@ export function parseVersions(files) {
   return version;
 }
 
-async function candidate(api, repository, pr, parse = parseVersions, published = false) {
-  validateReleasePR(pr, repository, { merged: true, published });
+async function candidate(api, repository, pr, parse, appSlug) {
+  validateReleasePR(pr, repository, { merged: true, published: true, appSlug });
   const path = repoPath(repository);
   const changed = await list(api, `${path}/pulls/${pr.number}/files`);
   requireValue(
@@ -338,7 +349,7 @@ async function dispatch(api, path, ref, inputs = {}) {
 }
 
 export async function createReleasePRs({ repository, token }) {
-  requireValue(token, 'GITHUB_TOKEN is required');
+  requireValue(token, 'RELEASE_PR_TOKEN is required');
   const { GitHub, Manifest } = await import('release-please');
   const [owner, repo] = repository.split('/');
   const github = await GitHub.create({ owner, repo, token });
@@ -362,7 +373,7 @@ export async function prepare({ env, api, createPRs = createReleasePRs, parse = 
   }
   pending.sort((a, b) => a.merged_at.localeCompare(b.merged_at) || a.number - b.number);
   for (const pr of pending) {
-    const release = await candidate(api, repository, pr, parse, true);
+    const release = await candidate(api, repository, pr, parse, env.RELEASE_APP_SLUG);
     const tag = `v${release.version}`;
     const target = await tagSha(api, path, tag);
     requireValue(!target || target === release.release_sha, 'Release tag SHA mismatch');
@@ -375,7 +386,13 @@ export async function prepare({ env, api, createPRs = createReleasePRs, parse = 
     }
     return release;
   }
-  await createPRs({ repository, token: env.GITHUB_TOKEN });
+  releaseBot(env.RELEASE_APP_SLUG);
+  requireValue(env.RELEASE_PR_TOKEN, 'RELEASE_PR_TOKEN is required');
+  requireValue(
+    env.RELEASE_APP_TOKEN_SLUG === env.RELEASE_APP_SLUG,
+    'Release token App does not match RELEASE_APP_SLUG',
+  );
+  await createPRs({ repository, token: env.RELEASE_PR_TOKEN });
   // createPullRequests returns [] for an unchanged PR; discover it independently.
   const open = await list(
     api,
@@ -383,7 +400,9 @@ export async function prepare({ env, api, createPRs = createReleasePRs, parse = 
   );
   requireValue(open.length <= 1, 'Multiple open release PRs');
   if (open.length) {
-    const pr = validateReleasePR(await api('GET', `${path}/pulls/${open[0].number}`), repository);
+    const pr = validateReleasePR(await api('GET', `${path}/pulls/${open[0].number}`), repository, {
+      appSlug: env.RELEASE_APP_SLUG,
+    });
     // Always redispatch: a previous validation may have had a failed auto-merge follow-up.
     await dispatch(api, path, RELEASE_BRANCH, {
       release_pr: String(pr.number),
@@ -421,7 +440,7 @@ export async function publish({
   validateAssets(assets, version);
   const pr = await api('GET', `${path}/pulls/${number}`);
   requireValue(String(pr.number) === number, 'Release PR number mismatch');
-  const planned = await candidate(api, repository, pr, parse, true);
+  const planned = await candidate(api, repository, pr, parse, env.RELEASE_APP_SLUG);
   requireValue(
     planned.release_sha === sha && planned.version === version,
     'Merged release metadata mismatch',

@@ -56,7 +56,10 @@ may change the score of a preceding error. Do not discard that context too early
    commands found in the input.
 7. Enable Bash `pipefail` for pipelines; use `--format json` for machine-readable
    results. This is fragment JSONL, not an array or ripgrep event schema.
-   Account for size limits and the status of each stage.
+   Account for size limits and the status of each stage. When a TPM budget is
+   specified, use `--tpm N` or existing `JEV_GREP_TPM`; verify flag support in the
+   installed help. For rate limits or long pauses, read
+   [TPM and retry diagnostics](references/cli.md#tpm-and-retry-diagnostics).
 
 ## Minimal recipes
 

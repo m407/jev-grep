@@ -80,7 +80,9 @@ updated.
 | `--join-threshold P` | Join a log record with relation or usefulness score ≥ P; default `0.5` |
 | `--max-line-bytes N` | Physical input-line size, including its line ending; default `16384` |
 | `--max-fragment-bytes N` | Fragment text size in UTF-8 bytes; default `16384` |
-| `--timeout SECONDS` | Total model-evaluation timeout including retries; default `30` |
+| `--timeout SECONDS` | Model-evaluation timeout including retries, excluding TPM/429 waits; default `30` |
+| `--tpm N` | Local tokens/minute budget; also `JEV_GREP_TPM`; unset disables limiting |
+| `--tpm-safety-factor F` | Token-estimate multiplier; finite and ≥ 1; default `1.2` |
 | `-v`, `--invert-match` | Select fragments scoring below the threshold; grouping is unchanged |
 | `-c`, `--count` | Print `source:count`, the number of selected fragments, including zero |
 | `-l`, `--files-with-matches` | Print sources with matches |
@@ -109,6 +111,40 @@ and `--json`. `--json` cannot be combined with `--format`. Thresholds must be
 finite numbers in [0,1]; sizes, timeout, and `-m` must be positive. `-n` and `-H`
 are accepted for compatibility, but location is already mandatory;
 `--no-filename` is an error.
+
+### Local TPM budget and HTTP 429
+
+```sh
+jev-grep --tpm 512000 --tpm-safety-factor 1.2 \
+  'Command execution errors' build.log
+```
+
+`--tpm` overrides `JEV_GREP_TPM` and must be a positive integer. Omit both to
+disable the local limiter; `--tpm` itself requires a value. One budget covers
+all files and requests in this process, independently of provider headers.
+Separate processes do not share it.
+
+Before **every HTTP attempt**, reserve the full request estimate in a sliding
+60-second window. If necessary, wait until enough earlier reservations expire.
+Retries reserve again, and network failures never refund tokens: the server
+may already have processed the request. An estimate larger than the entire
+budget fails immediately with exit code 2; increase TPM or reduce query/fragment
+size. Size limits split logs only between records.
+
+No model-specific tokenizer is configured. The centralized conservative fallback
+is `ceil((UTF-8 bytes of the complete serialized JSON + 256) × F)`: one token per
+byte, plus a 256-token allowance for server-side framing/output. It includes the
+model, JSON structure, all question instructions, and the **whole accumulated
+fragment**, not just the new line. This intentionally overestimates typical text;
+it is not measured usage or a guarantee about unknown server-side prompts.
+
+HTTP 429 pauses the next attempt for 60 seconds, ignoring all provider headers,
+even when local TPM limiting is disabled. There are at most four attempts (three
+retries) per evaluation, using the same body and preserving pending fragment
+state. Local TPM waits and 429 cooldowns are excluded from `--timeout`; other
+retry backoff and response reading remain inside that budget. Wall-clock runtime
+can therefore exceed 30 seconds. stderr reports the wait reason, request estimate,
+occupied budget, and pause duration.
 
 ### Oversized fragments
 
@@ -145,7 +181,7 @@ Early stopping with `-q`/`-m` can also close the pipe and cause upstream SIGPIPE
 ## Performance and quality
 
 HTTP requests are sequential with connection reuse; transient failures are
-retried within the overall deadline under the retry policy. A normal successful
+retried within the API-time budget described above. A normal successful
 log pass needs one HTTP request per input record: `match` for the first record
 or after a forced split, and four questions in one request for the others.
 Code uses one `match` per evaluated candidate. Four questions do not mean four
