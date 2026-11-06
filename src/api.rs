@@ -1,14 +1,17 @@
 use anyhow::{Context, Result, ensure};
-use rand::Rng;
 use reqwest::blocking::Client;
 use serde_json::{Value, json};
+use std::cell::RefCell;
 use std::io::Read;
 use std::time::{Duration, Instant, SystemTime};
 
 use crate::Args;
+use crate::rate_limit::{Clock, RateLimiter, SystemClock, WINDOW, estimate_request_tokens};
 
 pub struct Api {
     client: Client,
+    limiter: RefCell<RateLimiter>,
+    clock: Box<dyn Clock>,
 }
 
 const MAX_RESPONSE_BYTES: usize = 65536;
@@ -38,6 +41,8 @@ impl Api {
                 .retry(reqwest::retry::never())
                 .redirect(reqwest::redirect::Policy::none())
                 .build()?,
+            limiter: RefCell::new(RateLimiter::new(args.tpm)),
+            clock: Box::new(SystemClock),
         })
     }
 
@@ -85,11 +90,13 @@ impl Api {
     }
 
     fn send(&self, args: &Args, body: &Value) -> Result<Value> {
+        let body = serde_json::to_vec(body)?;
+        let cost = estimate_request_tokens(&body, args.tpm_safety_factor)?;
         let budget = Duration::from_secs(args.timeout);
-        let started = Instant::now();
+        let mut started = self.clock.now();
         let mut last_failure = String::from("deadline exhausted");
         for attempt in 1..=MAX_ATTEMPTS {
-            let remaining = budget.saturating_sub(started.elapsed());
+            let remaining = budget.saturating_sub(self.clock.now().duration_since(started));
             ensure!(
                 !remaining.is_zero(),
                 "API retry budget exhausted after attempt {}/{}: {last_failure}",
@@ -99,21 +106,40 @@ impl Api {
             let mut request = self
                 .client
                 .post(&args.api_url)
-                .json(body)
-                .timeout(remaining);
+                .header(reqwest::header::CONTENT_TYPE, "application/json")
+                .body(body.clone());
             if let Some(key) = &args.api_key {
                 request = request.bearer_auth(key);
             }
-            match request.send() {
+            // Build/authenticate before reserving; every actual send, including a
+            // retry, reserves the full body. Waiting does not spend API time.
+            let waiting = self.clock.now();
+            loop {
+                let delay = self.limiter.borrow_mut().reserve(cost, self.clock.now())?;
+                let Some(delay) = delay else { break };
+                self.report_wait("local TPM budget", cost, delay);
+                self.clock.sleep(delay);
+            }
+            started += self.clock.now().duration_since(waiting);
+            let remaining = budget.saturating_sub(self.clock.now().duration_since(started));
+            ensure!(
+                !remaining.is_zero(),
+                "API retry budget exhausted before attempt {attempt}: {last_failure}"
+            );
+            match request.timeout(remaining).send() {
                 Ok(response) => {
                     let status = response.status();
                     if !status.is_success() {
                         let code = status.as_u16();
-                        let retry_after = response
-                            .headers()
-                            .get(reqwest::header::RETRY_AFTER)
-                            .and_then(|h| h.to_str().ok())
-                            .map(str::to_owned);
+                        let retry_after = (code != 429)
+                            .then(|| {
+                                response
+                                    .headers()
+                                    .get(reqwest::header::RETRY_AFTER)
+                                    .and_then(|h| h.to_str().ok())
+                                    .map(str::to_owned)
+                            })
+                            .flatten();
                         drop(response);
                         if !retryable_status(code) {
                             anyhow::bail!("API returned HTTP {code}");
@@ -122,8 +148,23 @@ impl Api {
                         if attempt == MAX_ATTEMPTS {
                             break;
                         }
+                        if code == 429 {
+                            self.report_wait("HTTP 429 cooldown", cost, WINDOW);
+                            let waiting = self.clock.now();
+                            self.clock.sleep(WINDOW);
+                            started += self.clock.now().duration_since(waiting);
+                            continue;
+                        }
                         let delay = retry_delay(attempt, retry_after.as_deref(), SystemTime::now());
-                        sleep_within_budget(delay, started, budget, attempt, &last_failure)?;
+                        self.report_wait(&last_failure, cost, delay);
+                        sleep_within_budget(
+                            self.clock.as_ref(),
+                            delay,
+                            started,
+                            budget,
+                            attempt,
+                            &last_failure,
+                        )?;
                         continue;
                     }
                     let mut bytes = Vec::new();
@@ -148,8 +189,11 @@ impl Api {
                             if attempt == MAX_ATTEMPTS {
                                 break;
                             }
+                            let delay = retry_delay(attempt, None, SystemTime::now());
+                            self.report_wait(&last_failure, cost, delay);
                             sleep_within_budget(
-                                retry_delay(attempt, None, SystemTime::now()),
+                                self.clock.as_ref(),
+                                delay,
                                 started,
                                 budget,
                                 attempt,
@@ -169,8 +213,11 @@ impl Api {
                     if attempt == MAX_ATTEMPTS {
                         break;
                     }
+                    let delay = retry_delay(attempt, None, SystemTime::now());
+                    self.report_wait(&last_failure, cost, delay);
                     sleep_within_budget(
-                        retry_delay(attempt, None, SystemTime::now()),
+                        self.clock.as_ref(),
+                        delay,
                         started,
                         budget,
                         attempt,
@@ -181,6 +228,19 @@ impl Api {
             }
         }
         anyhow::bail!("API retry attempts exhausted ({MAX_ATTEMPTS}); last failure: {last_failure}")
+    }
+
+    fn report_wait(&self, reason: &str, cost: u64, delay: Duration) {
+        let mut limiter = self.limiter.borrow_mut();
+        limiter.expire(self.clock.now());
+        let limit = limiter
+            .limit
+            .map_or_else(|| "disabled".into(), |n| n.to_string());
+        eprintln!(
+            "jev-grep: waiting: {reason}; request estimate={cost} tokens; occupied budget={}/{limit}; pause={:.3}s",
+            limiter.used,
+            delay.as_secs_f64()
+        );
     }
 }
 
@@ -223,7 +283,7 @@ fn retryable_io(error: &std::io::Error) -> bool {
 
 fn retry_delay(attempt: u32, retry_after: Option<&str>, now: SystemTime) -> Duration {
     let exponential = Duration::from_millis([200, 400, 800][(attempt - 1) as usize]);
-    let jitter = Duration::from_millis(rand::thread_rng().gen_range(0..=100));
+    let jitter = Duration::from_millis(rand::random_range(0..=100));
     let backoff = exponential + jitter;
     let server = retry_after.and_then(|value| {
         if value.bytes().all(|byte| byte.is_ascii_digit()) {
@@ -243,20 +303,21 @@ fn retry_delay(attempt: u32, retry_after: Option<&str>, now: SystemTime) -> Dura
 }
 
 fn sleep_within_budget(
+    clock: &dyn Clock,
     delay: Duration,
     started: Instant,
     budget: Duration,
     attempt: u32,
     failure: &str,
 ) -> Result<()> {
-    let remaining = budget.saturating_sub(started.elapsed());
+    let remaining = budget.saturating_sub(clock.now().duration_since(started));
     ensure!(
         delay < remaining,
         "API retry budget exhausted after attempt {attempt}: {failure}"
     );
-    std::thread::sleep(delay);
+    clock.sleep(delay);
     ensure!(
-        started.elapsed() < budget,
+        clock.now().duration_since(started) < budget,
         "API retry budget exhausted after attempt {attempt}: {failure}"
     );
     Ok(())
@@ -287,8 +348,10 @@ fn probability(answers: &Value, id: &str) -> Result<f64> {
 mod tests {
     use super::*;
     use std::{
+        cell::Cell,
         io::{Read, Write},
         net::TcpListener,
+        rc::Rc,
         thread,
     };
 
@@ -357,6 +420,8 @@ mod tests {
             no_filename: false,
             max_line_bytes: 16384,
             timeout,
+            tpm: None,
+            tpm_safety_factor: 1.2,
         }
     }
 
@@ -419,13 +484,17 @@ mod tests {
             (first_request, second_request)
         });
         let url = format!("http://{address}/v1/systemone");
-        let args = args(url, 4, Some("same-token".into()));
-        assert_eq!(
-            Api::new(&args).unwrap().probability(&args, "A").unwrap(),
-            0.9
-        );
+        let mut args = args(url, 4, Some("same-token".into()));
+        args.tpm = Some(100_000);
+        let api = Api::new(&args).unwrap();
+        assert_eq!(api.probability(&args, "A").unwrap(), 0.9);
         let (first, second) = server.join().unwrap();
         assert_eq!(first, second);
+        let payload = first.split_once("\r\n\r\n").unwrap().1;
+        assert_eq!(
+            api.limiter.borrow().used,
+            2 * estimate_request_tokens(payload.as_bytes(), 1.2).unwrap()
+        );
         assert!(
             first
                 .to_ascii_lowercase()
@@ -670,6 +739,8 @@ mod tests {
             no_filename: false,
             max_line_bytes: 16384,
             timeout: 5,
+            tpm: None,
+            tpm_safety_factor: 1.2,
         };
         let one = request_body(
             &args,
@@ -712,5 +783,159 @@ mod tests {
         assert!(
             retry_delay(1, Some("Thu, 01 Jan 1970 00:00:00 GMT"), now) < Duration::from_secs(1)
         );
+    }
+
+    #[derive(Default)]
+    struct TestClock {
+        skipped: Cell<Duration>,
+        sleeps: RefCell<Vec<Duration>>,
+    }
+
+    // Keep actual network time visible to request deadlines while advancing long
+    // cooldowns instantly. The production HTTP transport remains under test.
+    impl Clock for Rc<TestClock> {
+        fn now(&self) -> Instant {
+            Instant::now() + self.skipped.get()
+        }
+
+        fn sleep(&self, delay: Duration) {
+            self.sleeps.borrow_mut().push(delay);
+            self.skipped.set(self.skipped.get() + delay);
+        }
+    }
+
+    fn scripted_http(responses: Vec<String>) -> (String, thread::JoinHandle<Vec<String>>) {
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        listener.set_nonblocking(true).unwrap();
+        let address = listener.local_addr().unwrap();
+        let server = thread::spawn(move || {
+            let until = Instant::now() + Duration::from_secs(5);
+            let mut requests = Vec::new();
+            for response in responses {
+                loop {
+                    match listener.accept() {
+                        Ok((mut stream, _)) => {
+                            requests.push(read_request(&mut stream));
+                            stream.write_all(response.as_bytes()).unwrap();
+                            break;
+                        }
+                        Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
+                            assert!(Instant::now() < until, "expected another HTTP attempt");
+                            thread::sleep(Duration::from_millis(1));
+                        }
+                        Err(error) => panic!("accept failed: {error}"),
+                    }
+                }
+            }
+            requests
+        });
+        (format!("http://{address}/v1/systemone"), server)
+    }
+
+    #[test]
+    fn http_429_ignores_headers_and_waits_outside_timeout_even_without_tpm() {
+        for header in [
+            "",
+            "Retry-After: 0\r\n",
+            "Retry-After: 999999\r\n",
+            "Retry-After: invalid\r\n",
+        ] {
+            let (url, server) = scripted_http(vec![
+                format!(
+                    "HTTP/1.1 429 Busy\r\n{header}Content-Length: 0\r\nConnection: close\r\n\r\n"
+                ),
+                http_response(200, r#"{"answers":{"match":{"noul":0.9}}}"#),
+            ]);
+            let args = args(url, 1, Some("same-token".into()));
+            let mut api = Api::new(&args).unwrap();
+            let clock = Rc::new(TestClock::default());
+            api.clock = Box::new(clock.clone());
+            assert_eq!(api.probability(&args, "text").unwrap(), 0.9);
+            assert_eq!(*clock.sleeps.borrow(), vec![WINDOW]);
+            let requests = server.join().unwrap();
+            assert_eq!(requests[0], requests[1]);
+        }
+    }
+
+    #[test]
+    fn repeated_429_stops_after_four_attempts_and_three_cooldowns() {
+        let (url, server) = scripted_http(vec![http_response(429, ""); 4]);
+        let mut args = args(url, 1, None);
+        args.tpm = Some(100_000);
+        let mut api = Api::new(&args).unwrap();
+        let clock = Rc::new(TestClock::default());
+        api.clock = Box::new(clock.clone());
+        let error = api.probability(&args, "text").unwrap_err().to_string();
+        assert!(error.contains("attempts exhausted (4)"), "{error}");
+        assert!(error.contains("HTTP 429"), "{error}");
+        assert_eq!(*clock.sleeps.borrow(), vec![WINDOW; 3]);
+        let requests = server.join().unwrap();
+        assert_eq!(requests.len(), 4);
+        assert!(requests.iter().all(|r| r == &requests[0]));
+        // The final attempt has its own reservation after the prior one expires.
+        assert_eq!(
+            api.limiter.borrow().used,
+            estimate_request_tokens(
+                requests[0].split_once("\r\n\r\n").unwrap().1.as_bytes(),
+                1.2
+            )
+            .unwrap()
+        );
+    }
+
+    #[test]
+    fn tpm_counts_retries_and_subsequent_evaluations_outside_api_timeout() {
+        let success = http_response(200, r#"{"answers":{"match":{"noul":0.9}}}"#);
+        let (url, server) = scripted_http(vec![http_response(503, ""), success.clone(), success]);
+        let mut args = args(url, 1, None);
+        let body = request_body(
+            &args,
+            json!("text"),
+            json!({"match": question(&args.query)}),
+        );
+        let cost = estimate_request_tokens(&serde_json::to_vec(&body).unwrap(), 1.2).unwrap();
+        args.tpm = Some(cost);
+        let mut api = Api::new(&args).unwrap();
+        let clock = Rc::new(TestClock::default());
+        api.clock = Box::new(clock.clone());
+        assert_eq!(api.probability(&args, "text").unwrap(), 0.9);
+        assert_eq!(api.probability(&args, "text").unwrap(), 0.9);
+        let sleeps = clock.sleeps.borrow();
+        assert_eq!(sleeps.len(), 3); // ordinary backoff, retry TPM, next call TPM
+        assert!(sleeps[0] < Duration::from_secs(1));
+        assert!(sleeps[1] > Duration::from_secs(59));
+        assert!(sleeps[2] > Duration::from_secs(59));
+        assert_eq!(api.limiter.borrow().used, cost);
+        let requests = server.join().unwrap();
+        assert!(requests.iter().all(|r| r == &requests[0]));
+    }
+
+    #[test]
+    fn full_growing_group_and_all_questions_are_charged() {
+        let success = http_response(
+            200,
+            r#"{"answers":{"same_event":{"noul":0.9},"useful_context":{"noul":0.1},"match_next":{"noul":0.2},"match_extended":{"noul":0.8}}}"#,
+        );
+        let (url, server) = scripted_http(vec![success.clone(), success]);
+        let mut args = args(url, 2, None);
+        args.query = "ошибки выполнения команд".into();
+        args.tpm = Some(100_000);
+        let api = Api::new(&args).unwrap();
+        api.group_probabilities(&args, "first\n", "second\n")
+            .unwrap();
+        api.group_probabilities(&args, "first\nsecond\n", "third\n")
+            .unwrap();
+        let requests = server.join().unwrap();
+        let costs: Vec<_> = requests
+            .iter()
+            .map(|r| {
+                let body = r.split_once("\r\n\r\n").unwrap().1;
+                let payload: Value = serde_json::from_str(body).unwrap();
+                assert_eq!(payload["questions"].as_object().unwrap().len(), 4);
+                estimate_request_tokens(body.as_bytes(), 1.2).unwrap()
+            })
+            .collect();
+        assert!(costs[1] > costs[0]);
+        assert_eq!(api.limiter.borrow().used, costs.iter().sum::<u64>());
     }
 }

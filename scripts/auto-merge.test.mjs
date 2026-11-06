@@ -30,7 +30,7 @@ function fixture(kind = 'release', event = 'workflow_dispatch') {
     title: release ? 'chore(main): release 1.2.0' : 'chore(deps): bump example from 1 to 2',
     state: 'open',
     draft: false,
-    user: { login: release ? 'github-actions[bot]' : 'dependabot[bot]' },
+    user: { login: release ? 'jev-release[bot]' : 'dependabot[bot]' },
     head: {
       repo: { ...repository },
       ref: release ? releaseBranch : 'dependabot/npm_and_yarn/example-2',
@@ -69,6 +69,7 @@ function fixture(kind = 'release', event = 'workflow_dispatch') {
     mergeError: null,
     calls: [],
     messages: [],
+    env: { RELEASE_APP_SLUG: 'jev-release' },
   };
   // Intentionally separate payload and API data: forged payload fields must not authorize merging.
   const context = { repo, payload: { workflow_run: structuredClone(state.run) } };
@@ -124,7 +125,8 @@ function fixture(kind = 'release', event = 'workflow_dispatch') {
     paginate: async (method, params) => (await method(params)).data,
   };
   const core = { info: (message) => state.messages.push(message) };
-  state.execute = () => script.runInNewContext({ github, context, core });
+  state.execute = () =>
+    script.runInNewContext({ github, context, core, process: { env: state.env } });
   state.context = context;
   return state;
 }
@@ -208,6 +210,7 @@ for (const [name, change] of invalidRuns) {
 }
 
 const invalidPRs = [
+  ['the legacy Actions bot', (pr) => (pr.user.login = 'github-actions[bot]')],
   ['a stale tested SHA', (pr) => (pr.head.sha = newSha)],
   ['a human author', (pr) => (pr.user.login = 'maintainer')],
   ['another bot author', (pr) => (pr.user.login = 'release-please[bot]')],
@@ -295,6 +298,29 @@ test('dispatch cannot authorize Dependabot even on the release branch', async ()
   state.pr.head.ref = releaseBranch;
   await state.execute();
   assert.deepEqual(mutations(state), []);
+});
+
+test('missing or invalid App configuration cannot authorize release merging', async () => {
+  for (const slug of [
+    undefined,
+    '',
+    'github-actions',
+    'dependabot',
+    'jev-release[bot]',
+    'other-app',
+  ]) {
+    const state = fixture();
+    state.env.RELEASE_APP_SLUG = slug;
+    await state.execute();
+    assert.deepEqual(mutations(state), []);
+  }
+});
+
+test('Dependabot merging does not require release App credentials', async () => {
+  const state = fixture('dependabot', 'pull_request');
+  state.env = {};
+  await state.execute();
+  assert.equal(mutations(state).length, 2);
 });
 
 test('PR run branch must match the current PR head branch', async () => {

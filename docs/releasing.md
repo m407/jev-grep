@@ -8,7 +8,7 @@ PR with the next version and changelog from Conventional Commits. Successful
 exact-head CI allows that generated PR to be squash-merged automatically;
 full validation of the merged snapshot and three-platform builds then gate
 publication. No manual version bump or approval
-of the generated release PR is required.
+of the generated release PR is required once the release GitHub App is configured.
 
 [release-please-config.json](../release-please-config.json) configures the root
 Rust package; [.release-please-manifest.json](../.release-please-manifest.json)
@@ -26,9 +26,11 @@ After the entire PR workflow succeeds,
 squash-merges Dependabot PRs into `main`, including major and security updates.
 It verifies the author, source repository, and tested head SHA before merging.
 Failed checks and merge conflicts block automatic merging.
+The shared merge concurrency group uses `queue: max` so simultaneous successful
+PR checks queue for merging instead of replacing pending merge runs.
 
 The same guarded workflow also handles generated release PRs. It verifies the
-Release workflow identity and successful validation jobs, `github-actions[bot]`
+Release workflow identity and successful validation jobs, the configured `<RELEASE_APP_SLUG>[bot]`
 author, same repository, `main` base, `release-please--branches--main` source
 branch, release labels, allowed files, and exact tested head SHA. Allowed release
 files are `Cargo.toml`, `Cargo.lock`, `.release-please-manifest.json`, and
@@ -85,9 +87,11 @@ mise run check
    creates or updates the release PR, generating `CHANGELOG.md` and updating
    `Cargo.toml`, `Cargo.lock`, and the manifest together. Without a merged release
    awaiting publication, archive builds and publication are skipped.
-3. Explicitly dispatches Release validation for the release PR's exact head.
-   This is required because PRs created with `GITHUB_TOKEN` do not automatically
-   trigger PR workflows. After successful validation, the guarded bot workflow
+3. Creates/updates PRs with a short-lived GitHub App token, so native PR CI starts
+   without approval. Also explicitly dispatches Release validation for the exact
+   head, including unchanged PRs, to support retries. These two validations can
+   both run; the serialized merge workflow rechecks the current PR before merging.
+   After successful validation, the guarded bot workflow
    squash-merges that exact head and explicitly dispatches Release on `main`.
 4. Preparation outputs the merged release PR's immutable merge SHA and version.
    The separate `release-check` job runs the full `mise run check` aggregate on
@@ -119,9 +123,10 @@ sha256sum --ignore-missing -c SHA256SUMS
 ```
 
 Builds and publication run in one workflow after the release PR is merged: no
-separate tag-triggered run is needed. The workflow uses the built-in
-`GITHUB_TOKEN`; a personal access token, Zen access, and a model
-key are not required. Neither an npm package nor a crates.io package is
+separate tag-triggered run is needed. PR creation uses a GitHub App installation
+token; merging, publication and explicit dispatch use the built-in `GITHUB_TOKEN`.
+A personal access token, Zen access, and a model key are not required.
+Neither an npm package nor a crates.io package is
 published.
 
 ## Version baseline and GitHub settings
@@ -132,16 +137,61 @@ discovery at `34610d0bed5d374d0ccd0c1304f363614668cb30`. This does not force the
 next version: Conventional Commits after the baseline determine the next bump.
 Subsequent releases use release-please's merged release history.
 
-In GitHub **Settings → Actions → General → Workflow permissions**,
-**Allow GitHub Actions to create and approve pull requests** must be enabled.
-It is already enabled in this repository; check it when setting up another
-repository from a copy or fork. Default workflow permissions remain read-only.
-The workflow grants individual jobs the contents, pull-request, and Actions
-permissions needed to create PRs, merge, publish, and dispatch validation;
-no personal token or additional secret is needed.
+### Release GitHub App (required)
+
+Create a dedicated GitHub App under **Settings → Developer settings → GitHub Apps**.
+Disable its webhook and grant repository **Contents: Read and write** and
+**Pull requests: Read and write** (Metadata read access is implicit). Install it
+on this repository only. Generate a private key and configure repository
+**Settings → Secrets and variables → Actions**:
+
+| Kind | Name | Value |
+| --- | --- | --- |
+| Variable | `RELEASE_APP_CLIENT_ID` | App Client ID from the App settings |
+| Variable | `RELEASE_APP_SLUG` | Exact slug from `github.com/apps/<slug>`, without `[bot]` |
+| Secret | `RELEASE_APP_PRIVATE_KEY` | Entire generated PEM private key |
+
+The SHA-pinned `actions/create-github-app-token` action creates a token scoped to
+the current repository with only those two write permissions and revokes it at
+job completion. Only preparation on `main` receives the App key. PR CI and
+read-only build verification need no App credentials. Preparation verifies the
+token's App slug matches configuration; release validation, merging and publication
+accept only that App's bot. Missing credentials fail preparation; there is no
+fallback to `GITHUB_TOKEN` for creating PRs.
+
+GitHub now creates approval-required PR runs when a workflow creates/updates a PR
+using `GITHUB_TOKEN`. The **Allow GitHub Actions to create and approve pull requests**
+setting does not remove that requirement. An App installation token is the
+[documented solution](https://docs.github.com/en/actions/concepts/security/github_token).
+Default workflow permissions remain read-only; individual jobs receive the
+contents, pull-request and Actions permissions needed for orchestration.
 Any branch rules must permit the bot's squash merge after CI. Configuring squash
 merge to use the Conventional Commit PR title is recommended. These repository
 settings are configured in GitHub, not in YAML files.
+
+### Migration and rollout verification
+
+Updating a PR with an App token does not change its author. Before the first
+App-backed preparation, close the unmerged legacy `github-actions[bot]` release
+PR, if one exists, and delete its `release-please--branches--main` branch. Then
+run Release on `main` after deploying this configuration and installing the App.
+Release-please recreates the pending release from commits with the correct author;
+do not manually merge the old PR. Resolve any already-merged legacy pending release
+with the old publisher before migration; the new publisher rejects its author.
+
+In this repository, legacy PR #15 was merged and `v1.2.0` published before the
+App migration. It does not need recreation; the next release uses a new PR.
+The App `m407-jev-grep-release` is installed and its repository variables and
+secret are configured. The local key is stored in the system keychain via fnox's
+`release` profile (`RELEASE_APP_PRIVATE_KEY`); the downloaded PEM was deleted.
+Use `fnox --profile release --no-defaults exec -- <command>` for commands that
+need this key without loading the Zen credentials.
+
+Verify the new PR author, an automatically started `pull_request` Release run,
+the successful Bot PR auto-merge run, and the subsequent publication with all
+three archives and `SHA256SUMS`. Local tests alone do not verify App installation
+or this live end-to-end flow. If CI succeeds but its merge follow-up is absent,
+rerun the native PR workflow and inspect the follow-up before claiming completion.
 
 ## Read-only build verification
 
