@@ -12,7 +12,7 @@
     "test:release": "node --test scripts/*.test.mjs"
   },
   "devDependencies": {
-    "@commitlint/cli": "21.2.3",
+    "@commitlint/cli": "21.2.4",
     "@commitlint/config-conventional": "21.2.4",
     "release-please": "17.11.2"
   }
