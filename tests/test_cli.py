@@ -7,6 +7,7 @@ import ssl
 import subprocess
 import tempfile
 import threading
+import time
 import unittest
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
@@ -243,10 +244,22 @@ class CliTests(unittest.TestCase):
 
     def test_group_retry_commits_once_and_exhaustion_does_not_flush_pending(self):
         self.statuses = [200, 429, 200]
+        started = time.monotonic()
         result = self.run_lg(
-            '--format', 'json', 'criterion', data='PKIX first\njoin continuation\n'
+            '--format',
+            'json',
+            '--timeout',
+            '2',
+            'criterion',
+            data='PKIX first\njoin continuation\n',
+            process_timeout=70,
         )
+        self.assertGreaterEqual(time.monotonic() - started, 60)
         self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn('HTTP 429 cooldown', result.stderr)
+        self.assertIn('request estimate=', result.stderr)
+        self.assertIn('occupied budget=', result.stderr)
+        self.assertIn('pause=60.000s', result.stderr)
         self.assertEqual(len(self.requests), 3)
         self.assertEqual(self.requests[1][2], self.requests[2][2])
         self.assertEqual(len(result.stdout.splitlines()), 1)
@@ -498,7 +511,13 @@ class CliTests(unittest.TestCase):
         self.requests.clear()
 
     def run_lg(
-        self, *args, data='', cwd=None, env_overrides=None, use_default_url=True
+        self,
+        *args,
+        data='',
+        cwd=None,
+        env_overrides=None,
+        use_default_url=True,
+        process_timeout=10,
     ):
         env = clean_test_env(env_overrides)
         command = [BIN]
@@ -510,10 +529,43 @@ class CliTests(unittest.TestCase):
             input=data,
             text=True,
             capture_output=True,
-            timeout=10,
+            timeout=process_timeout,
             cwd=cwd,
             env=env,
         )
+
+    def test_tpm_configuration_validation_and_oversized_request(self):
+        for flags in (
+            ('--tpm', '0'),
+            ('--tpm', '-1'),
+            ('--tpm', 'invalid'),
+            ('--tpm-safety-factor', 'NaN'),
+            ('--tpm-safety-factor', 'inf'),
+            ('--tpm-safety-factor', '0'),
+            ('--tpm-safety-factor', '0.9'),
+        ):
+            with self.subTest(flags=flags):
+                result = self.run_lg(*flags, 'criterion', data='PKIX\n')
+                self.assertEqual(result.returncode, 2, result.stderr)
+                self.assertEqual(self.requests, [])
+
+        result = self.run_lg(
+            'criterion', data='PKIX\n', env_overrides={'JEV_GREP_TPM': '1'}
+        )
+        self.assertEqual(result.returncode, 2)
+        self.assertIn('exceeds local TPM budget 1', result.stderr)
+        self.assertEqual(self.requests, [])
+        result = self.run_lg(
+            '--tpm',
+            '100000',
+            '--tpm-safety-factor',
+            '1',
+            'criterion',
+            data='PKIX\n',
+            env_overrides={'JEV_GREP_TPM': '1'},
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(len(self.requests), 1)
 
     def test_fragment_join_and_located_json(self):
         result = self.run_lg(
