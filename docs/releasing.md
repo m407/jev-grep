@@ -26,6 +26,8 @@ After the entire PR workflow succeeds,
 squash-merges Dependabot PRs into `main`, including major and security updates.
 It verifies the author, source repository, and tested head SHA before merging.
 Failed checks and merge conflicts block automatic merging.
+The shared merge concurrency group uses `queue: max` so simultaneous successful
+PR checks queue for merging instead of replacing pending merge runs.
 
 The same guarded workflow also handles generated release PRs. It verifies the
 Release workflow identity and successful validation jobs, the configured `<RELEASE_APP_SLUG>[bot]`
