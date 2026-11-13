@@ -61,7 +61,7 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
-      - uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
+      - uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
         with:
           version: '2026.11.1'
           cache: false
@@ -90,7 +90,7 @@ jobs:
           ref: ${{ needs.context.outputs.check_sha }}
           fetch-depth: 0
           persist-credentials: false
-      - uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
+      - uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
         with:
           version: '2026.11.1'
           cache: false
@@ -132,7 +132,7 @@ jobs:
           ref: ${{ needs.context.outputs.check_sha }}
           fetch-depth: 0
           persist-credentials: false
-      - uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
+      - uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
         with:
           version: '2026.11.1'
           cache: false
@@ -167,7 +167,7 @@ jobs:
           ref: ${{ needs.prepare.outputs.release_sha }}
           fetch-depth: 0
           persist-credentials: false
-      - uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
+      - uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
         with:
           version: '2026.11.1'
           cache: false
@@ -206,7 +206,7 @@ jobs:
         with:
           ref: ${{ env.RELEASE_SHA }}
           persist-credentials: false
-      - uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
+      - uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
         with:
           version: '2026.11.1'
           cache: false
@@ -286,7 +286,7 @@ jobs:
           ref: ${{ needs.prepare.outputs.release_sha }}
           fetch-depth: 0
           persist-credentials: false
-      - uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
+      - uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
         with:
           version: '2026.11.1'
           cache: false
